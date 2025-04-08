@@ -1,3 +1,5 @@
 public class main {
-    String nom;
+    public static void main(String[] args) {
+        ConnexionBdd.seConnecter(); // Appel de la méthode pour tester
+    }
 }
