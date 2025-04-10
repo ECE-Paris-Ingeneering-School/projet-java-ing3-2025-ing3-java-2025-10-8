@@ -1,4 +1,4 @@
-package model;
+package Modele;
 
 public class Admin extends Utilisateur{
     private String role;

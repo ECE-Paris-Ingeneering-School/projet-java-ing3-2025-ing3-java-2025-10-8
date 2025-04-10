@@ -1,4 +1,4 @@
-package model;
+package Modele;
 
 public class Utilisateur {
     protected int id_utilisateur;

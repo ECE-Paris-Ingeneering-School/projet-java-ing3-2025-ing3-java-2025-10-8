@@ -1,4 +1,4 @@
-package model;
+package Modele;
 
 public class Client extends Utilisateur {
     private TypeClient typeClient;
