@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 public class ConnexionBdd {
 
-    private static final String URL = "jdbc:mysql://localhost:3306/bookingjava?useSSL=false&serverTimezone=UTC";
+    private static final String URL = "jdbc:mysql://localhost:3306/booking?useSSL=false&serverTimezone=UTC";
     private static final String UTILISATEUR = "root";
     private static final String MOT_DE_PASSE = "";
 

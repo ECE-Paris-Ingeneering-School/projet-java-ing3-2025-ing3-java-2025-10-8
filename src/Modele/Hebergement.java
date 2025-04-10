@@ -1,43 +1,70 @@
 package Modele;
 
+import java.math.BigDecimal;
+
 public class Hebergement {
-    private long id;
+    private long idHebergement;
     private String nom;
     private String adresse;
-    private String ville;
-    private String codePostal;
-    private String pays;
+    private BigDecimal prixParNuit;
     private String description;
+    private String specification;
 
-    public Hebergement(long id, String nom, String adresse, String ville, String codePostal, String pays, String description) {
-        this.id = id;
+    public Hebergement(long idHebergement, String nom, String adresse, BigDecimal prixParNuit, String description, String specification) {
+        this.idHebergement = idHebergement;
         this.nom = nom;
         this.adresse = adresse;
-        this.ville = ville;
-        this.codePostal = codePostal;
-        this.pays = pays;
+        this.prixParNuit = prixParNuit;
         this.description = description;
+        this.specification = specification;
     }
 
     // Getters et Setters
-    public long getId() { return id; }
-    public void setId(long id) { this.id = id; }
+    public long getIdHebergement() {
+        return idHebergement;
+    }
 
-    public String getNom() { return nom; }
-    public void setNom(String nom) { this.nom = nom; }
+    public void setIdHebergement(long idHebergement) {
+        this.idHebergement = idHebergement;
+    }
 
-    public String getAdresse() { return adresse; }
-    public void setAdresse(String adresse) { this.adresse = adresse; }
+    public String getNom() {
+        return nom;
+    }
 
-    public String getVille() { return ville; }
-    public void setVille(String ville) { this.ville = ville; }
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
 
-    public String getCodePostal() { return codePostal; }
-    public void setCodePostal(String codePostal) { this.codePostal = codePostal; }
+    public String getAdresse() {
+        return adresse;
+    }
 
-    public String getPays() { return pays; }
-    public void setPays(String pays) { this.pays = pays; }
+    public void setAdresse(String adresse) {
+        this.adresse = adresse;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public BigDecimal getPrixParNuit() {
+        return prixParNuit;
+    }
+
+    public void setPrixParNuit(BigDecimal prixParNuit) {
+        this.prixParNuit = prixParNuit;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getSpecification() {
+        return specification;
+    }
+
+    public void setSpecification(String specification) {
+        this.specification = specification;
+    }
 }

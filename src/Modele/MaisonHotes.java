@@ -1,20 +1,32 @@
 package Modele;
 
-public class MaisonHotes extends Hebergement {
-    private int nombreChambres;
-    private boolean petitDejeunerInclus;
+import java.math.BigDecimal;
 
-    public MaisonHotes(long id, String nom, String adresse, String ville, String codePostal, String pays, String description,
-                       int nombreChambres, boolean petitDejeunerInclus) {
-        super(id, nom, adresse, ville, codePostal, pays, description);
-        this.nombreChambres = nombreChambres;
-        this.petitDejeunerInclus = petitDejeunerInclus;
+public class MaisonHotes extends Hebergement {
+    private boolean petitDejeuner; // = petit_dejeuner dans la BDD
+    private boolean jardin;        // = jardin dans la BDD
+
+    public MaisonHotes(long idHebergement, String nom, String adresse, BigDecimal prixParNuit,
+                       String description, String specification,
+                       boolean petitDejeuner, boolean jardin) {
+        super(idHebergement, nom, adresse, prixParNuit, description, specification);
+        this.petitDejeuner = petitDejeuner;
+        this.jardin = jardin;
     }
 
-    public int getNombreChambres() { return nombreChambres; }
-    public void setNombreChambres(int nombreChambres) { this.nombreChambres = nombreChambres; }
+    public boolean isPetitDejeuner() {
+        return petitDejeuner;
+    }
 
-    public boolean isPetitDejeunerInclus() { return petitDejeunerInclus; }
-    public void setPetitDejeunerInclus(boolean petitDejeunerInclus) { this.petitDejeunerInclus = petitDejeunerInclus; }
+    public void setPetitDejeuner(boolean petitDejeuner) {
+        this.petitDejeuner = petitDejeuner;
+    }
+
+    public boolean isJardin() {
+        return jardin;
+    }
+
+    public void setJardin(boolean jardin) {
+        this.jardin = jardin;
+    }
 }
-

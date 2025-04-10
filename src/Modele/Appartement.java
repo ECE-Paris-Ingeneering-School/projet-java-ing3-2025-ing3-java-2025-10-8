@@ -1,24 +1,41 @@
 package Modele;
 
-public class Appartement extends Hebergement {
-    private int superficie;
-    private int nombrePieces;
-    private boolean balcon;
+import java.math.BigDecimal;
 
-    public Appartement(long id, String nom, String adresse, String ville, String codePostal, String pays, String description,
-                       int superficie, int nombrePieces, boolean balcon) {
-        super(id, nom, adresse, ville, codePostal, pays, description);
-        this.superficie = superficie;
+public class Appartement extends Hebergement {
+    private int nombrePieces;
+    private boolean petitDejeuner;
+    private int etage;
+
+    public Appartement(long idHebergement, String nom, String adresse, BigDecimal prixParNuit, String description, String specification,
+                       int nombrePieces, boolean petitDejeuner, int etage) {
+        super(idHebergement, nom, adresse, prixParNuit, description, specification);
         this.nombrePieces = nombrePieces;
-        this.balcon = balcon;
+        this.petitDejeuner = petitDejeuner;
+        this.etage = etage;
     }
 
-    public int getSuperficie() { return superficie; }
-    public void setSuperficie(int superficie) { this.superficie = superficie; }
+    public int getNombrePieces() {
+        return nombrePieces;
+    }
 
-    public int getNombrePieces() { return nombrePieces; }
-    public void setNombrePieces(int nombrePieces) { this.nombrePieces = nombrePieces; }
+    public void setNombrePieces(int nombrePieces) {
+        this.nombrePieces = nombrePieces;
+    }
 
-    public boolean isBalcon() { return balcon; }
-    public void setBalcon(boolean balcon) { this.balcon = balcon; }
+    public boolean isPetitDejeuner() {
+        return petitDejeuner;
+    }
+
+    public void setPetitDejeuner(boolean petitDejeuner) {
+        this.petitDejeuner = petitDejeuner;
+    }
+
+    public int getEtage() {
+        return etage;
+    }
+
+    public void setEtage(int etage) {
+        this.etage = etage;
+    }
 }
