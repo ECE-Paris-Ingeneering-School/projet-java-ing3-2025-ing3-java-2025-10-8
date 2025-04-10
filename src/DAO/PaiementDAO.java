@@ -1,6 +1,6 @@
 package DAO;
 
-import model.Paiement;
+import Modele.Paiement;
 
 import java.sql.*;
 import java.util.ArrayList;

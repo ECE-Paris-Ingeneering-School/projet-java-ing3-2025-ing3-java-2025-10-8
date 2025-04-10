@@ -1,8 +1,8 @@
 package gui;
 
 import DAO.PaiementDAO;
-import connexionBdd.ConnexionBdd;
-import model.Paiement;
+import DAO.ConnexionBdd;
+import Modele.Paiement;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;

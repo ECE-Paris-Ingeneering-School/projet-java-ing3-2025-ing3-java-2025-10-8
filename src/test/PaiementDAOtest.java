@@ -2,7 +2,7 @@ package test;
 
 import connexionBdd.ConnexionBdd;
 import DAO.PaiementDAO;
-import model.Paiement;
+import Modele.Paiement;
 
 import java.sql.Connection;
 import java.sql.Date;
