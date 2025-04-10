@@ -1,7 +1,5 @@
 package model;
 
-//import java.time.LocalDate;
-
 import java.sql.Date;
 
 public class Paiement {
@@ -13,21 +11,18 @@ public class Paiement {
     private StatutPaiement statut;
     private Date datePaiement;
 
-    // Enum pour les méthodes de paiement
     public enum MethodePaiement {
         CARTE_BANCAIRE,
         PAYPAL,
         VIREMENT
     }
 
-    // Enum pour le statut du paiement
     public enum StatutPaiement {
         EN_ATTENTE,
         PAYE,
         ANNULE
     }
 
-    // Constructeurs
     public Paiement() {}
 
     public Paiement(int idReservation, double montant, MethodePaiement methodePaiement, StatutPaiement statut, Date datePaiement) {
@@ -47,7 +42,6 @@ public class Paiement {
         this.datePaiement = datePaiement;
     }
 
-    // Getters & Setters
     public int getIdPaiement() {
         return idPaiement;
     }
@@ -96,7 +90,6 @@ public class Paiement {
         this.datePaiement = datePaiement;
     }
 
-    // ToString pour debug ou affichage
     @Override
     public String toString() {
         return "Paiement{" +
@@ -107,5 +100,42 @@ public class Paiement {
                 ", statut=" + statut +
                 ", datePaiement=" + datePaiement +
                 '}';
+    }
+
+    // 🆕 Méthodes utilitaires pour la BDD
+    public static String getSQLMethode(MethodePaiement methode) {
+        switch (methode) {
+            case CARTE_BANCAIRE: return "Carte bancaire";
+            case PAYPAL: return "PayPal";
+            case VIREMENT: return "Virement";
+            default: return null;
+        }
+    }
+
+    public static String getSQLStatut(StatutPaiement statut) {
+        switch (statut) {
+            case EN_ATTENTE: return "En attente";
+            case PAYE: return "Payé";
+            case ANNULE: return "Annulé";
+            default: return null;
+        }
+    }
+
+    public static MethodePaiement fromSQLMethode(String value) {
+        switch (value) {
+            case "Carte bancaire": return MethodePaiement.CARTE_BANCAIRE;
+            case "PayPal": return MethodePaiement.PAYPAL;
+            case "Virement": return MethodePaiement.VIREMENT;
+            default: throw new IllegalArgumentException("Méthode inconnue : " + value);
+        }
+    }
+
+    public static StatutPaiement fromSQLStatut(String value) {
+        switch (value) {
+            case "En attente": return StatutPaiement.EN_ATTENTE;
+            case "Payé": return StatutPaiement.PAYE;
+            case "Annulé": return StatutPaiement.ANNULE;
+            default: throw new IllegalArgumentException("Statut inconnu : " + value);
+        }
     }
 }
