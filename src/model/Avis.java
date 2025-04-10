@@ -9,4 +9,7 @@ public class Avis {
     private int note;
     private String commentaire;
     private LocalDate date;
+
+
+
 }

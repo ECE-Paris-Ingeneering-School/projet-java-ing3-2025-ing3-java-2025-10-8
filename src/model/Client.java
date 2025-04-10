@@ -1,20 +1,27 @@
 package model;
 
 public class Client extends Utilisateur {
-    private boolean ancienClient;
+    private TypeClient typeClient;
 
-    public Client() {}
-
-    public Client(int id, String nom, String prenom, String email, String motDePasse, boolean ancienClient) {
-        super(id, nom, prenom, email, motDePasse);
-        this.ancienClient = ancienClient;
+    public enum TypeClient {
+        Nouveau,
+        Ancien
     }
 
-    public boolean isAncienClient() {
-        return ancienClient;
+    // Constructeur
+    public Client(int id_utilisateur, String nom, String prenom, String email, String mdp, TypeClient typeClient) {
+        super(id_utilisateur, nom, prenom, email, mdp); // Appel du constructeur de Utilisateur
+        this.typeClient = typeClient;
     }
 
-    public void setAncienClient(boolean ancienClient) {
-        this.ancienClient = ancienClient;
+    // Getter
+    public TypeClient getTypeClient() {
+        return typeClient;
     }
+
+    // Setter
+    public void setTypeClient(TypeClient typeClient) {
+        this.typeClient = typeClient;
+    }
+
 }
