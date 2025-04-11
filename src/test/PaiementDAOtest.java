@@ -1,6 +1,6 @@
 package test;
 
-import connexionBdd.ConnexionBdd;
+import DAO.ConnexionBdd;
 import DAO.PaiementDAO;
 import Modele.Paiement;
 
