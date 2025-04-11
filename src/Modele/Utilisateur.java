@@ -20,7 +20,7 @@ public class Utilisateur {
     }
 
     //getter
-    public int getId_utilisateur() {
+    public int getIdUtilisateur() {
         return id_utilisateur;
     }
     public String getNom(){
@@ -37,7 +37,7 @@ public class Utilisateur {
     }
 
     //setter
-    public void setId_utilisateur(int id_utilisateur) {
+    public void setIdUtilisateur(int id_utilisateur) {
         this.id_utilisateur = id_utilisateur;
     }
     public void setNom(String nom) {

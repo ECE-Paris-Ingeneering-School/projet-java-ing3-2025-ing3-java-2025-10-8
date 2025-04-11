@@ -52,7 +52,7 @@ public class AccueilPrincipalFenetre extends JFrame {
 
     private void chargerAppartements(DefaultTableModel model) {
         HebergementDAO dao = new HebergementDAO();
-        List<Appartement> appartements = dao.getAllAppartements();
+        List<Appartement> appartements = DAO.getAllAppartements();
 
         for (Appartement a : appartements) {
             model.addRow(new Object[]{
