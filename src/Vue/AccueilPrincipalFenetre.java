@@ -3,6 +3,7 @@ package Vue;
 import DAO.HebergementDAO;
 import DAO.ImageDAO;
 import Modele.*;
+import DAO.ClientDAO;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -134,14 +135,14 @@ public class AccueilPrincipalFenetre extends JFrame {
                 int row = table.getSelectedRow();
                 if (row != -1) {
                     String nom = model.getValueAt(row, 0).toString();
-                    Hebergement h = new HebergementDAO().getHebergementByNom(nom);
-                    afficherImagePourHebergement(h);
+                    //Hebergement h = new HebergementDAO().getHebergementByNom(nom);
+                    //afficherImagePourHebergement(h);
                 }
             }
         });
     }
 
-    private void afficherImagePourHebergement(Hebergement hebergement) {
+   /*private void afficherImagePourHebergement(Hebergement hebergement) {
         panelImage.removeAll();
         List<Modele.Image> images = new ImageDAO().getImagesByHebergementId(hebergement.getIdHebergement());
 
@@ -158,7 +159,7 @@ public class AccueilPrincipalFenetre extends JFrame {
 
         panelImage.revalidate();
         panelImage.repaint();
-    }
+    }*/
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new AccueilPrincipalFenetre(null).setVisible(true));
