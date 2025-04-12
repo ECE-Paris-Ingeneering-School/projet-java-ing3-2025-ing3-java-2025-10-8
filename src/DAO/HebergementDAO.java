@@ -270,6 +270,7 @@ public Hotel findHotelById(int id) {
 
         return null;
     }
+    //get les Hebergements
     public List<Hebergement> getAllHebergements() {
         List<Hebergement> hebergements;
         hebergements = new ArrayList<>();

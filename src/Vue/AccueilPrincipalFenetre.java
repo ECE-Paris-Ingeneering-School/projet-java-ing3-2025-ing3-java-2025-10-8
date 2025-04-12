@@ -50,7 +50,7 @@ public class AccueilPrincipalFenetre extends JFrame {
             new ConnexionFenetre().setVisible(true);
         });
     }
-
+ // charge les hebergements de la bdd
     private void chargerHebergements(DefaultTableModel model) {
         HebergementDAO dao = new HebergementDAO();
         List<Hebergement> hebergements = dao.getAllHebergements();
