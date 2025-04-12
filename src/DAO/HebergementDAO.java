@@ -202,7 +202,7 @@ public class HebergementDAO {
         return null;
     }
 
-public Hotel findHotelById(int id) {
+    public Hotel findHotelById(int id) {
         String sqlHebergement = "SELECT * FROM hebergement WHERE id_hebergement = ?";
         String sqlHotel = "SELECT * FROM hotel WHERE id_hebergement = ?";
 

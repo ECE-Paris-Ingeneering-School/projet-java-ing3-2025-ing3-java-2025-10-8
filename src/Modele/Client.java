@@ -4,8 +4,8 @@ public class Client extends Utilisateur {
     private TypeClient typeClient;
 
     public enum TypeClient {
-        Nouveau,
-        Ancien
+        PARTICULIER,
+        ENTREPRISE
     }
 
     // Constructeur

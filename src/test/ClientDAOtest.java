@@ -24,15 +24,15 @@ public class ClientDAOtest {
             System.out.print("Mot de passe : ");
             String mdp = scanner.nextLine();
 
-            System.out.print("Type de client (Nouveau / Ancien) : ");
+            System.out.print("Type de client (Particulier / Entreprise): ");
             String type = scanner.nextLine().trim();
 
             // Vérification du type
             TypeClient typeClient;
             if (type.equalsIgnoreCase("Nouveau")) {
-                typeClient = TypeClient.Nouveau;
+                typeClient = TypeClient.PARTICULIER;
             } else if (type.equalsIgnoreCase("Ancien")) {
-                typeClient = TypeClient.Ancien;
+                typeClient = TypeClient.ENTREPRISE;
             } else {
                 System.out.println("Type de client invalide");
                 return;
