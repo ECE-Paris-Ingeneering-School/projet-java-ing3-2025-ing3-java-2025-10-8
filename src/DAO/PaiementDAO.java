@@ -21,8 +21,8 @@ public class PaiementDAO {
         try (PreparedStatement stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setInt(1, paiement.getIdReservation());
             stmt.setDouble(2, paiement.getMontant());
-            stmt.setString(3, Paiement.getSQLMethode(paiement.getMethodePaiement()));  // 🔄 conversion
-            stmt.setString(4, Paiement.getSQLStatut(paiement.getStatut()));            // 🔄 conversion
+            stmt.setString(3, Paiement.getSQLMethode(paiement.getMethodePaiement()));  // Conversion
+            stmt.setString(4, Paiement.getSQLStatut(paiement.getStatut()));            // Conversion
             stmt.setDate(5, paiement.getDatePaiement());
 
             stmt.executeUpdate();
@@ -30,7 +30,7 @@ public class PaiementDAO {
             // Récupérer l'ID généré pour le paiement
             try (ResultSet rs = stmt.getGeneratedKeys()) {
                 if (rs.next()) {
-                    paiement.setIdPaiement(rs.getInt(1));  // ⚠️ Assigner l'ID généré à l'objet Paiement
+                    paiement.setIdPaiement(rs.getInt(1));  // Assigner l'ID généré à l'objet Paiement
                 }
             }
         }
@@ -49,8 +49,8 @@ public class PaiementDAO {
                         rs.getInt("id_paiement"),
                         rs.getInt("id_reservation"),
                         rs.getDouble("montant"),
-                        Paiement.fromSQLMethode(rs.getString("methode_paiement")),  // 🔄 conversion
-                        Paiement.fromSQLStatut(rs.getString("statut")),              // 🔄 conversion
+                        Paiement.fromSQLMethode(rs.getString("methode_paiement")),  // Conversion
+                        Paiement.fromSQLStatut(rs.getString("statut")),              // Conversion
                         rs.getDate("date_paiement")
                 );
             }
@@ -72,8 +72,8 @@ public class PaiementDAO {
                         rs.getInt("id_paiement"),
                         rs.getInt("id_reservation"),
                         rs.getDouble("montant"),
-                        Paiement.fromSQLMethode(rs.getString("methode_paiement")),  // 🔄
-                        Paiement.fromSQLStatut(rs.getString("statut")),              // 🔄
+                        Paiement.fromSQLMethode(rs.getString("methode_paiement")),  // Conversion
+                        Paiement.fromSQLStatut(rs.getString("statut")),              // Conversion
                         rs.getDate("date_paiement")
                 );
                 paiements.add(paiement);
@@ -88,8 +88,8 @@ public class PaiementDAO {
 
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setDouble(1, paiement.getMontant());
-            stmt.setString(2, Paiement.getSQLMethode(paiement.getMethodePaiement()));  // 🔄
-            stmt.setString(3, Paiement.getSQLStatut(paiement.getStatut()));            // 🔄
+            stmt.setString(2, Paiement.getSQLMethode(paiement.getMethodePaiement()));  // Conversion
+            stmt.setString(3, Paiement.getSQLStatut(paiement.getStatut()));            // Conversion
             stmt.setDate(4, paiement.getDatePaiement());
             stmt.setInt(5, paiement.getIdPaiement());
 

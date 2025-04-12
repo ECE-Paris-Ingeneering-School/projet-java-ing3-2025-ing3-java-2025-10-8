@@ -2,9 +2,9 @@ package Modele;
 
 public class Admin extends Utilisateur{
     private String role;
-    public Admin (int id_utilisateur, String nom, String prenom, String email, String mdp, String roleSprecifique){
+    public Admin (int id_utilisateur, String nom, String prenom, String email, String mdp, String roleSpecifique){
         super(id_utilisateur, nom, prenom, email, mdp); // hérité de la classe Utilisateur
-        this.role = roleSprecifique;
+        this.role = roleSpecifique;
     }
 
     //Getter

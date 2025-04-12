@@ -5,29 +5,36 @@ import DAO.ConnexionBdd;
 import Modele.Paiement;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.sql.Connection;
 import java.sql.Date;
-import java.util.List;
 
 public class PaiementGUI extends JFrame {
-    private JTextField idReservationField, montantField;
-    private JComboBox<String> methodeCombo;
-    private JButton ajouterBtn, rafraichirBtn, validerBtn, annulerBtn;
-    private JTable paiementTable;
-    private DefaultTableModel tableModel;
 
+    private JLabel recapReservationLabel;
+    private JLabel recapMontantLabel;
+
+    private JComboBox<String> methodeCombo;
+    private JPanel methodeDetailsPanel;
+    private CardLayout cardLayout;
+
+    private JTextField carteNumeroField, carteCVVField;
+    private JTextField paypalEmailField;
+    private JTextField virementIbanField;
+
+    private JButton confirmerBtn, sauvegarderBtn;
     private PaiementDAO paiementDAO;
 
+    private int idReservation = 1234;
+    private double montant = 150.0;
+
     public PaiementGUI() {
-        setTitle("Gestion des Paiements");
-        setSize(700, 400);
+        setTitle("Paiement Réservation");
+        setSize(500, 400);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        // Connexion à la base de données
         Connection connection = ConnexionBdd.seConnecter();
         if (connection == null) {
             JOptionPane.showMessageDialog(this, "Erreur de connexion à la base de données");
@@ -40,132 +47,173 @@ public class PaiementGUI extends JFrame {
     }
 
     private void initUI() {
-        JPanel inputPanel = new JPanel(new GridLayout(5, 2, 5, 5));
+        JPanel recapPanel = new JPanel(new GridLayout(2, 1));
+        recapReservationLabel = new JLabel("Réservation n° " + idReservation);
+        recapMontantLabel = new JLabel("Montant à payer : " + montant + " €");
 
-        inputPanel.add(new JLabel("ID Réservation :"));
-        idReservationField = new JTextField();
-        inputPanel.add(idReservationField);
+        recapReservationLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
+        recapMontantLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
 
-        inputPanel.add(new JLabel("Montant :"));
-        montantField = new JTextField();
-        inputPanel.add(montantField);
+        recapPanel.setBorder(BorderFactory.createTitledBorder("Récapitulatif"));
+        recapPanel.add(recapReservationLabel);
+        recapPanel.add(recapMontantLabel);
 
-        inputPanel.add(new JLabel("Méthode de paiement :"));
+        add(recapPanel, BorderLayout.NORTH);
+
+        JPanel centerPanel = new JPanel(new BorderLayout());
         methodeCombo = new JComboBox<>(new String[]{"Carte bancaire", "PayPal", "Virement"});
-        inputPanel.add(methodeCombo);
+        methodeCombo.addActionListener(e -> cardLayout.show(methodeDetailsPanel, (String) methodeCombo.getSelectedItem()));
+        centerPanel.add(methodeCombo, BorderLayout.NORTH);
 
-        ajouterBtn = new JButton("Ajouter Paiement");
-        ajouterBtn.addActionListener(e -> ajouterPaiement());
-        inputPanel.add(ajouterBtn);
+        cardLayout = new CardLayout();
+        methodeDetailsPanel = new JPanel(cardLayout);
+        methodeDetailsPanel.add(initCartePanel(), "Carte bancaire");
+        methodeDetailsPanel.add(initPaypalPanel(), "PayPal");
+        methodeDetailsPanel.add(initVirementPanel(), "Virement");
 
-        rafraichirBtn = new JButton("Afficher Paiements");
-        rafraichirBtn.addActionListener(e -> chargerPaiements());
-        inputPanel.add(rafraichirBtn);
+        centerPanel.add(methodeDetailsPanel, BorderLayout.CENTER);
+        add(centerPanel, BorderLayout.CENTER);
 
-        // Ajout des boutons Valider et Annuler
-        validerBtn = new JButton("Valider Paiement");
-        validerBtn.addActionListener(e -> validerPaiement());
-        inputPanel.add(validerBtn);
+        JPanel bottomPanel = new JPanel(new FlowLayout());
+        confirmerBtn = new JButton("Confirmer le paiement");
+        sauvegarderBtn = new JButton("Enregistrer en attente");
 
-        annulerBtn = new JButton("Annuler Paiement");
-        annulerBtn.addActionListener(e -> annulerPaiement());
-        inputPanel.add(annulerBtn);
+        confirmerBtn.addActionListener(e -> confirmerPaiement());
+        sauvegarderBtn.addActionListener(e -> enregistrerEnAttente());
 
-        add(inputPanel, BorderLayout.NORTH);
+        bottomPanel.add(sauvegarderBtn);
+        bottomPanel.add(confirmerBtn);
 
-        // Table
-        tableModel = new DefaultTableModel(new String[]{"ID", "Réservation", "Montant", "Méthode", "Statut", "Date"}, 0);
-        paiementTable = new JTable(tableModel);
-        add(new JScrollPane(paiementTable), BorderLayout.CENTER);
+        add(bottomPanel, BorderLayout.SOUTH);
     }
 
-    private void ajouterPaiement() {
-        try {
-            int idRes = Integer.parseInt(idReservationField.getText());
-            double montant = Double.parseDouble(montantField.getText());
-            String methodeStr = (String) methodeCombo.getSelectedItem();
-            Paiement.MethodePaiement methode = Paiement.fromSQLMethode(methodeStr);
+    private JPanel initCartePanel() {
+        JPanel panel = new JPanel(new GridLayout(2, 2));
+        panel.add(new JLabel("Numéro de carte :"));
+        carteNumeroField = new JTextField();
+        panel.add(carteNumeroField);
 
+        panel.add(new JLabel("Code CVV :"));
+        carteCVVField = new JTextField();
+        panel.add(carteCVVField);
+        return panel;
+    }
+
+    private JPanel initPaypalPanel() {
+        JPanel panel = new JPanel(new GridLayout(1, 2));
+        panel.add(new JLabel("Email PayPal :"));
+        paypalEmailField = new JTextField();
+        panel.add(paypalEmailField);
+        return panel;
+    }
+
+    private JPanel initVirementPanel() {
+        JPanel panel = new JPanel(new GridLayout(1, 2));
+        panel.add(new JLabel("IBAN :"));
+        virementIbanField = new JTextField();
+        panel.add(virementIbanField);
+        return panel;
+    }
+
+    private void confirmerPaiement() {
+        String methodeStr = (String) methodeCombo.getSelectedItem();
+        Paiement.MethodePaiement methode = Paiement.fromSQLMethode(methodeStr);
+
+        if (!verifierChamps(methode)) return;
+
+        int confirm = JOptionPane.showConfirmDialog(this,
+                "Confirmez-vous ce paiement de " + montant + " € via " + methodeStr + " ?",
+                "Confirmation",
+                JOptionPane.YES_NO_OPTION);
+
+        Paiement.StatutPaiement statut = (confirm == JOptionPane.YES_OPTION) ?
+                Paiement.StatutPaiement.PAYE :
+                Paiement.StatutPaiement.ANNULE;
+
+        try {
             Paiement paiement = new Paiement(
-                    idRes,
+                    idReservation,
+                    montant,
+                    methode,
+                    statut,
+                    new Date(System.currentTimeMillis())
+            );
+
+            paiementDAO.ajouterPaiement(paiement);
+
+            JOptionPane.showMessageDialog(this,
+                    statut == Paiement.StatutPaiement.PAYE ?
+                            "🎉 Paiement enregistré avec succès !" :
+                            "❌ Paiement annulé.",
+                    "Info",
+                    JOptionPane.INFORMATION_MESSAGE);
+
+            resetForm();
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Erreur lors de l'enregistrement :\n" + e.getMessage(),
+                    "Erreur",
+                    JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }
+
+    private void enregistrerEnAttente() {
+        String methodeStr = (String) methodeCombo.getSelectedItem();
+        Paiement.MethodePaiement methode = Paiement.fromSQLMethode(methodeStr);
+
+        if (!verifierChamps(methode)) return;
+
+        try {
+            Paiement paiement = new Paiement(
+                    idReservation,
                     montant,
                     methode,
                     Paiement.StatutPaiement.EN_ATTENTE,
                     new Date(System.currentTimeMillis())
             );
+
             paiementDAO.ajouterPaiement(paiement);
-            JOptionPane.showMessageDialog(this, "✅ Paiement ajouté !");
-            chargerPaiements();
 
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Erreur : " + ex.getMessage());
+            JOptionPane.showMessageDialog(this,
+                    "💾 Paiement enregistré en attente.",
+                    "Info",
+                    JOptionPane.INFORMATION_MESSAGE);
+
+            resetForm();
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Erreur lors de l'enregistrement en attente :\n" + e.getMessage(),
+                    "Erreur",
+                    JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
     }
 
-    private void chargerPaiements() {
-        try {
-            int idRes = Integer.parseInt(idReservationField.getText());
-            List<Paiement> paiements = paiementDAO.getPaiementsByReservation(idRes);
-
-            tableModel.setRowCount(0); // Clear table
-            for (Paiement p : paiements) {
-                tableModel.addRow(new Object[]{
-                        p.getIdPaiement(),
-                        p.getIdReservation(),
-                        p.getMontant(),
-                        Paiement.getSQLMethode(p.getMethodePaiement()),
-                        Paiement.getSQLStatut(p.getStatut()),
-                        p.getDatePaiement()
-                });
-            }
-
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Erreur de chargement : " + e.getMessage());
+    private boolean verifierChamps(Paiement.MethodePaiement methode) {
+        if (methode == Paiement.MethodePaiement.CARTE_BANCAIRE &&
+                (carteNumeroField.getText().isEmpty() || carteCVVField.getText().isEmpty())) {
+            JOptionPane.showMessageDialog(this, "Veuillez remplir tous les champs de la carte bancaire.");
+            return false;
+        } else if (methode == Paiement.MethodePaiement.PAYPAL && paypalEmailField.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Veuillez renseigner un email PayPal.");
+            return false;
+        } else if (methode == Paiement.MethodePaiement.VIREMENT && virementIbanField.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Veuillez renseigner un IBAN pour le virement.");
+            return false;
         }
+        return true;
     }
 
-    private void validerPaiement() {
-        try {
-            int selectedRow = paiementTable.getSelectedRow();
-            if (selectedRow == -1) {
-                JOptionPane.showMessageDialog(this, "Veuillez sélectionner un paiement à valider.");
-                return;
-            }
-
-            int idPaiement = (int) tableModel.getValueAt(selectedRow, 0);
-            Paiement paiement = paiementDAO.getPaiementById(idPaiement);
-            if (paiement != null) {
-                paiement.setStatut(Paiement.StatutPaiement.PAYE);
-                paiementDAO.updatePaiement(paiement);
-                JOptionPane.showMessageDialog(this, "Paiement validé !");
-                chargerPaiements();
-            }
-
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Erreur lors de la validation du paiement : " + e.getMessage());
-        }
-    }
-
-    private void annulerPaiement() {
-        try {
-            int selectedRow = paiementTable.getSelectedRow();
-            if (selectedRow == -1) {
-                JOptionPane.showMessageDialog(this, "Veuillez sélectionner un paiement à annuler.");
-                return;
-            }
-
-            int idPaiement = (int) tableModel.getValueAt(selectedRow, 0);
-            Paiement paiement = paiementDAO.getPaiementById(idPaiement);
-            if (paiement != null) {
-                paiement.setStatut(Paiement.StatutPaiement.ANNULE);
-                paiementDAO.updatePaiement(paiement);
-                JOptionPane.showMessageDialog(this, "Paiement annulé !");
-                chargerPaiements();
-            }
-
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Erreur lors de l'annulation du paiement : " + e.getMessage());
-        }
+    private void resetForm() {
+        carteNumeroField.setText("");
+        carteCVVField.setText("");
+        paypalEmailField.setText("");
+        virementIbanField.setText("");
+        methodeCombo.setSelectedIndex(0);
+        cardLayout.show(methodeDetailsPanel, "Carte bancaire");
     }
 
     public static void main(String[] args) {

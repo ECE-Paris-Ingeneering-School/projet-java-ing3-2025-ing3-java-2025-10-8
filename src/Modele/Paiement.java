@@ -102,7 +102,7 @@ public class Paiement {
                 '}';
     }
 
-    // 🆕 Méthodes utilitaires pour la BDD
+    // Méthodes utilitaires pour la BDD
     public static String getSQLMethode(MethodePaiement methode) {
         switch (methode) {
             case CARTE_BANCAIRE: return "Carte bancaire";
