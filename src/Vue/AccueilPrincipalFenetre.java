@@ -2,6 +2,7 @@ package Vue;
 
 import DAO.HebergementDAO;
 import Modele.Appartement;
+import Modele.Hebergement;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -35,7 +36,7 @@ public class AccueilPrincipalFenetre extends JFrame {
         add(scrollPane, BorderLayout.CENTER);
 
         // Charger les données depuis le DAO
-        chargerAppartements(model);
+        chargerHebergements(model);
 
         // Bouton déconnexion
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -50,16 +51,16 @@ public class AccueilPrincipalFenetre extends JFrame {
         });
     }
 
-    private void chargerAppartements(DefaultTableModel model) {
+    private void chargerHebergements(DefaultTableModel model) {
         HebergementDAO dao = new HebergementDAO();
-        List<Appartement> appartements = dao.getAllAppartements();
+        List<Hebergement> hebergements = dao.getAllHebergements();
 
-        for (Appartement a : appartements) {
+        for (Hebergement a : hebergements) {
             model.addRow(new Object[]{
                     a.getNom(),
                     a.getAdresse(),
                     a.getPrixParNuit() + " €",
-                    a.isPetitDejeuner() ? "Oui" : "Non"
+
             });
         }
     }

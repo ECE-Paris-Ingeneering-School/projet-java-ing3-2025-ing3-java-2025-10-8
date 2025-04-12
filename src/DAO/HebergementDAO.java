@@ -7,6 +7,7 @@ import Modele.MaisonHotes;
 
 import java.sql.*;
 import java.math.BigDecimal;
+import java.util.*;
 
 public class HebergementDAO {
 
@@ -269,4 +270,45 @@ public Hotel findHotelById(int id) {
 
         return null;
     }
+    public List<Hebergement> getAllHebergements() {
+        List<Hebergement> hebergements;
+        hebergements = new ArrayList<>();
+        String sql = "SELECT * FROM hebergement";
+
+        try (Connection conn = ConnexionBdd.seConnecter();
+             Statement st = conn.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+
+            while (rs.next()) {
+                long id = rs.getLong("id_hebergement");
+                String spec = rs.getString("specification");
+
+                // Vérifie si c'est un appartement
+                Appartement app = findAppartementById((int) id);
+                if (app != null) {
+                    hebergements.add(app);
+                    continue;
+                }
+
+                // Vérifie si c'est un hotel
+                Hotel hotel = findHotelById((int) id);
+                if (hotel != null) {
+                    hebergements.add(hotel);
+                    continue;
+                }
+
+                // Vérifie si c'est une maison d'hôte
+                MaisonHotes mh = findMaisonHotesById((int) id);
+                if (mh != null) {
+                    hebergements.add(mh);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return hebergements;
     }
+
+}
