@@ -89,7 +89,7 @@ public class ConnexionFenetre extends JFrame {
             if (client != null && client.getMdp().equals(mdp)) {
                 JOptionPane.showMessageDialog(this, "Connexion réussie !");
                 dispose();
-                new AccueilPrincipalFenetre().setVisible(true);
+                new AccueilPrincipalFenetre(client).setVisible(true);
             } else {
                 JOptionPane.showMessageDialog(this, "Email ou mot de passe incorrect.");
             }

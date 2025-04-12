@@ -108,7 +108,7 @@ public class InscriptionFenetre extends JFrame {
                     String email = emailField.getText();
                     String mdp = new String(mdpField.getPassword());
 
-                    Client client = new Client(0, nom, prenom, email, mdp, Client.TypeClient.Nouveau);
+                    Client client = new Client(0, nom, prenom, email, mdp, Client.TypeClient.PARTICULIER);
                     ClientDAO clientDAO = new ClientDAO();
                     boolean success = clientDAO.ajouterClient(client);
 

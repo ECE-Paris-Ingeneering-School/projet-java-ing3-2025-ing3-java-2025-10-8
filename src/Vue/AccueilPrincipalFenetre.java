@@ -4,6 +4,9 @@ import DAO.HebergementDAO;
 import Modele.Appartement;
 import Modele.Hebergement;
 
+import Modele.Client;
+import DAO.ClientDAO;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -14,7 +17,12 @@ public class AccueilPrincipalFenetre extends JFrame {
     private JTable tableauAppartements;
     private JButton deconnexionButton;
 
-    public AccueilPrincipalFenetre() {
+    private Client clientConnecte;
+
+    public AccueilPrincipalFenetre(Client clientConnecte) {
+
+        this.clientConnecte = clientConnecte;
+
         setTitle("Accueil - Booking App");
         setSize(700, 400);
         setLocationRelativeTo(null);
@@ -49,6 +57,52 @@ public class AccueilPrincipalFenetre extends JFrame {
             dispose();
             new ConnexionFenetre().setVisible(true);
         });
+
+        // Encart profil
+        JPanel profilPanel = new JPanel();
+        profilPanel.setLayout(new BoxLayout(profilPanel, BoxLayout.Y_AXIS));
+        profilPanel.setBorder(BorderFactory.createTitledBorder("Mon profil"));
+        profilPanel.setBackground(Color.WHITE);
+
+        if (clientConnecte != null) {
+            profilPanel.add(new JLabel("Nom : " + clientConnecte.getNom()));
+            profilPanel.add(new JLabel("Prénom : " + clientConnecte.getPrenom()));
+            profilPanel.add(new JLabel("Email : " + clientConnecte.getEmail()));
+
+            JButton btnVoirReservations = new JButton("Voir mes réservations");
+            JButton btnSupprimer = new JButton("Supprimer mon compte");
+
+            profilPanel.add(Box.createVerticalStrut(10));
+            profilPanel.add(btnVoirReservations);
+            profilPanel.add(Box.createVerticalStrut(5));
+            profilPanel.add(btnSupprimer);
+
+            btnSupprimer.addActionListener(e -> {
+                int confirm = JOptionPane.showConfirmDialog(this, "Êtes-vous sûr de vouloir supprimer votre compte ?", "Confirmation", JOptionPane.YES_NO_OPTION);
+                if (confirm == JOptionPane.YES_OPTION) {
+                    ClientDAO dao = new ClientDAO();
+                    dao.supprimerClient(clientConnecte.getIdUtilisateur());
+                    JOptionPane.showMessageDialog(this, "Compte supprimé.");
+                    dispose();
+                    new ConnexionFenetre().setVisible(true);
+                }
+            });
+
+            btnVoirReservations.addActionListener(e -> {
+                JOptionPane.showMessageDialog(this, "👉Affichage des réservations de " + clientConnecte.getPrenom());
+            });
+
+        } else {
+            JButton btnConnexion = new JButton("Se connecter");
+            profilPanel.add(btnConnexion);
+            btnConnexion.addActionListener(e -> {
+                dispose();
+                new ConnexionFenetre().setVisible(true);
+            });
+        }
+
+        add(profilPanel, BorderLayout.WEST); // Ajout dans la fenêtre
+
     }
  // charge les hebergements de la bdd
     private void chargerHebergements(DefaultTableModel model) {
@@ -66,6 +120,6 @@ public class AccueilPrincipalFenetre extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new AccueilPrincipalFenetre().setVisible(true));
+        SwingUtilities.invokeLater(() -> new AccueilPrincipalFenetre(null).setVisible(true));
     }
 }
