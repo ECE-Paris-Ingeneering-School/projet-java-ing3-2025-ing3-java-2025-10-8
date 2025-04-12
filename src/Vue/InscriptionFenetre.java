@@ -1,5 +1,7 @@
 package Vue;
 
+import DAO.ClientDAO;
+import Modele.Client;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -7,12 +9,11 @@ import java.awt.event.ActionListener;
 
 public class InscriptionFenetre extends JFrame {
 
-    private JTextField idField;
     private JTextField nomField;
     private JTextField prenomField;
     private JTextField emailField;
     private JPasswordField mdpField;
-    private JComboBox<String> typeClientBox;
+
     private JButton registerButton;
     private JButton retourButton;
 
@@ -44,14 +45,6 @@ public class InscriptionFenetre extends JFrame {
 
         gbc.gridx = 0;
         gbc.gridy = row;
-        panel.add(createStyledLabel("ID utilisateur :"), gbc);
-        gbc.gridx = 1;
-        idField = new JTextField(20);
-        panel.add(idField, gbc);
-
-        row++;
-        gbc.gridx = 0;
-        gbc.gridy = row;
         panel.add(createStyledLabel("Nom :"), gbc);
         gbc.gridx = 1;
         nomField = new JTextField(20);
@@ -81,13 +74,6 @@ public class InscriptionFenetre extends JFrame {
         mdpField = new JPasswordField(20);
         panel.add(mdpField, gbc);
 
-        row++;
-        gbc.gridx = 0;
-        gbc.gridy = row;
-        panel.add(createStyledLabel("Type de client :"), gbc);
-        gbc.gridx = 1;
-        typeClientBox = new JComboBox<>(new String[] {"PARTICULIER", "ENTREPRISE"});
-        panel.add(typeClientBox, gbc);
 
         // Boutons
         row++;
@@ -116,10 +102,30 @@ public class InscriptionFenetre extends JFrame {
         registerButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO : enregistrer les infos en base
-                JOptionPane.showMessageDialog(InscriptionFenetre.this, "Inscription réussie !");
+                try {
+                    String nom = nomField.getText();
+                    String prenom = prenomField.getText();
+                    String email = emailField.getText();
+                    String mdp = new String(mdpField.getPassword());
+
+                    Client client = new Client(0, nom, prenom, email, mdp, Client.TypeClient.Nouveau);
+                    ClientDAO clientDAO = new ClientDAO();
+                    boolean success = clientDAO.ajouterClient(client);
+
+                    if (success) {
+                        JOptionPane.showMessageDialog(InscriptionFenetre.this, "Inscription réussie !");
+                        dispose();
+                        new ConnexionFenetre().setVisible(true);
+                    } else {
+                        JOptionPane.showMessageDialog(InscriptionFenetre.this, "Erreur lors de l'inscription.");
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(InscriptionFenetre.this, "Erreur : " + ex.getMessage());
+                }
             }
         });
+
 
         // Retour à la page de connexion
         retourButton.addActionListener(e -> {
