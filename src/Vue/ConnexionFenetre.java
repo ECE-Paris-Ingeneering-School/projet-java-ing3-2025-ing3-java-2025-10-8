@@ -1,11 +1,10 @@
 package Vue;
 
-import Vue.InscriptionFenetre;
-import Vue.AccueilPrincipalFenetre;
+import DAO.ClientDAO;
+import Modele.Client;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class ConnexionFenetre extends JFrame {
 
@@ -17,33 +16,18 @@ public class ConnexionFenetre extends JFrame {
 
     public ConnexionFenetre() {
         setTitle("Connexion - Booking App");
-        setSize(400, 450);
-        setLocationRelativeTo(null);
+        setSize(400, 300);
+        setLocationRelativeTo(null); // centre la fenêtre
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // Logo
-
-        ImageIcon icon = new ImageIcon(getClass().getResource("/Vue/BookingLogo.png"));
-        Image image = icon.getImage().getScaledInstance(60, 70, Image.SCALE_SMOOTH);
-        JLabel imageLabel = new JLabel(new ImageIcon(image));
-
-        JPanel topPanel = new JPanel();
-        topPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10)); // aligné à gauche sans marge
-        topPanel.setBackground(Color.WHITE);
-        topPanel.add(imageLabel);
-
-        add(topPanel, BorderLayout.NORTH);
-
-
         // Panel principal
         JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBackground(Color.WHITE); // Fond blanc
+        panel.setBackground(Color.WHITE);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
 
-
-        // Email label stylisé
+        // Email
         gbc.gridx = 0;
         gbc.gridy = 0;
         JLabel emailLabel = new JLabel("Email :");
@@ -55,7 +39,7 @@ public class ConnexionFenetre extends JFrame {
         emailField = new JTextField(20);
         panel.add(emailField, gbc);
 
-        // Mot de passe label stylisé
+        // Mot de passe
         gbc.gridx = 0;
         gbc.gridy = 1;
         JLabel passwordLabel = new JLabel("Mot de passe :");
@@ -72,10 +56,10 @@ public class ConnexionFenetre extends JFrame {
         gbc.gridy = 2;
         gbc.gridwidth = 2;
         messageLabel = new JLabel("");
-        messageLabel.setForeground(Color.BLUE);
+        messageLabel.setForeground(Color.RED);
         panel.add(messageLabel, gbc);
 
-        // Boutons stylisés
+        // Boutons
         gbc.gridy = 3;
         gbc.gridwidth = 1;
 
@@ -86,10 +70,8 @@ public class ConnexionFenetre extends JFrame {
         loginButton.setFocusPainted(false);
 
         registerButton = new JButton("S'inscrire");
-        registerButton.setBackground(new Color(0, 102, 204));
-        registerButton.setForeground(Color.WHITE);
-        registerButton.setFont(new Font("Arial", Font.BOLD, 13));
-        registerButton.setFocusPainted(false);
+        registerButton.setBackground(Color.LIGHT_GRAY);
+        registerButton.setFont(new Font("Arial", Font.PLAIN, 13));
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setBackground(Color.WHITE);
@@ -103,26 +85,27 @@ public class ConnexionFenetre extends JFrame {
         add(panel, BorderLayout.CENTER);
 
         // Action de connexion
-        loginButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String email = emailField.getText();
-                String password = new String(passwordField.getPassword());
+        loginButton.addActionListener(e -> {
+            String email = emailField.getText().trim();
+            String password = new String(passwordField.getPassword()).trim();
 
-                if (email.equals("admin@example.com") && password.equals("admin123")) {
-                    dispose(); // ferme la fenêtre actuelle
-                    new AccueilPrincipalFenetre().setVisible(true); // ouvre la page d'accueil
-                }
+            ClientDAO dao = new ClientDAO();
+            Client client = dao.verifierConnexion(email, password);
 
+            if (client != null) {
+                JOptionPane.showMessageDialog(this, "Connexion réussie !");
+                dispose();
+                new AccueilPrincipalFenetre().setVisible(true); // à remplacer par la bonne page
+            } else {
+                messageLabel.setText("Email ou mot de passe incorrect.");
             }
         });
 
         // Action d'inscription
         registerButton.addActionListener(e -> {
-            dispose(); // ferme la fenêtre actuelle
-            new InscriptionFenetre().setVisible(true); // ouvre la fenêtre d'inscription
+            dispose();
+            new InscriptionFenetre().setVisible(true);
         });
-
     }
 
     public static void main(String[] args) {

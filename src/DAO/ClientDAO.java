@@ -147,5 +147,33 @@ public class ClientDAO {
 
         return clients;
     }
+    public Client verifierConnexion(String email, String mdp) {
+        String sql = "SELECT u.*, c.type_client FROM utilisateur u JOIN client c ON u.id_utilisateur = c.id_utilisateur WHERE u.email = ? AND u.mdp = ?";
+
+        try (Connection conn = ConnexionBdd.seConnecter();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, email);
+            ps.setString(2, mdp);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return new Client(
+                        rs.getInt("id_utilisateur"),
+                        rs.getString("nom"),
+                        rs.getString("prenom"),
+                        rs.getString("email"),
+                        rs.getString("mdp"),
+                        TypeClient.valueOf(rs.getString("type_client"))
+                );
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
 }
 
