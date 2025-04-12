@@ -9,106 +9,140 @@ import java.awt.*;
 public class ConnexionFenetre extends JFrame {
 
     private JTextField emailField;
-    private JPasswordField passwordField;
+    private JPasswordField mdpField;
     private JButton loginButton;
-    private JButton registerButton;
-    private JLabel messageLabel;
+    private JButton signupButton;
 
     public ConnexionFenetre() {
-        setTitle("Connexion - Booking App");
-        setSize(400, 300);
-        setLocationRelativeTo(null); // centre la fenêtre
+        setTitle("Connexion - Booking");
+        setSize(430, 480);
+        setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // Panel principal
-        JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBackground(Color.WHITE);
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
+        // Logo et titre
+        ImageIcon icon = new ImageIcon(getClass().getResource("/Vue/BookingLogo.png"));
+        Image image = icon.getImage().getScaledInstance(45, 45, Image.SCALE_SMOOTH);
+        JLabel logoLabel = new JLabel(new ImageIcon(image));
+        JLabel titreLabel = new JLabel("Reservation");
+        titreLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        titreLabel.setForeground(new Color(0, 45, 114));
+
+        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 20));
+        headerPanel.setBackground(Color.WHITE);
+        headerPanel.add(logoLabel);
+        headerPanel.add(titreLabel);
+        add(headerPanel, BorderLayout.NORTH);
+
+        // Centre avec BoxLayout (vertical)
+        JPanel centerPanel = new JPanel();
+        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
+        centerPanel.setBackground(Color.WHITE);
+
+        // Titre "Log in"
+        JLabel loginLabel = new JLabel("Log in");
+        loginLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        loginLabel.setForeground(new Color(0, 45, 114));
+        loginLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        centerPanel.add(loginLabel);
+        centerPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 
         // Email
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        JLabel emailLabel = new JLabel("Email :");
-        emailLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        emailLabel.setForeground(new Color(0, 102, 204));
-        panel.add(emailLabel, gbc);
-
-        gbc.gridx = 1;
+        centerPanel.add(createLabel("Adresse email :"));
         emailField = new JTextField(20);
-        panel.add(emailField, gbc);
+        styleField(emailField);
+        centerPanel.add(emailField);
+        centerPanel.add(Box.createRigidArea(new Dimension(0, 15)));
 
         // Mot de passe
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        JLabel passwordLabel = new JLabel("Mot de passe :");
-        passwordLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        passwordLabel.setForeground(new Color(0, 102, 204));
-        panel.add(passwordLabel, gbc);
+        centerPanel.add(createLabel("Mot de passe :"));
+        mdpField = new JPasswordField(20);
+        styleField(mdpField);
+        centerPanel.add(mdpField);
+        centerPanel.add(Box.createRigidArea(new Dimension(0, 25)));
 
-        gbc.gridx = 1;
-        passwordField = new JPasswordField(20);
-        panel.add(passwordField, gbc);
+        // Bouton Connexion
+        loginButton = new RoundedButton("Connexion", new Color(0, 45, 114), Color.WHITE);
+        loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        centerPanel.add(loginButton);
+        centerPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 
-        // Message d'erreur
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        gbc.gridwidth = 2;
-        messageLabel = new JLabel("");
-        messageLabel.setForeground(Color.RED);
-        panel.add(messageLabel, gbc);
+        // Bouton Inscription
+        signupButton = new RoundedButton("Inscription", new Color(255, 128, 0), Color.WHITE);
+        signupButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        centerPanel.add(signupButton);
 
-        // Boutons
-        gbc.gridy = 3;
-        gbc.gridwidth = 1;
+        // Wrapper qui centre verticalement
+        JPanel wrapper = new JPanel(new GridBagLayout());
+        wrapper.setBackground(Color.WHITE);
+        wrapper.add(centerPanel);
+        add(wrapper, BorderLayout.CENTER);
 
-        loginButton = new JButton("Se connecter");
-        loginButton.setBackground(new Color(0, 102, 204));
-        loginButton.setForeground(Color.WHITE);
-        loginButton.setFont(new Font("Arial", Font.BOLD, 13));
-        loginButton.setFocusPainted(false);
-
-        registerButton = new JButton("S'inscrire");
-        registerButton.setBackground(Color.LIGHT_GRAY);
-        registerButton.setFont(new Font("Arial", Font.PLAIN, 13));
-
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setBackground(Color.WHITE);
-        buttonPanel.add(loginButton);
-        buttonPanel.add(registerButton);
-
-        gbc.gridx = 0;
-        gbc.gridwidth = 2;
-        panel.add(buttonPanel, gbc);
-
-        add(panel, BorderLayout.CENTER);
-
-        // Action de connexion
+        // Action Connexion
         loginButton.addActionListener(e -> {
-            String email = emailField.getText().trim();
-            String password = new String(passwordField.getPassword()).trim();
+            String email = emailField.getText();
+            String mdp = new String(mdpField.getPassword());
 
             ClientDAO dao = new ClientDAO();
-            Client client = dao.verifierConnexion(email, password);
+            Client client = dao.getClientParEmail(email);
 
-            if (client != null) {
+            if (client != null && client.getMdp().equals(mdp)) {
                 JOptionPane.showMessageDialog(this, "Connexion réussie !");
                 dispose();
-                new AccueilPrincipalFenetre().setVisible(true); // à remplacer par la bonne page
+                new AccueilPrincipalFenetre().setVisible(true);
             } else {
-                messageLabel.setText("Email ou mot de passe incorrect.");
+                JOptionPane.showMessageDialog(this, "Email ou mot de passe incorrect.");
             }
         });
 
-        // Action d'inscription
-        registerButton.addActionListener(e -> {
+        // Redirection vers Inscription
+        signupButton.addActionListener(e -> {
             dispose();
             new InscriptionFenetre().setVisible(true);
         });
     }
 
+    private JLabel createLabel(String text) {
+        JLabel label = new JLabel(text);
+        label.setFont(new Font("Arial", Font.BOLD, 13));
+        label.setForeground(Color.DARK_GRAY);
+        label.setAlignmentX(Component.CENTER_ALIGNMENT);
+        return label;
+    }
+
+    private void styleField(JTextField field) {
+        field.setMaximumSize(new Dimension(280, 35));
+        field.setFont(new Font("Arial", Font.PLAIN, 14));
+    }
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new ConnexionFenetre().setVisible(true));
+    }
+
+    // ----- CLASSE INTERNE POUR BOUTONS ARRONDIS -----
+    static class RoundedButton extends JButton {
+        public RoundedButton(String text, Color bg, Color fg) {
+            super(text);
+            setContentAreaFilled(false);
+            setOpaque(true);
+            setBackground(bg);
+            setForeground(fg);
+            setFont(new Font("Arial", Font.BOLD, 15));
+            setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+            setFocusPainted(false);
+            setPreferredSize(new Dimension(200, 40));
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setColor(getBackground());
+            g2.fillRoundRect(0, 0, getWidth(), getHeight(), 30, 30);
+            super.paintComponent(g);
+        }
+
+        @Override
+        protected void paintBorder(Graphics g) { }
     }
 }
