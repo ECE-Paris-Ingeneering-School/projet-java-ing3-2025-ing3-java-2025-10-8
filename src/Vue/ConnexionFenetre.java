@@ -1,6 +1,8 @@
 package Vue;
 
+import DAO.AdminDAO;
 import DAO.ClientDAO;
+import Modele.Admin;
 import Modele.Client;
 
 import javax.swing.*;
@@ -72,26 +74,45 @@ public class ConnexionFenetre extends JFrame {
         signupButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         centerPanel.add(signupButton);
 
-        // Wrapper qui centre verticalement
+        // Wrapper pour centrer
         JPanel wrapper = new JPanel(new GridBagLayout());
         wrapper.setBackground(Color.WHITE);
         wrapper.add(centerPanel);
         add(wrapper, BorderLayout.CENTER);
 
-        // Action Connexion
         loginButton.addActionListener(e -> {
             String email = emailField.getText();
             String mdp = new String(mdpField.getPassword());
 
-            ClientDAO dao = new ClientDAO();
-            Client client = dao.getClientParEmail(email);
+            ClientDAO clientDAO = new ClientDAO();
+            AdminDAO adminDAO = new AdminDAO();
+
+            // Essayer d'abord comme client
+            Client client = clientDAO.getClientParEmail(email);
 
             if (client != null && client.getMdp().equals(mdp)) {
+                // Vérifier s'il est aussi admin
+                Admin admin = adminDAO.getAdminParId(client.getIdUtilisateur());
+
                 JOptionPane.showMessageDialog(this, "Connexion réussie !");
                 dispose();
-                new AccueilPrincipalFenetre(client).setVisible(true);
+
+                if (admin != null) {
+                    new AccueilAdminFenetre().setVisible(true);
+                } else {
+                    new AccueilPrincipalFenetre(client).setVisible(true);
+                }
             } else {
-                JOptionPane.showMessageDialog(this, "Email ou mot de passe incorrect.");
+                // Tentative directe admin (au cas où l’admin n’est pas dans la table client)
+                Admin admin = adminDAO.getAdminParEmail(email);
+
+                if (admin != null && admin.getMdp().equals(mdp)) {
+                    JOptionPane.showMessageDialog(this, "Connexion admin réussie !");
+                    dispose();
+                    new AccueilAdminFenetre().setVisible(true);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Email ou mot de passe incorrect.");
+                }
             }
         });
 
@@ -143,6 +164,7 @@ public class ConnexionFenetre extends JFrame {
         }
 
         @Override
-        protected void paintBorder(Graphics g) { }
+        protected void paintBorder(Graphics g) {
+        }
     }
 }

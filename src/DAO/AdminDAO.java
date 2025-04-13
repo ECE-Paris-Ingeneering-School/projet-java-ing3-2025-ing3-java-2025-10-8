@@ -118,4 +118,31 @@ public class AdminDAO {
 
         return admins;
     }
+    public Admin getAdminParEmail(String email) {
+        String sql = "SELECT u.*, a.role_specifique FROM utilisateur u JOIN admin a ON u.id_utilisateur = a.id_utilisateur WHERE u.email = ?";
+
+        try (Connection conn = ConnexionBdd.seConnecter();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return new Admin(
+                        rs.getInt("id_utilisateur"),
+                        rs.getString("nom"),
+                        rs.getString("prenom"),
+                        rs.getString("email"),
+                        rs.getString("mdp"),
+                        rs.getString("role_specifique")
+                );
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
 }
