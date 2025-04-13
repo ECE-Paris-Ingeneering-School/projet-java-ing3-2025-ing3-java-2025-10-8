@@ -50,59 +50,42 @@ public class VueConsole {
         HebergementDAO dao = new HebergementDAO();
         VueConsole vue = new VueConsole();
 
-        // ✅ INSERT : un nouvel hôtel
-        Hotel newHotel = new Hotel(
-                0,
-                "Hôtel du Soleil",
-                "10 Rue des Palmiers",
-                new BigDecimal("155.50"),
-                "Un hôtel chaleureux près de la plage",
-                "Wi-Fi, Climatisation, Petit-déjeuner",
-                4,
-                true,
-                false,
-                true
-        );
-        dao.ajouterHotel(newHotel);
-        System.out.println("✅ Hôtel inséré");
+        dao.ajouterHotel(new Hotel(0, "Hôtel Émeraude", "1 Rue de la Liberté", new BigDecimal("120.00"), "Chic et central", "Wi-Fi, Clim, Parking", 3, true, false, false));
+        dao.ajouterHotel(new Hotel(0, "Hôtel Montagne", "45 Avenue des Cimes", new BigDecimal("180.00"), "Vue panoramique sur les Alpes", "Sauna, Spa", 4, true, true, true));
+        dao.ajouterHotel(new Hotel(0, "Hôtel Océan", "12 Quai de la Mer", new BigDecimal("160.00"), "Face à la plage", "Piscine, Petit Déj", 4, true, true, false));
+        dao.ajouterHotel(new Hotel(0, "Hôtel Business", "99 Boulevard Haussmann", new BigDecimal("200.00"), "Idéal pour séminaires", "Salle conf, Bureau", 5, false, false, true));
+        dao.ajouterHotel(new Hotel(0, "Hôtel Nature", "Route des Forêts", new BigDecimal("140.00"), "Repos en pleine nature", "Jardin, Calme", 3, true, false, true));
+        dao.ajouterHotel(new Hotel(0, "Hôtel Luxe Palace", "Place Royale", new BigDecimal("350.00"), "Prestige 5 étoiles", "Butler, Spa, Limousine", 5, true, true, true));
+        dao.ajouterHotel(new Hotel(0, "Hôtel Budget Plus", "18 Rue Éco", new BigDecimal("75.00"), "Simple et efficace", "Wi-Fi", 2, false, false, false));
 
-        // ✅ INSERT : un nouvel appartement
-        Appartement newAppart = new Appartement(
-                0,
-                "Appartement Vue Mer",
-                "3 Avenue des Sables",
-                new BigDecimal("95.00"),
-                "Appartement cosy avec balcon",
-                "Cuisine équipée, TV",
-                2,
-                true,
-                3
-        );
-        dao.ajouterAppartement(newAppart);
-        System.out.println("✅ Appartement inséré");
 
-        // ✅ INSERT : une nouvelle maison d'hôtes (adaptée)
-        MaisonHotes newMaison = new MaisonHotes(
-                0,
-                "La Maison des Bois",
-                "12 Chemin des Arbres",
-                new BigDecimal("130.00"),
-                "Maison d'hôtes au cœur de la forêt",
-                "Cheminée, Terrasse, Parking",
-                true,
-                true
-        );
-        dao.ajouterMaisonHotes(newMaison);
-        System.out.println("✅ Maison d'hôtes insérée");
+        dao.ajouterAppartement(new Appartement(0, "Studio cosy centre-ville", "4 Rue Lafayette", new BigDecimal("85.00"), "Petit mais fonctionnel", "Cuisine équipée", 1, true, 2));
+        dao.ajouterAppartement(new Appartement(0, "Appartement Vue Tour Eiffel", "7 Quai Branly", new BigDecimal("200.00"), "Vue exceptionnelle", "Balcon, Clim", 2, false, 5));
+        dao.ajouterAppartement(new Appartement(0, "Loft Industriel", "10 Rue des Ateliers", new BigDecimal("150.00"), "Style moderne", "TV, Cuisine US", 1, true, 1));
+        dao.ajouterAppartement(new Appartement(0, "T3 Familial", "22 Rue du Parc", new BigDecimal("130.00"), "Parfait pour 4 pers.", "2 chambres", 3, true, 3));
+        dao.ajouterAppartement(new Appartement(0, "Penthouse Luxueux", "88 Avenue du Ciel", new BigDecimal("320.00"), "Terrasse privée", "Jacuzzi, Salon panoramique", 4, false, 10));
+        dao.ajouterAppartement(new Appartement(0, "Appart Budget", "5 Rue Simple", new BigDecimal("65.00"), "Prix mini", "Pas de petit déj", 1, false, 0));
+        dao.ajouterAppartement(new Appartement(0, "Appartement avec jardin", "15 Allée Fleurie", new BigDecimal("110.00"), "RDC avec verdure", "Jardin privé", 2, true, 0));
 
-        // 🟢 AFFICHAGE depuis la base
-        Hotel hotel = dao.findHotelById(1);
-        if (hotel != null) vue.afficherHebergement(hotel);
 
-        Appartement appart = dao.findAppartementById(2);
-        if (appart != null) vue.afficherHebergement(appart);
+        dao.ajouterMaisonHotes(new MaisonHotes(0, "Maison Lavande", "Chemin des Plantes", new BigDecimal("140.00"), "Charme provençal", "Terrasse, Parfum Lavande", true, true));
+        dao.ajouterMaisonHotes(new MaisonHotes(0, "Les Oiseaux", "Route des Champs", new BigDecimal("120.00"), "Repos total", "Calme, Vue campagne", false, true));
+        dao.ajouterMaisonHotes(new MaisonHotes(0, "Villa Bella", "Rue des Oliviers", new BigDecimal("190.00"), "Piscine privée", "Style méditerranéen", true, false));
+        dao.ajouterMaisonHotes(new MaisonHotes(0, "Le Refuge", "Montagne Verte", new BigDecimal("160.00"), "Randonnées à proximité", "Cheminée", true, true));
+        dao.ajouterMaisonHotes(new MaisonHotes(0, "L’Écureuil", "Forêt enchantée", new BigDecimal("100.00"), "Rustique et boisé", "Coin feu, Cabane", false, true));
+        dao.ajouterMaisonHotes(new MaisonHotes(0, "Maison du Lac", "Bord du lac", new BigDecimal("175.00"), "Kayak inclus", "Plage privée", true, false));
+        dao.ajouterMaisonHotes(new MaisonHotes(0, "Gîte du Silence", "Fin de la route", new BigDecimal("90.00"), "Totalement isolé", "Paix garantie", false, false));
 
-        MaisonHotes maison = dao.findMaisonHotesById(3);
-        if (maison != null) vue.afficherHebergement(maison);
+
+        for (int i = 1; i <= 7; i++) {
+            Hotel h = dao.findHotelById(i);
+            if (h != null) vue.afficherHebergement(h);
+
+            Appartement a = dao.findAppartementById(i);
+            if (a != null) vue.afficherHebergement(a);
+
+            MaisonHotes m = dao.findMaisonHotesById(i);
+            if (m != null) vue.afficherHebergement(m);
+        }
     }
 }

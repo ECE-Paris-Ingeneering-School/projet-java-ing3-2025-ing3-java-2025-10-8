@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le : jeu. 10 avr. 2025 à 10:09
+-- Généré le : sam. 12 avr. 2025 à 18:49
 -- Version du serveur : 9.1.0
 -- Version de PHP : 8.3.14
 
@@ -48,6 +48,16 @@ CREATE TABLE IF NOT EXISTS `appartement` (
   `etage` int DEFAULT NULL,
   PRIMARY KEY (`id_hebergement`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Déchargement des données de la table `appartement`
+--
+
+INSERT INTO `appartement` (`id_hebergement`, `nombre_pieces`, `petit_dejeuner`, `etage`) VALUES
+(2, 2, 1, 3),
+(5, 2, 1, 3),
+(8, 2, 1, 3),
+(11, 2, 1, 3);
 
 -- --------------------------------------------------------
 
@@ -96,7 +106,25 @@ CREATE TABLE IF NOT EXISTS `hebergement` (
   `description` text,
   `specification` text,
   PRIMARY KEY (`id_hebergement`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Déchargement des données de la table `hebergement`
+--
+
+INSERT INTO `hebergement` (`id_hebergement`, `nom`, `adresse`, `prix_par_nuit`, `description`, `specification`) VALUES
+(1, 'Hôtel du Soleil', '10 Rue des Palmiers', 155.50, 'Un hôtel chaleureux près de la plage', 'Wi-Fi, Climatisation, Petit-déjeuner'),
+(2, 'Appartement Vue Mer', '3 Avenue des Sables', 95.00, 'Appartement cosy avec balcon', 'Cuisine équipée, TV'),
+(3, 'La Maison des Bois', '12 Chemin des Arbres', 130.00, 'Maison d\'hôtes au cœur de la forêt', 'Cheminée, Terrasse, Parking'),
+(4, 'Hôtel du Soleil', '10 Rue des Palmiers', 155.50, 'Un hôtel chaleureux près de la plage', 'Wi-Fi, Climatisation, Petit-déjeuner'),
+(5, 'Appartement Vue Mer', '3 Avenue des Sables', 95.00, 'Appartement cosy avec balcon', 'Cuisine équipée, TV'),
+(6, 'La Maison des Bois', '12 Chemin des Arbres', 130.00, 'Maison d\'hôtes au cœur de la forêt', 'Cheminée, Terrasse, Parking'),
+(7, 'Hôtel du Soleil', '10 Rue des Palmiers', 155.50, 'Un hôtel chaleureux près de la plage', 'Wi-Fi, Climatisation, Petit-déjeuner'),
+(8, 'Appartement Vue Mer', '3 Avenue des Sables', 95.00, 'Appartement cosy avec balcon', 'Cuisine équipée, TV'),
+(9, 'La Maison des Bois', '12 Chemin des Arbres', 130.00, 'Maison d\'hôtes au cœur de la forêt', 'Cheminée, Terrasse, Parking'),
+(10, 'Hôtel du Soleil', '10 Rue des Palmiers', 155.50, 'Un hôtel chaleureux près de la plage', 'Wi-Fi, Climatisation, Petit-déjeuner'),
+(11, 'Appartement Vue Mer', '3 Avenue des Sables', 95.00, 'Appartement cosy avec balcon', 'Cuisine équipée, TV'),
+(12, 'La Maison des Bois', '12 Chemin des Arbres', 130.00, 'Maison d\'hôtes au cœur de la forêt', 'Cheminée, Terrasse, Parking');
 
 -- --------------------------------------------------------
 
@@ -113,6 +141,16 @@ CREATE TABLE IF NOT EXISTS `hotel` (
   `spa` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id_hebergement`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Déchargement des données de la table `hotel`
+--
+
+INSERT INTO `hotel` (`id_hebergement`, `nombre_etoiles`, `petit_dejeuner`, `piscine`, `spa`) VALUES
+(1, 4, 1, 0, 1),
+(4, 4, 1, 0, 1),
+(7, 4, 1, 0, 1),
+(10, 4, 1, 0, 1);
 
 -- --------------------------------------------------------
 
@@ -143,6 +181,15 @@ CREATE TABLE IF NOT EXISTS `maisonhotes` (
   `jardin` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id_hebergement`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Déchargement des données de la table `maisonhotes`
+--
+
+INSERT INTO `maisonhotes` (`id_hebergement`, `petit_dejeuner`, `jardin`) VALUES
+(6, 1, 1),
+(9, 1, 1),
+(12, 1, 1);
 
 -- --------------------------------------------------------
 
