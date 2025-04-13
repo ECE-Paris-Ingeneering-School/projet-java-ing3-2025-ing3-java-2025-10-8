@@ -33,7 +33,7 @@ public class AccueilAdminFenetre extends JFrame {
         // Action pour ajouter un hébergement (à implémenter)
         ajouterHebergementButton.addActionListener(e -> {
             JOptionPane.showMessageDialog(this, "Redirection vers le formulaire d'ajout...");
-            // new AjouterHebergementFenetre().setVisible(true);
+             new AjoutHebergementFenetre().setVisible(true);
         });
 
         panel.add(titleLabel);
