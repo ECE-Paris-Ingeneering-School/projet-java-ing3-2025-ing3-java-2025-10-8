@@ -5,6 +5,7 @@ import DAO.ConnexionBdd;
 import Modele.Paiement;
 
 import javax.swing.*;
+import javax.swing.text.*;
 import java.awt.*;
 import java.sql.Connection;
 import java.sql.Date;
@@ -27,6 +28,9 @@ public class PaiementGUI extends JFrame {
 
     private int idReservation = 1234;
     private double montant = 150.0;
+
+    // Composants pour le traitement avec la barre de progression
+    private JProgressBar progressBar;
 
     public PaiementGUI() {
         setTitle("Paiement Réservation");
@@ -88,9 +92,10 @@ public class PaiementGUI extends JFrame {
     }
 
     private JPanel initCartePanel() {
-        JPanel panel = new JPanel(new GridLayout(2, 2));
+        JPanel panel = new JPanel(new GridLayout(3, 2));
         panel.add(new JLabel("Numéro de carte :"));
         carteNumeroField = new JTextField();
+        appliquerFormatCarte(carteNumeroField);
         panel.add(carteNumeroField);
 
         panel.add(new JLabel("Code CVV :"));
@@ -115,7 +120,70 @@ public class PaiementGUI extends JFrame {
         return panel;
     }
 
+    private void appliquerFormatCarte(JTextField field) {
+        ((AbstractDocument) field.getDocument()).setDocumentFilter(new DocumentFilter() {
+            @Override
+            public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
+                if (string != null) {
+                    String newText = fb.getDocument().getText(0, fb.getDocument().getLength()) + string;
+                    String formatted = formatCarte(newText);
+                    fb.replace(0, fb.getDocument().getLength(), formatted, attr);
+                }
+            }
+
+            @Override
+            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+                if (text != null) {
+                    String currentText = fb.getDocument().getText(0, fb.getDocument().getLength());
+                    String newText = currentText.substring(0, offset) + text + currentText.substring(offset + length);
+                    String formatted = formatCarte(newText);
+                    fb.replace(0, fb.getDocument().getLength(), formatted, attrs);
+                }
+            }
+
+            @Override
+            public void remove(FilterBypass fb, int offset, int length) throws BadLocationException {
+                String currentText = fb.getDocument().getText(0, fb.getDocument().getLength());
+                String newText = currentText.substring(0, offset) + currentText.substring(offset + length);
+                String formatted = formatCarte(newText);
+                fb.replace(0, fb.getDocument().getLength(), formatted, null);
+            }
+
+            private String formatCarte(String input) {
+                return input.replaceAll("\\D", "").replaceAll("(.{4})", "$1 ").trim();
+            }
+        });
+    }
+
+    // Affichage de l'écran de traitement avec la barre de progression
+    private void afficherTraitement() {
+        JPanel panelTraitement = new JPanel();
+        panelTraitement.setLayout(new BorderLayout());
+
+        JLabel statusLabel = new JLabel("Traitement en cours... Veuillez patienter.");
+        statusLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        panelTraitement.add(statusLabel, BorderLayout.CENTER);
+
+        progressBar = new JProgressBar();
+        progressBar.setIndeterminate(true); // Barre de progression indéterminée
+        panelTraitement.add(progressBar, BorderLayout.SOUTH);
+
+        this.add(panelTraitement, BorderLayout.CENTER);
+        this.revalidate();
+        this.repaint();
+    }
+
+    // Cacher l'écran de traitement
+    private void cacherTraitement() {
+        this.remove(progressBar.getParent());
+        this.revalidate();
+        this.repaint();
+    }
+
     private void confirmerPaiement() {
+        // Afficher la barre de progression et le message de traitement
+        afficherTraitement();
+
         String methodeStr = (String) methodeCombo.getSelectedItem();
         Paiement.MethodePaiement methode = Paiement.fromSQLMethode(methodeStr);
 
@@ -131,6 +199,9 @@ public class PaiementGUI extends JFrame {
                 Paiement.StatutPaiement.ANNULE;
 
         try {
+            // Simuler un délai de traitement
+            Thread.sleep(2000); // 2 secondes de délai pour simuler le traitement
+
             Paiement paiement = new Paiement(
                     idReservation,
                     montant,
@@ -141,16 +212,19 @@ public class PaiementGUI extends JFrame {
 
             paiementDAO.ajouterPaiement(paiement);
 
+            // Cacher la barre de progression
+            cacherTraitement();
+
+            // Afficher un message de succès ou d'échec
             JOptionPane.showMessageDialog(this,
                     statut == Paiement.StatutPaiement.PAYE ?
-                            "🎉 Paiement enregistré avec succès !" :
+                            "🎉 Paiement réussi !" :
                             "❌ Paiement annulé.",
                     "Info",
                     JOptionPane.INFORMATION_MESSAGE);
 
-            resetForm();
-
         } catch (Exception e) {
+            cacherTraitement();
             JOptionPane.showMessageDialog(this,
                     "Erreur lors de l'enregistrement :\n" + e.getMessage(),
                     "Erreur",
@@ -160,12 +234,17 @@ public class PaiementGUI extends JFrame {
     }
 
     private void enregistrerEnAttente() {
+        afficherTraitement();
+
         String methodeStr = (String) methodeCombo.getSelectedItem();
         Paiement.MethodePaiement methode = Paiement.fromSQLMethode(methodeStr);
 
         if (!verifierChamps(methode)) return;
 
         try {
+            // Simuler un délai de traitement
+            Thread.sleep(2000); // 2 secondes de délai pour simuler le traitement
+
             Paiement paiement = new Paiement(
                     idReservation,
                     montant,
@@ -176,14 +255,15 @@ public class PaiementGUI extends JFrame {
 
             paiementDAO.ajouterPaiement(paiement);
 
+            // Cacher la barre de progression et afficher un message d'attente
+            cacherTraitement();
             JOptionPane.showMessageDialog(this,
                     "💾 Paiement enregistré en attente.",
                     "Info",
                     JOptionPane.INFORMATION_MESSAGE);
 
-            resetForm();
-
         } catch (Exception e) {
+            cacherTraitement();
             JOptionPane.showMessageDialog(this,
                     "Erreur lors de l'enregistrement en attente :\n" + e.getMessage(),
                     "Erreur",
