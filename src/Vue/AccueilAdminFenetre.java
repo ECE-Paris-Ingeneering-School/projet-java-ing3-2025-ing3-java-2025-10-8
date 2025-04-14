@@ -54,7 +54,7 @@ public class AccueilAdminFenetre extends JFrame {
 
         // Action pour supprimer un hébergement
         supprimerHebergementButton.addActionListener(e -> {
-            new AccueilPrincipalFenetre(null, true).setVisible(true);
+            new SupprimerHebergementFenetre().setVisible(true);
         });
 
         panel.add(titleLabel);

@@ -267,6 +267,21 @@ public class HebergementDAO {
         return filtres;
     }
 
+    //Supprimer des hebergements
+    public boolean supprimerHebergementParNom(String nom) {
+        String sql = "DELETE FROM hebergement WHERE nom = ?";
+        try (Connection conn = ConnexionBdd.seConnecter();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, nom);
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 
     // Récupérer tous les hébergements (sans filtrage)
     public List<Hebergement> getAllHebergements() {

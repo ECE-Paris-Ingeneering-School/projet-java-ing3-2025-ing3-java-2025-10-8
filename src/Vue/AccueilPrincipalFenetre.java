@@ -19,7 +19,7 @@ public class AccueilPrincipalFenetre extends JFrame {
     private JButton deconnexionButton;
     private Client clientConnecte;
 
-    public AccueilPrincipalFenetre(Client clientConnecte, boolean admin) {
+    public AccueilPrincipalFenetre(Client clientConnecte) {
         this.clientConnecte = clientConnecte;
 
         setTitle("Booking App");
@@ -252,6 +252,6 @@ public class AccueilPrincipalFenetre extends JFrame {
 
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new AccueilPrincipalFenetre(null, false).setVisible(true));
+        SwingUtilities.invokeLater(() -> new AccueilPrincipalFenetre(null).setVisible(true));
     }
 }
