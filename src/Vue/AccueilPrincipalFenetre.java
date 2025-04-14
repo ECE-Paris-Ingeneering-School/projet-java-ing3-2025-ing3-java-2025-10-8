@@ -200,14 +200,31 @@ public class AccueilPrincipalFenetre extends JFrame {
         carte.setLayout(new BorderLayout());
         carte.setPreferredSize(new Dimension(800, 120));
 
-        // Partie gauche - image (placeholder)
-        JLabel image = new JLabel();
-        image.setPreferredSize(new Dimension(150, 100));
-        image.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-        image.setHorizontalAlignment(SwingConstants.CENTER);
-        image.setText("[Image]");
+        // Partie gauche - image
+        JLabel imageLabel = new JLabel();
+        imageLabel.setPreferredSize(new Dimension(150, 100));
+        imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-        carte.add(image, BorderLayout.WEST);
+        try {
+            if (h.getImageUrl() != null && !h.getImageUrl().isEmpty()) {
+                // Chargement depuis le classpath
+                java.net.URL imageUrl = getClass().getClassLoader().getResource(h.getImageUrl());
+                if (imageUrl != null) {
+                    ImageIcon icon = new ImageIcon(imageUrl);
+                    Image img = icon.getImage().getScaledInstance(150, 100, Image.SCALE_SMOOTH);
+                    imageLabel.setIcon(new ImageIcon(img));
+                    imageLabel.setText("");
+                } else {
+                    imageLabel.setText("[Image]");
+                }
+            } else {
+                imageLabel.setText("[Image]");
+            }
+        } catch (Exception e) {
+            imageLabel.setText("[Image]");
+        }
+
+        carte.add(imageLabel, BorderLayout.WEST);
 
         // Partie droite - infos
         JPanel infos = new JPanel();
@@ -232,6 +249,7 @@ public class AccueilPrincipalFenetre extends JFrame {
 
         return carte;
     }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new AccueilPrincipalFenetre(null, false).setVisible(true));
