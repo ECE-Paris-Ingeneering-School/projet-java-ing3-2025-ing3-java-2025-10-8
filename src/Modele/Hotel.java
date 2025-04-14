@@ -8,15 +8,17 @@ public class Hotel extends Hebergement {
     private boolean piscine;
     private boolean spa;
 
-    public Hotel(long idHebergement, String nom, String adresse, BigDecimal prixParNuit, String description, String specification,
+    public Hotel(int idHebergement, String nom, String adresse, BigDecimal prixParNuit,
+                 String description, String specification, String imageUrl,
                  int nombreEtoiles, boolean petitDejeuner, boolean piscine, boolean spa) {
-        super(idHebergement, nom, adresse, prixParNuit, description, specification);
+        super(idHebergement, nom, adresse, prixParNuit, description, specification, imageUrl);
         this.nombreEtoiles = nombreEtoiles;
         this.petitDejeuner = petitDejeuner;
         this.piscine = piscine;
         this.spa = spa;
     }
 
+    // Getters & Setters
     public int getNombreEtoiles() {
         return nombreEtoiles;
     }

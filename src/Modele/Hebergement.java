@@ -9,14 +9,17 @@ public class Hebergement {
     private BigDecimal prixParNuit;
     private String description;
     private String specification;
+    private String imageUrl;  // Attribut image_url pour l'URL de l'image
 
-    public Hebergement(long idHebergement, String nom, String adresse, BigDecimal prixParNuit, String description, String specification) {
+    // Constructeur
+    public Hebergement(long idHebergement, String nom, String adresse, BigDecimal prixParNuit, String description, String specification, String imageUrl) {
         this.idHebergement = idHebergement;
         this.nom = nom;
         this.adresse = adresse;
         this.prixParNuit = prixParNuit;
         this.description = description;
         this.specification = specification;
+        this.imageUrl = imageUrl;  // Initialisation de l'URL de l'image
     }
 
     // Getters et Setters
@@ -66,5 +69,13 @@ public class Hebergement {
 
     public void setSpecification(String specification) {
         this.specification = specification;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;  // Getter pour l'URL de l'image
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;  // Setter pour l'URL de l'image
     }
 }

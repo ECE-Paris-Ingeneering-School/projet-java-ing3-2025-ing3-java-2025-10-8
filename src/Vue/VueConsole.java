@@ -8,84 +8,186 @@ import Modele.Hebergement;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.util.List;
+import java.util.Scanner;
 
 public class VueConsole {
 
     private static final DecimalFormat prixFormat = new DecimalFormat("#0.00");
+    private static Scanner scanner = new Scanner(System.in);
+    private static HebergementDAO dao = new HebergementDAO();
 
-    public void afficherHebergement(Hebergement h) {
+    // Affichage des détails d'un hébergement
+    public static void afficherHebergement(Hebergement h) {
+        System.out.println("===== HÉBERGEMENT =====");
         System.out.println("ID : " + h.getIdHebergement());
         System.out.println("Nom : " + h.getNom());
         System.out.println("Adresse : " + h.getAdresse());
-        System.out.println("Prix par nuit : " + prixFormat.format(h.getPrixParNuit()) + " €");
+        System.out.println("Prix par nuit : " + h.getPrixParNuit() + " €");
         System.out.println("Description : " + h.getDescription());
         System.out.println("Spécification : " + h.getSpecification());
+        System.out.println("Image : " + h.getImageUrl());
 
+        // Vérifie le type réel de l'objet
         if (h instanceof Hotel) {
             Hotel hotel = (Hotel) h;
-            System.out.println("Type : Hôtel");
-            System.out.println("Étoiles : " + hotel.getNombreEtoiles());
-            System.out.println("Petit déjeuner : " + (hotel.isPetitDejeuner() ? "Oui" : "Non"));
+            System.out.println("→ Type : Hôtel");
+            System.out.println("Nombre d'étoiles : " + hotel.getNombreEtoiles());
+            System.out.println("Petit déjeuner inclus : " + (hotel.isPetitDejeuner() ? "Oui" : "Non"));
             System.out.println("Piscine : " + (hotel.isPiscine() ? "Oui" : "Non"));
             System.out.println("Spa : " + (hotel.isSpa() ? "Oui" : "Non"));
 
         } else if (h instanceof Appartement) {
-            Appartement a = (Appartement) h;
-            System.out.println("Type : Appartement");
-            System.out.println("Nombre de pièces : " + a.getNombrePieces());
-            System.out.println("Petit déjeuner : " + (a.isPetitDejeuner() ? "Oui" : "Non"));
-            System.out.println("Étage : " + a.getEtage());
+            Appartement app = (Appartement) h;
+            System.out.println("→ Type : Appartement");
+            System.out.println("Nombre de pièces : " + app.getNombrePieces());
+            System.out.println("Petit déjeuner inclus : " + (app.isPetitDejeuner() ? "Oui" : "Non"));
+            System.out.println("Étage : " + app.getEtage());
 
         } else if (h instanceof MaisonHotes) {
-            MaisonHotes m = (MaisonHotes) h;
-            System.out.println("Type : Maison d'hôtes");
-            System.out.println("Petit déjeuner : " + (m.isPetitDejeuner() ? "Oui" : "Non"));
-            System.out.println("Jardin : " + (m.isJardin() ? "Oui" : "Non"));
+            MaisonHotes mh = (MaisonHotes) h;
+            System.out.println("→ Type : Maison d’hôtes");
+            System.out.println("Petit déjeuner inclus : " + (mh.isPetitDejeuner() ? "Oui" : "Non"));
+            System.out.println("Jardin : " + (mh.isJardin() ? "Oui" : "Non"));
         }
 
-        System.out.println("--------------------------------------------");
+        System.out.println("========================\n");
     }
 
+    // Afficher les filtres disponibles
+    private static void afficherMenuFiltres() {
+        System.out.println("Filtres disponibles :");
+        System.out.println("1. Filtrer par type d'hébergement");
+        System.out.println("2. Filtrer par prix minimum");
+        System.out.println("3. Filtrer par prix maximum");
+        System.out.println("4. Filtrer par piscine");
+        System.out.println("5. Filtrer par petit déjeuner");
+        System.out.println("6. Filtrer par jardin");
+        System.out.println("0. Quitter");
+        System.out.print("Choisissez un filtre à appliquer : ");
+    }
+
+    // Choisir un type d'hébergement
+    private static String choisirType() {
+        System.out.println("Choisissez un type d'hébergement :");
+        System.out.println("1. Hôtel");
+        System.out.println("2. Appartement");
+        System.out.println("3. Maison d'hôtes");
+        System.out.print("Votre choix : ");
+        int typeChoisi = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+
+        switch (typeChoisi) {
+            case 1: return "Hotel";
+            case 2: return "Appartement";
+            case 3: return "MaisonHotes";
+            default: return null;
+        }
+    }
+
+    // Demander un prix minimum ou maximum
+    private static BigDecimal choisirPrix(String type) {
+        System.out.print("Entrez le prix " + type + " (ou appuyez sur Entrée pour ne pas appliquer ce filtre) : ");
+        String input = scanner.nextLine();
+        if (input.isEmpty()) {
+            return null;
+        }
+        return new BigDecimal(input);
+    }
+
+    // Choisir un critère booléen (piscine, petit déjeuner, jardin)
+    private static Boolean choisirBool(String critere) {
+        System.out.print("Le " + critere + " est-il disponible ? (oui/non) : ");
+        String input = scanner.nextLine().toLowerCase();
+        if (input.equals("oui")) {
+            return true;
+        } else if (input.equals("non")) {
+            return false;
+        }
+        return null;
+    }
+
+    // Afficher les hébergements filtrés
+    private static void afficherHebergements(List<Hebergement> hebergements) {
+        if (hebergements.isEmpty()) {
+            System.out.println("Aucun hébergement ne correspond à vos critères.");
+        } else {
+            int i = 1;
+            for (Hebergement h : hebergements) {
+                System.out.println("\n# Hébergement " + i++);
+                afficherHebergement(h);
+            }
+        }
+    }
+
+
+    public static void afficherRésuméFiltres(String type, BigDecimal prixMin, BigDecimal prixMax,
+                                             Boolean piscine, Boolean petitDejeuner, Boolean jardin) {
+        System.out.println("\nRésumé des filtres appliqués :");
+        if (type != null) System.out.println("Type : " + type);
+        if (prixMin != null) System.out.println("Prix minimum : " + prixMin + "€");
+        if (prixMax != null) System.out.println("Prix maximum : " + prixMax + "€");
+        if (piscine != null) System.out.println("Piscine : " + (piscine ? "Oui" : "Non"));
+        if (petitDejeuner != null) System.out.println("Petit déjeuner : " + (petitDejeuner ? "Oui" : "Non"));
+        if (jardin != null) System.out.println("Jardin : " + (jardin ? "Oui" : "Non"));
+        System.out.println();
+    }
+
+
     public static void main(String[] args) {
-        HebergementDAO dao = new HebergementDAO();
-        VueConsole vue = new VueConsole();
+        while (true) {
+            System.out.println("\n--- MENU DE FILTRES ---");
 
-        dao.ajouterHotel(new Hotel(0, "Hôtel Émeraude", "1 Rue de la Liberté", new BigDecimal("120.00"), "Chic et central", "Wi-Fi, Clim, Parking", 3, true, false, false));
-        dao.ajouterHotel(new Hotel(0, "Hôtel Montagne", "45 Avenue des Cimes", new BigDecimal("180.00"), "Vue panoramique sur les Alpes", "Sauna, Spa", 4, true, true, true));
-        dao.ajouterHotel(new Hotel(0, "Hôtel Océan", "12 Quai de la Mer", new BigDecimal("160.00"), "Face à la plage", "Piscine, Petit Déj", 4, true, true, false));
-        dao.ajouterHotel(new Hotel(0, "Hôtel Business", "99 Boulevard Haussmann", new BigDecimal("200.00"), "Idéal pour séminaires", "Salle conf, Bureau", 5, false, false, true));
-        dao.ajouterHotel(new Hotel(0, "Hôtel Nature", "Route des Forêts", new BigDecimal("140.00"), "Repos en pleine nature", "Jardin, Calme", 3, true, false, true));
-        dao.ajouterHotel(new Hotel(0, "Hôtel Luxe Palace", "Place Royale", new BigDecimal("350.00"), "Prestige 5 étoiles", "Butler, Spa, Limousine", 5, true, true, true));
-        dao.ajouterHotel(new Hotel(0, "Hôtel Budget Plus", "18 Rue Éco", new BigDecimal("75.00"), "Simple et efficace", "Wi-Fi", 2, false, false, false));
+            // Initialiser les filtres
+            String type = null;
+            BigDecimal prixMin = null;
+            BigDecimal prixMax = null;
+            Boolean piscine = null;
+            Boolean petitDejeuner = null;
+            Boolean jardin = null;
 
+            // Choix de filtres
+            boolean filtrageFini = false;
+            while (!filtrageFini) {
+                afficherMenuFiltres();
+                int choix = scanner.nextInt();
+                scanner.nextLine(); // consomme le retour à la ligne
 
-        dao.ajouterAppartement(new Appartement(0, "Studio cosy centre-ville", "4 Rue Lafayette", new BigDecimal("85.00"), "Petit mais fonctionnel", "Cuisine équipée", 1, true, 2));
-        dao.ajouterAppartement(new Appartement(0, "Appartement Vue Tour Eiffel", "7 Quai Branly", new BigDecimal("200.00"), "Vue exceptionnelle", "Balcon, Clim", 2, false, 5));
-        dao.ajouterAppartement(new Appartement(0, "Loft Industriel", "10 Rue des Ateliers", new BigDecimal("150.00"), "Style moderne", "TV, Cuisine US", 1, true, 1));
-        dao.ajouterAppartement(new Appartement(0, "T3 Familial", "22 Rue du Parc", new BigDecimal("130.00"), "Parfait pour 4 pers.", "2 chambres", 3, true, 3));
-        dao.ajouterAppartement(new Appartement(0, "Penthouse Luxueux", "88 Avenue du Ciel", new BigDecimal("320.00"), "Terrasse privée", "Jacuzzi, Salon panoramique", 4, false, 10));
-        dao.ajouterAppartement(new Appartement(0, "Appart Budget", "5 Rue Simple", new BigDecimal("65.00"), "Prix mini", "Pas de petit déj", 1, false, 0));
-        dao.ajouterAppartement(new Appartement(0, "Appartement avec jardin", "15 Allée Fleurie", new BigDecimal("110.00"), "RDC avec verdure", "Jardin privé", 2, true, 0));
+                switch (choix) {
+                    case 1:
+                        type = choisirType();
+                        break;
+                    case 2:
+                        prixMin = choisirPrix("minimum");
+                        break;
+                    case 3:
+                        prixMax = choisirPrix("maximum");
+                        break;
+                    case 4:
+                        piscine = choisirBool("piscine");
+                        break;
+                    case 5:
+                        petitDejeuner = choisirBool("petit déjeuner");
+                        break;
+                    case 6:
+                        jardin = choisirBool("jardin");
+                        break;
+                    case 0:
+                        filtrageFini = true;
+                        break;
+                    default:
+                        System.out.println("Choix invalide.");
+                        break;
+                }
+            }
 
+            // Affiche les filtres sélectionnés
+            afficherRésuméFiltres(type, prixMin, prixMax, piscine, petitDejeuner, jardin);
 
-        dao.ajouterMaisonHotes(new MaisonHotes(0, "Maison Lavande", "Chemin des Plantes", new BigDecimal("140.00"), "Charme provençal", "Terrasse, Parfum Lavande", true, true));
-        dao.ajouterMaisonHotes(new MaisonHotes(0, "Les Oiseaux", "Route des Champs", new BigDecimal("120.00"), "Repos total", "Calme, Vue campagne", false, true));
-        dao.ajouterMaisonHotes(new MaisonHotes(0, "Villa Bella", "Rue des Oliviers", new BigDecimal("190.00"), "Piscine privée", "Style méditerranéen", true, false));
-        dao.ajouterMaisonHotes(new MaisonHotes(0, "Le Refuge", "Montagne Verte", new BigDecimal("160.00"), "Randonnées à proximité", "Cheminée", true, true));
-        dao.ajouterMaisonHotes(new MaisonHotes(0, "L’Écureuil", "Forêt enchantée", new BigDecimal("100.00"), "Rustique et boisé", "Coin feu, Cabane", false, true));
-        dao.ajouterMaisonHotes(new MaisonHotes(0, "Maison du Lac", "Bord du lac", new BigDecimal("175.00"), "Kayak inclus", "Plage privée", true, false));
-        dao.ajouterMaisonHotes(new MaisonHotes(0, "Gîte du Silence", "Fin de la route", new BigDecimal("90.00"), "Totalement isolé", "Paix garantie", false, false));
+            // Récupère et affiche les résultats
+            List<Hebergement> hebergementsFiltres = dao.getHebergementsAvecFiltres(type, prixMin, prixMax, piscine, petitDejeuner, jardin);
+            afficherHebergements(hebergementsFiltres);
 
-
-        for (int i = 1; i <= 7; i++) {
-            Hotel h = dao.findHotelById(i);
-            if (h != null) vue.afficherHebergement(h);
-
-            Appartement a = dao.findAppartementById(i);
-            if (a != null) vue.afficherHebergement(a);
-
-            MaisonHotes m = dao.findMaisonHotesById(i);
-            if (m != null) vue.afficherHebergement(m);
         }
     }
 }
