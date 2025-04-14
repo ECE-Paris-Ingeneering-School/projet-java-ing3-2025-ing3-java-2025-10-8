@@ -11,7 +11,7 @@ import Modele.MaisonHotes;
 public class AjoutHebergementFenetre extends JFrame {
 
     private JComboBox<String> typeCombo;
-    private JTextField nomField, adresseField, prixField, descriptionField;
+    private JTextField nomField, adresseField, prixField, descriptionField, imageUrlField;
     private JCheckBox petitDejBox;
 
     // Spécifiques
@@ -22,7 +22,7 @@ public class AjoutHebergementFenetre extends JFrame {
 
     public AjoutHebergementFenetre() {
         setTitle("Ajouter un hébergement");
-        setSize(600, 650);
+        setSize(600, 700);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
@@ -62,22 +62,25 @@ public class AjoutHebergementFenetre extends JFrame {
         adresseField = new JTextField(25);
         prixField = new JTextField(25);
         descriptionField = new JTextField(25);
+        imageUrlField = new JTextField(25);
 
         nomField.setMaximumSize(new Dimension(400, 30));
         adresseField.setMaximumSize(new Dimension(400, 30));
         prixField.setMaximumSize(new Dimension(400, 30));
         descriptionField.setMaximumSize(new Dimension(400, 30));
+        imageUrlField.setMaximumSize(new Dimension(400, 30));
 
         petitDejBox = new JCheckBox("Petit déjeuner inclus");
 
         formPanel.add(titre);
         formPanel.add(Box.createVerticalStrut(5));
         formPanel.add(choixPanel);
-        formPanel.add(Box.createVerticalStrut(5)); // espace réduit après le menu déroulant
+        formPanel.add(Box.createVerticalStrut(5));
         formPanel.add(createLabeledField("Nom :", nomField));
         formPanel.add(createLabeledField("Adresse :", adresseField));
         formPanel.add(createLabeledField("Prix par nuit :", prixField));
         formPanel.add(createLabeledField("Description :", descriptionField));
+        formPanel.add(createLabeledField("URL de l'image :", imageUrlField));
         formPanel.add(petitDejBox);
 
         specificFieldsPanel = new JPanel();
@@ -93,12 +96,9 @@ public class AjoutHebergementFenetre extends JFrame {
         btnAjouter.addActionListener(e -> ajouterHebergement());
 
         formPanel.add(Box.createVerticalStrut(15));
-
         formPanel.add(btnAjouter);
         add(formPanel, BorderLayout.CENTER);
 
-
-        // Listener
         typeCombo.addActionListener(e -> updateSpecificFields((String) typeCombo.getSelectedItem()));
         updateSpecificFields("Hôtel");
     }
@@ -118,24 +118,24 @@ public class AjoutHebergementFenetre extends JFrame {
         specificFieldsPanel.removeAll();
 
         switch (type) {
-            case "Hôtel":
+            case "Hôtel" -> {
                 nbEtoilesField = new JTextField();
                 piscineBox = new JCheckBox("Piscine");
                 spaBox = new JCheckBox("Spa");
                 specificFieldsPanel.add(createLabeledField("Nombre d'étoiles :", nbEtoilesField));
                 specificFieldsPanel.add(piscineBox);
                 specificFieldsPanel.add(spaBox);
-                break;
-            case "Appartement":
+            }
+            case "Appartement" -> {
                 nbPiecesField = new JTextField();
                 etageField = new JTextField();
                 specificFieldsPanel.add(createLabeledField("Nombre de pièces :", nbPiecesField));
                 specificFieldsPanel.add(createLabeledField("Étage :", etageField));
-                break;
-            case "Maison d'hôtes":
+            }
+            case "Maison d'hôtes" -> {
                 jardinBox = new JCheckBox("Jardin");
                 specificFieldsPanel.add(jardinBox);
-                break;
+            }
         }
 
         specificFieldsPanel.revalidate();
@@ -147,10 +147,11 @@ public class AjoutHebergementFenetre extends JFrame {
         String adresse = adresseField.getText().trim();
         String prixStr = prixField.getText().trim();
         String description = descriptionField.getText().trim();
+        String imageUrl = imageUrlField.getText().trim();
         boolean petitDej = petitDejBox.isSelected();
         String type = (String) typeCombo.getSelectedItem();
 
-        if (nom.isEmpty() || adresse.isEmpty() || prixStr.isEmpty() || description.isEmpty()) {
+        if (nom.isEmpty() || adresse.isEmpty() || prixStr.isEmpty() || description.isEmpty() || imageUrl.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Veuillez remplir tous les champs obligatoires.");
             return;
         }
@@ -167,21 +168,21 @@ public class AjoutHebergementFenetre extends JFrame {
 
         try {
             switch (type) {
-                case "Hôtel":
+                case "Hôtel" -> {
                     int etoiles = Integer.parseInt(nbEtoilesField.getText().trim());
                     boolean piscine = piscineBox.isSelected();
                     boolean spa = spaBox.isSelected();
-                    dao.ajouterHotel(new Hotel(0, nom, adresse, prix, description, "Hôtel", etoiles, petitDej, piscine, spa));
-                    break;
-                case "Appartement":
+                    dao.ajouterHotel(new Hotel(0, nom, adresse, prix, description, "Hôtel", imageUrl, etoiles, petitDej, piscine, spa));
+                }
+                case "Appartement" -> {
                     int pieces = Integer.parseInt(nbPiecesField.getText().trim());
                     int etage = Integer.parseInt(etageField.getText().trim());
-                    dao.ajouterAppartement(new Appartement(0, nom, adresse, prix, description, "Appartement", pieces, petitDej, etage));
-                    break;
-                case "Maison d'hôtes":
+                    dao.ajouterAppartement(new Appartement(0, nom, adresse, prix, description, "Appartement", imageUrl, pieces, petitDej, etage));
+                }
+                case "Maison d'hôtes" -> {
                     boolean jardin = jardinBox.isSelected();
-                    dao.ajouterMaisonHotes(new MaisonHotes(0, nom, adresse, prix, description, "Maison d'hôtes", petitDej, jardin));
-                    break;
+                    dao.ajouterMaisonHotes(new MaisonHotes(0, nom, adresse, prix, description, "Maison d'hôtes", imageUrl, petitDej, jardin));
+                }
             }
 
             JOptionPane.showMessageDialog(this, "Hébergement ajouté avec succès !");

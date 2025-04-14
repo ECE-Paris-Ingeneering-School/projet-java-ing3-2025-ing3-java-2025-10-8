@@ -25,69 +25,87 @@ public class HebergementDAO {
         }
     }
 
-
-
-    // ---------------------- UPDATE ----------------------
-
-    public void updateHotel(Hotel h) {
-        String sqlHotel = "UPDATE hotel SET nombre_etoiles = ?, petit_dejeuner = ?, piscine = ?, spa = ? WHERE id_hebergement = ?";
+    public void ajouterHotel(Hotel h) {
+        String sql = "INSERT INTO hebergement (nom, adresse, prix_par_nuit, description, specification, image_url) VALUES (?, ?, ?, ?, ?, ?)";
+        String sqlHotel = "INSERT INTO hotel (id_hebergement, nombre_etoiles, petit_dejeuner, piscine, spa) VALUES (LAST_INSERT_ID(), ?, ?, ?, ?)";
 
         try (Connection conn = ConnexionBdd.seConnecter();
+             PreparedStatement ps = conn.prepareStatement(sql);
              PreparedStatement psHotel = conn.prepareStatement(sqlHotel)) {
 
-            updateHebergementBase(conn, h);
+            ps.setString(1, h.getNom());
+            ps.setString(2, h.getAdresse());
+            ps.setBigDecimal(3, h.getPrixParNuit());
+            ps.setString(4, h.getDescription());
+            ps.setString(5, h.getSpecification());
+            ps.setString(6, h.getImageUrl());
+            ps.executeUpdate();
 
             psHotel.setInt(1, h.getNombreEtoiles());
             psHotel.setBoolean(2, h.isPetitDejeuner());
             psHotel.setBoolean(3, h.isPiscine());
             psHotel.setBoolean(4, h.isSpa());
-            psHotel.setLong(5, h.getIdHebergement());
             psHotel.executeUpdate();
 
-            System.out.println("Hôtel mis à jour avec succès !");
+            System.out.println("✅ Hôtel inséré : " + h.getNom());
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void updateAppartement(Appartement a) {
-        String sqlAppart = "UPDATE appartement SET nombre_pieces = ?, petit_dejeuner = ?, etage = ? WHERE id_hebergement = ?";
+    public void ajouterAppartement(Appartement a) {
+        String sql = "INSERT INTO hebergement (nom, adresse, prix_par_nuit, description, specification, image_url) VALUES (?, ?, ?, ?, ?, ?)";
+        String sqlAppart = "INSERT INTO appartement (id_hebergement, nombre_pieces, petit_dejeuner, etage) VALUES (LAST_INSERT_ID(), ?, ?, ?)";
 
         try (Connection conn = ConnexionBdd.seConnecter();
+             PreparedStatement ps = conn.prepareStatement(sql);
              PreparedStatement psAppart = conn.prepareStatement(sqlAppart)) {
 
-            updateHebergementBase(conn, a);
+            ps.setString(1, a.getNom());
+            ps.setString(2, a.getAdresse());
+            ps.setBigDecimal(3, a.getPrixParNuit());
+            ps.setString(4, a.getDescription());
+            ps.setString(5, a.getSpecification());
+            ps.setString(6, a.getImageUrl());
+            ps.executeUpdate();
 
             psAppart.setInt(1, a.getNombrePieces());
             psAppart.setBoolean(2, a.isPetitDejeuner());
             psAppart.setInt(3, a.getEtage());
-            psAppart.setLong(4, a.getIdHebergement());
             psAppart.executeUpdate();
 
-            System.out.println("Appartement mis à jour avec succès !");
+            System.out.println("✅ Appartement inséré : " + a.getNom());
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void updateMaisonHotes(MaisonHotes m) {
-        String sqlMaison = "UPDATE maisonhotes SET petit_dejeuner = ?, jardin = ? WHERE id_hebergement = ?";
+    public void ajouterMaisonHotes(MaisonHotes m) {
+        String sql = "INSERT INTO hebergement (nom, adresse, prix_par_nuit, description, specification, image_url) VALUES (?, ?, ?, ?, ?, ?)";
+        String sqlMaison = "INSERT INTO maisonhotes (id_hebergement, petit_dejeuner, jardin) VALUES (LAST_INSERT_ID(), ?, ?)";
 
         try (Connection conn = ConnexionBdd.seConnecter();
+             PreparedStatement ps = conn.prepareStatement(sql);
              PreparedStatement psMaison = conn.prepareStatement(sqlMaison)) {
 
-            updateHebergementBase(conn, m);
+            ps.setString(1, m.getNom());
+            ps.setString(2, m.getAdresse());
+            ps.setBigDecimal(3, m.getPrixParNuit());
+            ps.setString(4, m.getDescription());
+            ps.setString(5, m.getSpecification());
+            ps.setString(6, m.getImageUrl());
+            ps.executeUpdate();
 
             psMaison.setBoolean(1, m.isPetitDejeuner());
             psMaison.setBoolean(2, m.isJardin());
-            psMaison.setLong(3, m.getIdHebergement());
             psMaison.executeUpdate();
 
-            System.out.println("Maison d'hôtes mise à jour avec succès !");
+            System.out.println("✅ Maison d'hôtes insérée : " + m.getNom());
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
 
     // ---------------------- READ ----------------------
 
