@@ -297,6 +297,6 @@ public class PaiementVue extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(gui.PaiementGUI::new);
+        SwingUtilities.invokeLater(Vue.PaiementVue::new);
     }
 }
