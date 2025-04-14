@@ -100,7 +100,7 @@ public class ConnexionFenetre extends JFrame {
                 if (admin != null) {
                     new AccueilAdminFenetre().setVisible(true);
                 } else {
-                    new AccueilPrincipalFenetre(client).setVisible(true);
+                    new AccueilPrincipalFenetre(client, false).setVisible(true);
                 }
             } else {
                 // Tentative directe admin (au cas où l’admin n’est pas dans la table client)

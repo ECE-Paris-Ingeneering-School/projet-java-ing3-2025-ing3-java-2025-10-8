@@ -16,7 +16,7 @@ public class AccueilPrincipalFenetre extends JFrame {
     private JPanel panelImage;
     private Client clientConnecte;
 
-    public AccueilPrincipalFenetre(Client clientConnecte) {
+    public AccueilPrincipalFenetre(Client clientConnecte, boolean admin) {
         this.clientConnecte = clientConnecte;
 
         setTitle("Accueil - Booking App");
@@ -94,6 +94,11 @@ public class AccueilPrincipalFenetre extends JFrame {
                 new ConnexionFenetre().setVisible(true);
             });
         }
+        //a implementer
+        if (admin){
+            JOptionPane.showMessageDialog(this, "peut modifier/supprimer");
+
+        }
 
         add(profilPanel, BorderLayout.WEST);
     }
@@ -162,6 +167,6 @@ public class AccueilPrincipalFenetre extends JFrame {
     }*/
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new AccueilPrincipalFenetre(null).setVisible(true));
+        SwingUtilities.invokeLater(() -> new AccueilPrincipalFenetre(null, false).setVisible(true));
     }
 }
