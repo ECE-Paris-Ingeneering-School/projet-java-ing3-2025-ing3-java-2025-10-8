@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Hebergement {
-    private long idHebergement;
+    private int idHebergement;
     private String nom;
     private String adresse;
     private BigDecimal prixParNuit;
@@ -14,7 +14,7 @@ public class Hebergement {
     private List<String> imageUrls = new ArrayList<>(); // Liste d’images
 
     // Constructeur
-    public Hebergement(long idHebergement, String nom, String adresse, BigDecimal prixParNuit, String description, String specification, List<String> imageUrls) {
+    public Hebergement(int idHebergement, String nom, String adresse, BigDecimal prixParNuit, String description, String specification, List<String> imageUrls) {
         this.idHebergement = idHebergement;
         this.nom = nom;
         this.adresse = adresse;
@@ -25,11 +25,11 @@ public class Hebergement {
     }
 
     // Getters et Setters
-    public long getIdHebergement() {
+    public int getIdHebergement() {
         return idHebergement;
     }
 
-    public void setIdHebergement(long idHebergement) {
+    public void setIdHebergement(int idHebergement) {
         this.idHebergement = idHebergement;
     }
 

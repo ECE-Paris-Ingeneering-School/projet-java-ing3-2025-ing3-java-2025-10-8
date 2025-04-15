@@ -371,15 +371,15 @@ public class HebergementDAO {
 
 
     //Supprimer des hebergements
-    public boolean supprimerHebergementParNom(String nom) {
-        String sql = "DELETE FROM hebergement WHERE nom = ?";
+    public boolean supprimerHebergementParId(int idHebergement) {
+        String sql = "DELETE FROM hebergement WHERE id_hebergement = ?";
         try (Connection conn = ConnexionBdd.seConnecter();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setString(1, nom);
+            ps.setInt(1, idHebergement);
             return ps.executeUpdate() > 0;
 
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
