@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.math.BigDecimal;
 import DAO.HebergementDAO;
+import DAO.InitialisationBDD;
 import Modele.Appartement;
 import Modele.Hotel;
 import Modele.MaisonHotes;
@@ -147,11 +148,11 @@ public class AjoutHebergementFenetre extends JFrame {
         String adresse = adresseField.getText().trim();
         String prixStr = prixField.getText().trim();
         String description = descriptionField.getText().trim();
-        String imageUrl = imageUrlField.getText().trim();
+        String imageUrlRaw = imageUrlField.getText().trim();
         boolean petitDej = petitDejBox.isSelected();
         String type = (String) typeCombo.getSelectedItem();
 
-        if (nom.isEmpty() || adresse.isEmpty() || prixStr.isEmpty() || description.isEmpty() || imageUrl.isEmpty()) {
+        if (nom.isEmpty() || adresse.isEmpty() || prixStr.isEmpty() || description.isEmpty() || imageUrlRaw.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Veuillez remplir tous les champs obligatoires.");
             return;
         }
@@ -164,6 +165,12 @@ public class AjoutHebergementFenetre extends JFrame {
             return;
         }
 
+        // ✅ Création de la liste d’images
+        java.util.List<String> imageUrls = java.util.Arrays.stream(imageUrlRaw.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .toList();
+
         HebergementDAO dao = new HebergementDAO();
 
         try {
@@ -172,16 +179,16 @@ public class AjoutHebergementFenetre extends JFrame {
                     int etoiles = Integer.parseInt(nbEtoilesField.getText().trim());
                     boolean piscine = piscineBox.isSelected();
                     boolean spa = spaBox.isSelected();
-                    dao.ajouterHotel(new Hotel(0, nom, adresse, prix, description, "Hôtel", imageUrl, etoiles, petitDej, piscine, spa));
+                    dao.ajouterHotel(new Hotel(0, nom, adresse, prix, description, "Hôtel", imageUrls, etoiles, petitDej, piscine, spa));
                 }
                 case "Appartement" -> {
                     int pieces = Integer.parseInt(nbPiecesField.getText().trim());
                     int etage = Integer.parseInt(etageField.getText().trim());
-                    dao.ajouterAppartement(new Appartement(0, nom, adresse, prix, description, "Appartement", imageUrl, pieces, petitDej, etage));
+                    dao.ajouterAppartement(new Appartement(0, nom, adresse, prix, description, "Appartement", imageUrls, pieces, petitDej, etage));
                 }
                 case "Maison d'hôtes" -> {
                     boolean jardin = jardinBox.isSelected();
-                    dao.ajouterMaisonHotes(new MaisonHotes(0, nom, adresse, prix, description, "Maison d'hôtes", imageUrl, petitDej, jardin));
+                    dao.ajouterMaisonHotes(new MaisonHotes(0, nom, adresse, prix, description, "Maison d'hôtes", imageUrls, petitDej, jardin));
                 }
             }
 
@@ -191,6 +198,7 @@ public class AjoutHebergementFenetre extends JFrame {
             JOptionPane.showMessageDialog(this, "Erreur : " + e.getMessage());
         }
     }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new AjoutHebergementFenetre().setVisible(true));

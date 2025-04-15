@@ -1,6 +1,8 @@
 package Modele;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Hebergement {
     private long idHebergement;
@@ -9,17 +11,17 @@ public class Hebergement {
     private BigDecimal prixParNuit;
     private String description;
     private String specification;
-    private String imageUrl;  // Attribut image_url pour l'URL de l'image
+    private List<String> imageUrls = new ArrayList<>(); // Liste d’images
 
     // Constructeur
-    public Hebergement(long idHebergement, String nom, String adresse, BigDecimal prixParNuit, String description, String specification, String imageUrl) {
+    public Hebergement(long idHebergement, String nom, String adresse, BigDecimal prixParNuit, String description, String specification, List<String> imageUrls) {
         this.idHebergement = idHebergement;
         this.nom = nom;
         this.adresse = adresse;
         this.prixParNuit = prixParNuit;
         this.description = description;
         this.specification = specification;
-        this.imageUrl = imageUrl;  // Initialisation de l'URL de l'image
+        this.imageUrls = imageUrls;
     }
 
     // Getters et Setters
@@ -71,11 +73,16 @@ public class Hebergement {
         this.specification = specification;
     }
 
-    public String getImageUrl() {
-        return imageUrl;  // Getter pour l'URL de l'image
+    public List<String> getImageUrls() {
+        return imageUrls;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;  // Setter pour l'URL de l'image
+    public void setImageUrls(List<String> imageUrls) {
+        this.imageUrls = imageUrls;
+    }
+
+    // Pour garder une image principale si nécessaire
+    public String getImageUrl() {
+        return imageUrls != null && !imageUrls.isEmpty() ? imageUrls.get(0) : null;
     }
 }

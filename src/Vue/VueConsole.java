@@ -26,9 +26,8 @@ public class VueConsole {
         System.out.println("Prix par nuit : " + h.getPrixParNuit() + " €");
         System.out.println("Description : " + h.getDescription());
         System.out.println("Spécification : " + h.getSpecification());
-        System.out.println("Image : " + h.getImageUrl());
 
-        // Vérifie le type réel de l'objet
+        // Affichage du type
         if (h instanceof Hotel) {
             Hotel hotel = (Hotel) h;
             System.out.println("→ Type : Hôtel");
@@ -36,14 +35,12 @@ public class VueConsole {
             System.out.println("Petit déjeuner inclus : " + (hotel.isPetitDejeuner() ? "Oui" : "Non"));
             System.out.println("Piscine : " + (hotel.isPiscine() ? "Oui" : "Non"));
             System.out.println("Spa : " + (hotel.isSpa() ? "Oui" : "Non"));
-
         } else if (h instanceof Appartement) {
             Appartement app = (Appartement) h;
             System.out.println("→ Type : Appartement");
             System.out.println("Nombre de pièces : " + app.getNombrePieces());
             System.out.println("Petit déjeuner inclus : " + (app.isPetitDejeuner() ? "Oui" : "Non"));
             System.out.println("Étage : " + app.getEtage());
-
         } else if (h instanceof MaisonHotes) {
             MaisonHotes mh = (MaisonHotes) h;
             System.out.println("→ Type : Maison d’hôtes");
@@ -51,8 +48,40 @@ public class VueConsole {
             System.out.println("Jardin : " + (mh.isJardin() ? "Oui" : "Non"));
         }
 
+        // Affichage interactif des images
+        List<String> images = h.getImageUrls();
+        if (images != null && !images.isEmpty()) {
+            System.out.println("\n→ Galerie d’images (" + images.size() + " images)");
+
+            int index = 0;
+            boolean quitter = false;
+
+            while (!quitter) {
+                System.out.println("\nImage " + (index + 1) + " / " + images.size() + " : " + images.get(index));
+                System.out.print("Commande [n = suivant, p = précédent, q = quitter] : ");
+                String commande = scanner.nextLine().trim().toLowerCase();
+
+                switch (commande) {
+                    case "n":
+                        index = (index + 1) % images.size(); // loop forward
+                        break;
+                    case "p":
+                        index = (index - 1 + images.size()) % images.size(); // loop backward
+                        break;
+                    case "q":
+                        quitter = true;
+                        break;
+                    default:
+                        System.out.println("Commande invalide. Utilisez 'n', 'p' ou 'q'.");
+                }
+            }
+        } else {
+            System.out.println("Aucune image disponible.");
+        }
+
         System.out.println("========================\n");
     }
+
 
     // Afficher les filtres disponibles
     private static void afficherMenuFiltres() {
