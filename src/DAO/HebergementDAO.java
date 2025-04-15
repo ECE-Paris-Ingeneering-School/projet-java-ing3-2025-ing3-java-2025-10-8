@@ -8,6 +8,7 @@ import Modele.MaisonHotes;
 import java.sql.*;
 import java.math.BigDecimal;
 import java.util.*;
+import DAO.ConnexionBdd;
 
 public class HebergementDAO {
 
@@ -384,5 +385,46 @@ public class HebergementDAO {
             return false;
         }
     }
+
+    public boolean estDisponible(long idHebergement, String dateArrivee, String dateDepart) {
+        boolean dispo = false;
+        try (Connection conn = ConnexionBdd.seConnecter()) {
+            String sql = "SELECT disponibilite FROM Hebergement WHERE idHebergement = ?"; // ou une requête plus complexe avec les dates
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setLong(1, idHebergement);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                dispo = rs.getInt("disponibilite") == 1;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return dispo;
+    }
+
+    public Hebergement getHebergementById(int idHebergement) {
+        Hebergement hebergement = null;
+
+        // On vérifie quel type d'hébergement c'est (hotel, appartement, maison d'hôtes...)
+        // On utilise les méthodes findHotelById, findAppartementById, etc.
+        Hotel hotel = findHotelById(idHebergement);
+        if (hotel != null) {
+            hebergement = hotel;
+        }
+
+        Appartement appartement = findAppartementById(idHebergement);
+        if (appartement != null) {
+            hebergement = appartement;
+        }
+
+        MaisonHotes maisonHotes = findMaisonHotesById(idHebergement);
+        if (maisonHotes != null) {
+            hebergement = maisonHotes;
+        }
+
+        return hebergement;
+    }
+
+
 
 }

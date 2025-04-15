@@ -74,7 +74,6 @@ public class PaiementVue extends JFrame {
         JPanel recapPanel = new JPanel(new GridLayout(3, 1));
         recapReservationLabel = new JLabel("Réservation n° " + idReservation);
         recapMontantLabel = new JLabel("Montant à payer : " + montant + " €");
-
         recapMontantReductionLabel = new JLabel("Montant après réduction : " + montant + " €");
         recapMontantReductionLabel.setFont(new Font("SansSerif", Font.ITALIC, 13));
         recapMontantReductionLabel.setForeground(Color.DARK_GRAY);
@@ -177,7 +176,6 @@ public class PaiementVue extends JFrame {
         });
     }
 
-    // Affichage de l'écran de traitement avec la barre de progression
     private void afficherTraitement() {
         JPanel panelTraitement = new JPanel();
         panelTraitement.setLayout(new BorderLayout());
@@ -195,7 +193,6 @@ public class PaiementVue extends JFrame {
         this.repaint();
     }
 
-    // Cacher l'écran de traitement
     private void cacherTraitement() {
         this.remove(progressBar.getParent());
         this.revalidate();
@@ -256,7 +253,6 @@ public class PaiementVue extends JFrame {
             double reduction = reductionAppliquee ? 10.0 : 0.0; // 10% si true, sinon 0%
             offreReductionDAO.ajouterReductionPaiement(paiement.getIdPaiement(), reduction, montantReduit);
 
-
             cacherTraitement();
 
             JOptionPane.showMessageDialog(this,
@@ -273,9 +269,6 @@ public class PaiementVue extends JFrame {
             e.printStackTrace();
         }
     }
-
-
-
 
     private void enregistrerEnAttente() {
         afficherTraitement();

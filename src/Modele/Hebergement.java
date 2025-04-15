@@ -12,6 +12,7 @@ public class Hebergement {
     private String description;
     private String specification;
     private List<String> imageUrls = new ArrayList<>(); // Liste d’images
+    private int disponibilite; // ajout de la variable pour les disponibilites
 
     // Constructeur
     public Hebergement(int idHebergement, String nom, String adresse, BigDecimal prixParNuit, String description, String specification, List<String> imageUrls) {
@@ -57,6 +58,15 @@ public class Hebergement {
         this.prixParNuit = prixParNuit;
     }
 
+    public int getDisponibilite() {
+        return disponibilite;
+    }
+
+    public void setDisponibilite(int disponibilite) {
+        this.disponibilite = disponibilite;
+    }
+
+
     public String getDescription() {
         switch (nom) {
             case "Studio Chic":
@@ -84,6 +94,7 @@ public class Hebergement {
             default:
                 return "Ce charmant hébergement offre un cadre agréable et fonctionnel, parfait pour tous les types de voyageurs. Vous y trouverez tout le confort nécessaire avec un mobilier moderne, une literie de qualité et une atmosphère accueillante. Idéalement situé, il permet de rejoindre facilement les points d’intérêt touristiques ou les zones d’affaires. Chaque détail a été pensé pour que vous vous sentiez comme chez vous. Que ce soit pour une escapade de quelques jours ou un séjour prolongé, il saura répondre à toutes vos attentes.";
         }
+
     }
 
     public void setDescription(String description) {

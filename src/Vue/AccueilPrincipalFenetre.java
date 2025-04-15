@@ -3,6 +3,9 @@ package Vue;
 import DAO.HebergementDAO;
 import Modele.*;
 import DAO.ClientDAO;
+import DAO.ReservationDAO;
+import java.sql.Connection;
+import DAO.ConnexionBdd;
 
 import javax.swing.*;
 import java.awt.*;
@@ -116,9 +119,25 @@ public class AccueilPrincipalFenetre extends JFrame {
             profilPanel.add(Box.createVerticalStrut(5));
             profilPanel.add(btnSupprimer);
 
-            btnVoirReservations.addActionListener(e ->
-                    JOptionPane.showMessageDialog(this, "👉 Affichage des réservations de " + clientConnecte.getPrenom())
-            );
+            btnVoirReservations.addActionListener(e -> {
+                Connection connection = ConnexionBdd.seConnecter();
+                if (connection != null) {
+                    ReservationDAO reservationDAO = new ReservationDAO(connection);
+                    List<Reservation> reservations = reservationDAO.getReservationsByClient(clientConnecte.getIdUtilisateur());
+
+                    if (reservations == null || reservations.isEmpty()) {
+                        JOptionPane.showMessageDialog(this, "Aucune réservation trouvée.");
+                    } else {
+                        for (Reservation r : reservations) {
+                            RecapitulatifFenetre recap = new RecapitulatifFenetre(r);
+                            recap.setVisible(true);
+                        }
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "Erreur de connexion à la base de données.");
+                }
+            });
+
 
             btnSupprimer.addActionListener(e -> {
                 int confirm = JOptionPane.showConfirmDialog(this, "Supprimer votre compte ?", "Confirmation", JOptionPane.YES_NO_OPTION);
@@ -291,8 +310,23 @@ public class AccueilPrincipalFenetre extends JFrame {
         btnDispo.setFocusPainted(false);
 
         btnDispo.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Affichage des disponibilités pour : " + h.getNom());
+            // Récupérer la connexion via la classe ConnexionBdd
+            Connection connection = ConnexionBdd.seConnecter();
+
+            if (connection != null) {
+                // Initialiser ReservationDAO avec la connexion
+                ReservationDAO reservationDAO = new ReservationDAO(connection);
+
+                // Puis instancier DisponibiliteFenetre en passant les trois arguments nécessaires
+                new DisponibiliteFenetre(h, clientConnecte, reservationDAO).setVisible(true);
+            } else {
+                // Gérer le cas où la connexion à la base de données échoue
+                JOptionPane.showMessageDialog(null, "Erreur de connexion à la base de données.", "Erreur", JOptionPane.ERROR_MESSAGE);
+            }
         });
+
+
+
 
         JButton btnCarte = new JButton("Voir sur la carte");
         btnCarte.setBackground(new Color(0, 113, 194));
