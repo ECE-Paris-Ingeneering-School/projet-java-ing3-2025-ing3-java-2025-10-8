@@ -38,7 +38,7 @@ public class HebergementDetailFenetre extends JFrame {
             int nbEtoiles = ((Hotel) h).getNombreEtoiles();
             for (int i = 0; i < 5; i++) {
                 JLabel etoile = new JLabel("★");
-                etoile.setFont(new Font("Segoe UI", Font.PLAIN, 22));
+                etoile.setFont(new Font("SansSerif", Font.PLAIN, 22));
                 etoile.setForeground(i < nbEtoiles ? new Color(255, 191, 0) : Color.LIGHT_GRAY);
                 titrePanel.add(etoile);
             }
@@ -99,8 +99,12 @@ public class HebergementDetailFenetre extends JFrame {
         infosPanel.add(Box.createVerticalStrut(5));
         infosPanel.add(new JLabel("Prix par nuit : " + h.getPrixParNuit() + " €"));
         infosPanel.add(Box.createVerticalStrut(5));
-        infosPanel.add(new JLabel("Description : " + h.getDescription()));
+        infosPanel.add(new JLabel("Description :"));
         infosPanel.add(Box.createVerticalStrut(5));
+        JLabel descriptionLabel = new JLabel("<html><p style='width:500px'>" + h.getDescription() + "</p></html>");
+        descriptionLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        infosPanel.add(descriptionLabel);
+
         infosPanel.add(new JLabel("Spécification : " + h.getSpecification()));
         infosPanel.add(Box.createVerticalStrut(15));
 

@@ -283,7 +283,6 @@ public class AccueilPrincipalFenetre extends JFrame {
         infos.add(Box.createVerticalStrut(5));
         infos.add(prix);
         infos.add(Box.createVerticalStrut(5));
-        infos.add(desc);
 
         // === Boutons ===
         JButton btnDispo = new JButton("Voir les disponibilités");
@@ -321,10 +320,10 @@ public class AccueilPrincipalFenetre extends JFrame {
 
         carte.add(infos, BorderLayout.CENTER);
 
-        // ✅ Clic sur la carte
+        carte.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         carte.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
+            public void mouseClicked(java.awt.event.MouseEvent e) {
                 new HebergementDetailFenetre(h).setVisible(true);
             }
         });
