@@ -195,23 +195,25 @@ public class AccueilPrincipalFenetre extends JFrame {
 
     private JPanel creerCarteHebergement(Hebergement h) {
         JPanel carte = new JPanel();
-        carte.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+        carte.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(Color.LIGHT_GRAY),
+                BorderFactory.createEmptyBorder(10, 10, 10, 10)
+        ));
         carte.setBackground(Color.WHITE);
         carte.setLayout(new BorderLayout());
-        carte.setPreferredSize(new Dimension(800, 120));
+        carte.setPreferredSize(new Dimension(1000, 180)); // Plus grand en largeur et hauteur
 
         // Partie gauche - image
         JLabel imageLabel = new JLabel();
-        imageLabel.setPreferredSize(new Dimension(150, 100));
+        imageLabel.setPreferredSize(new Dimension(220, 150)); // Image plus grande
         imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         try {
             if (h.getImageUrl() != null && !h.getImageUrl().isEmpty()) {
-                // Chargement depuis le classpath
                 java.net.URL imageUrl = getClass().getClassLoader().getResource(h.getImageUrl());
                 if (imageUrl != null) {
                     ImageIcon icon = new ImageIcon(imageUrl);
-                    Image img = icon.getImage().getScaledInstance(150, 100, Image.SCALE_SMOOTH);
+                    Image img = icon.getImage().getScaledInstance(220, 150, Image.SCALE_SMOOTH);
                     imageLabel.setIcon(new ImageIcon(img));
                     imageLabel.setText("");
                 } else {
@@ -230,22 +232,37 @@ public class AccueilPrincipalFenetre extends JFrame {
         JPanel infos = new JPanel();
         infos.setLayout(new BoxLayout(infos, BoxLayout.Y_AXIS));
         infos.setBackground(Color.WHITE);
+        infos.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10)); // Padding interne
 
         JLabel nom = new JLabel(h.getNom());
-        nom.setFont(new Font("Arial", Font.BOLD, 16));
+        nom.setFont(new Font("Arial", Font.BOLD, 20));
 
         JLabel adresse = new JLabel(h.getAdresse());
+        adresse.setFont(new Font("Arial", Font.PLAIN, 14));
+
         JLabel prix = new JLabel(h.getPrixParNuit() + " € / nuit");
         prix.setForeground(new Color(255, 128, 0));
+        prix.setFont(new Font("Arial", Font.BOLD, 16));
 
-        JLabel desc = new JLabel(h.getDescription());
+        JLabel desc = new JLabel("<html><p style='width:700px'>" + h.getDescription() + "</p></html>");
+        desc.setFont(new Font("Arial", Font.PLAIN, 14));
 
         infos.add(nom);
+        infos.add(Box.createVerticalStrut(5));
         infos.add(adresse);
+        infos.add(Box.createVerticalStrut(5));
         infos.add(prix);
+        infos.add(Box.createVerticalStrut(5));
         infos.add(desc);
 
         carte.add(infos, BorderLayout.CENTER);
+
+        carte.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                new HebergementDetailFenetre(h).setVisible(true);
+            }
+        });
+
 
         return carte;
     }
