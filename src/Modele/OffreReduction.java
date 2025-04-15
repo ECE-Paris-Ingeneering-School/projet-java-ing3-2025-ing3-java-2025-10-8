@@ -12,7 +12,6 @@ public class OffreReduction {
     private Date dateFin;
 
     // Constructeurs
-    public OffreReduction() {}
 
     public OffreReduction(int idUtilisateur, String description, double pourcentageReduction, Date dateDebut, Date dateFin) {
         this.idUtilisateur = idUtilisateur;
@@ -22,21 +21,17 @@ public class OffreReduction {
         this.dateFin = dateFin;
     }
 
-    public OffreReduction(int idOffre, int idUtilisateur, String description, double pourcentageReduction, Date dateDebut, Date dateFin) {
-        this.idOffre = idOffre;
-        this.idUtilisateur = idUtilisateur;
-        this.description = description;
-        this.pourcentageReduction = pourcentageReduction;
-        this.dateDebut = dateDebut;
-        this.dateFin = dateFin;
+    public OffreReduction() {
     }
 
+
     // Getters et Setters
+
     public int getIdOffre() {
         return idOffre;
     }
 
-    public void setIdPromotion(int idOffre) {
+    public void setIdOffre(int idOffre) {
         this.idOffre = idOffre;
     }
 
@@ -80,7 +75,6 @@ public class OffreReduction {
         this.dateFin = dateFin;
     }
 
-    // ToString
     @Override
     public String toString() {
         return "OffreReduction{" +

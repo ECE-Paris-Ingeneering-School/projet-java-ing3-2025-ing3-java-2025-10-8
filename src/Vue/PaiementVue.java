@@ -3,17 +3,22 @@ package Vue;
 import DAO.PaiementDAO;
 import DAO.ConnexionBdd;
 import Modele.Paiement;
+import DAO.OffreReductionDAO;
 
 import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
 import java.sql.Connection;
 import java.sql.Date;
+import java.time.LocalDate;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 public class PaiementVue extends JFrame {
 
     private JLabel recapReservationLabel;
     private JLabel recapMontantLabel;
+    private JLabel recapMontantReductionLabel; // Nouveau label pour afficher la réduction
 
     private JComboBox<String> methodeCombo;
     private JPanel methodeDetailsPanel;
@@ -26,11 +31,13 @@ public class PaiementVue extends JFrame {
     private JButton confirmerBtn, sauvegarderBtn;
     private PaiementDAO paiementDAO;
 
-    private int idReservation = 1234;
-    private double montant = 150.0;
+    private int idReservation;
+    private double montant;
 
     // Composants pour le traitement avec la barre de progression
     private JProgressBar progressBar;
+    private Connection connection;
+    private int idUtilisateur = 3; // À remplacer par l'ID réel de l'utilisateur
 
     public PaiementVue() {
         setTitle("Paiement Réservation");
@@ -39,7 +46,7 @@ public class PaiementVue extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        Connection connection = ConnexionBdd.seConnecter();
+        this.connection = ConnexionBdd.seConnecter();
         if (connection == null) {
             JOptionPane.showMessageDialog(this, "Erreur de connexion à la base de données");
             System.exit(1);
@@ -50,17 +57,32 @@ public class PaiementVue extends JFrame {
         setVisible(true);
     }
 
+    public PaiementVue(int idUtilisateur, int idReservation, double montant) {
+        this(); // appelle le constructeur par défaut pour initialiser l'UI et la connexion
+
+        this.idUtilisateur = idUtilisateur;
+        this.idReservation = idReservation;
+        this.montant = montant;
+
+        // Met à jour l'affichage du récap avec les vraies valeurs
+        recapReservationLabel.setText("Réservation n° " + idReservation);
+        recapMontantLabel.setText("Montant à payer : " + montant + " €");
+        recapMontantReductionLabel.setText("Montant après réduction : " + montant + " €");
+    }
+
     private void initUI() {
-        JPanel recapPanel = new JPanel(new GridLayout(2, 1));
+        JPanel recapPanel = new JPanel(new GridLayout(3, 1));
         recapReservationLabel = new JLabel("Réservation n° " + idReservation);
         recapMontantLabel = new JLabel("Montant à payer : " + montant + " €");
 
-        recapReservationLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
-        recapMontantLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        recapMontantReductionLabel = new JLabel("Montant après réduction : " + montant + " €");
+        recapMontantReductionLabel.setFont(new Font("SansSerif", Font.ITALIC, 13));
+        recapMontantReductionLabel.setForeground(Color.DARK_GRAY);
 
         recapPanel.setBorder(BorderFactory.createTitledBorder("Récapitulatif"));
         recapPanel.add(recapReservationLabel);
         recapPanel.add(recapMontantLabel);
+        recapPanel.add(recapMontantReductionLabel);
 
         add(recapPanel, BorderLayout.NORTH);
 
@@ -181,7 +203,6 @@ public class PaiementVue extends JFrame {
     }
 
     private void confirmerPaiement() {
-        // Afficher la barre de progression et le message de traitement
         afficherTraitement();
 
         String methodeStr = (String) methodeCombo.getSelectedItem();
@@ -194,32 +215,52 @@ public class PaiementVue extends JFrame {
                 "Confirmation",
                 JOptionPane.YES_NO_OPTION);
 
-        Paiement.StatutPaiement statut = (confirm == JOptionPane.YES_OPTION) ?
-                Paiement.StatutPaiement.PAYE :
-                Paiement.StatutPaiement.ANNULE;
+        Paiement.StatutPaiement statut = (confirm == JOptionPane.YES_OPTION) ? Paiement.StatutPaiement.PAYE : Paiement.StatutPaiement.ANNULE;
 
         try {
-            // Simuler un délai de traitement
-            Thread.sleep(2000); // 2 secondes de délai pour simuler le traitement
+            // Vérification de l'éligibilité à la réduction
+            PreparedStatement ps = connection.prepareStatement("SELECT date_inscription FROM utilisateur WHERE id_utilisateur = ?");
+            ps.setInt(1, idUtilisateur);
+            ResultSet rs = ps.executeQuery();
 
-            Paiement paiement = new Paiement(
-                    idReservation,
-                    montant,
-                    methode,
-                    statut,
-                    new Date(System.currentTimeMillis())
-            );
+            boolean reductionAppliquee = false;
+            double montantAvant = montant;
+            double montantReduit = 0;
 
+            if (rs.next()) {
+                Date dateInscription = rs.getDate("date_inscription");
+                LocalDate dateInscriptionLocal = dateInscription.toLocalDate();
+                LocalDate aujourdHui = LocalDate.now();
+
+                if (dateInscriptionLocal.plusMonths(6).isBefore(aujourdHui)) {
+                    // Applique une réduction de 10%
+                    montantReduit = montant * 0.10;
+                    montant -= montantReduit;
+
+                    recapMontantReductionLabel.setText(
+                            "<html><span style='color:green;'>Réduction de 10% appliquée ✅</span><br/>" +
+                                    "<span style='color:#555;'>Avant : " + String.format("%.2f", montantAvant) + " €</span><br/>" +
+                                    "<b>Après : " + String.format("%.2f", montant) + " €</b></html>"
+                    );
+
+                    reductionAppliquee = true;
+                }
+            }
+
+            // Créer le paiement
+            Paiement paiement = new Paiement(idReservation, montant, methode, statut, new Date(System.currentTimeMillis()));
             paiementDAO.ajouterPaiement(paiement);
 
-            // Cacher la barre de progression
+            // Ajouter la réduction dans la table `offrereduction`
+            OffreReductionDAO offreReductionDAO = new OffreReductionDAO(connection);
+            double reduction = reductionAppliquee ? 10.0 : 0.0; // 10% si true, sinon 0%
+            offreReductionDAO.ajouterReductionPaiement(paiement.getIdPaiement(), reduction, montantReduit);
+
+
             cacherTraitement();
 
-            // Afficher un message de succès ou d'échec
             JOptionPane.showMessageDialog(this,
-                    statut == Paiement.StatutPaiement.PAYE ?
-                            "🎉 Paiement réussi !" :
-                            "❌ Paiement annulé.",
+                    statut == Paiement.StatutPaiement.PAYE ? "🎉 Paiement réussi !" : "❌ Paiement annulé.",
                     "Info",
                     JOptionPane.INFORMATION_MESSAGE);
 
@@ -233,6 +274,9 @@ public class PaiementVue extends JFrame {
         }
     }
 
+
+
+
     private void enregistrerEnAttente() {
         afficherTraitement();
 
@@ -242,20 +286,11 @@ public class PaiementVue extends JFrame {
         if (!verifierChamps(methode)) return;
 
         try {
-            // Simuler un délai de traitement
-            Thread.sleep(2000); // 2 secondes de délai pour simuler le traitement
+            Thread.sleep(2000); // Simule un délai de traitement
 
-            Paiement paiement = new Paiement(
-                    idReservation,
-                    montant,
-                    methode,
-                    Paiement.StatutPaiement.EN_ATTENTE,
-                    new Date(System.currentTimeMillis())
-            );
-
+            Paiement paiement = new Paiement(idReservation, montant, methode, Paiement.StatutPaiement.EN_ATTENTE, new Date(System.currentTimeMillis()));
             paiementDAO.ajouterPaiement(paiement);
 
-            // Cacher la barre de progression et afficher un message d'attente
             cacherTraitement();
             JOptionPane.showMessageDialog(this,
                     "💾 Paiement enregistré en attente.",
@@ -287,16 +322,7 @@ public class PaiementVue extends JFrame {
         return true;
     }
 
-    private void resetForm() {
-        carteNumeroField.setText("");
-        carteCVVField.setText("");
-        paypalEmailField.setText("");
-        virementIbanField.setText("");
-        methodeCombo.setSelectedIndex(0);
-        cardLayout.show(methodeDetailsPanel, "Carte bancaire");
-    }
-
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(Vue.PaiementVue::new);
+        SwingUtilities.invokeLater(() -> new PaiementVue(3, 42, 100.0));
     }
 }
