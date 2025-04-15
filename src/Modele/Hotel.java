@@ -9,7 +9,7 @@ public class Hotel extends Hebergement {
     private boolean piscine;
     private boolean spa;
 
-    public Hotel(long idHebergement, String nom, String adresse, BigDecimal prixParNuit,
+    public Hotel(int idHebergement, String nom, String adresse, BigDecimal prixParNuit,
                  String description, String specification, List<String> imageUrls,
                  int nombreEtoiles, boolean petitDejeuner, boolean piscine, boolean spa) {
         super(idHebergement, nom, adresse, prixParNuit, description, specification, imageUrls);

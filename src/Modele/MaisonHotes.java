@@ -7,7 +7,7 @@ public class MaisonHotes extends Hebergement {
     private boolean petitDejeuner;
     private boolean jardin;
 
-    public MaisonHotes(long idHebergement, String nom, String adresse, BigDecimal prixParNuit, String description,
+    public MaisonHotes(int idHebergement, String nom, String adresse, BigDecimal prixParNuit, String description,
                        String specification, List<String> imageUrls, boolean petitDejeuner, boolean jardin) {
         super(idHebergement, nom, adresse, prixParNuit, description, specification, imageUrls);
         this.petitDejeuner = petitDejeuner;
