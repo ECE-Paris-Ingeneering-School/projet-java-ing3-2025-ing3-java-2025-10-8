@@ -89,17 +89,21 @@ public class HebergementDetailFenetre extends JFrame {
 
         mainPanel.add(imagePanel, BorderLayout.CENTER);
 
-        // === INFOS PANEL ===
         JPanel infosPanel = new JPanel();
         infosPanel.setLayout(new BoxLayout(infosPanel, BoxLayout.Y_AXIS));
         infosPanel.setBackground(Color.WHITE);
-        infosPanel.setBorder(BorderFactory.createEmptyBorder(30, 80, 30, 30)); // marge gauche alignée
+        infosPanel.setBorder(BorderFactory.createEmptyBorder(30, 80, 30, 80));
 
-        infosPanel.add(new JLabel("Adresse : " + h.getAdresse()));
+// === INFOS DE BASE ===
+        infosPanel.add(createInfoLigne("Adresse :", h.getAdresse()));
         infosPanel.add(Box.createVerticalStrut(10));
-        infosPanel.add(new JLabel("Prix par nuit : " + h.getPrixParNuit() + " €"));
-        infosPanel.add(Box.createVerticalStrut(10));
-        infosPanel.add(new JLabel("Description :"));
+        infosPanel.add(createInfoLigne("Prix par nuit :", h.getPrixParNuit() + " €"));
+        infosPanel.add(Box.createVerticalStrut(15));
+
+// === DESCRIPTION ===
+        JLabel descTitre = new JLabel("Description :");
+        descTitre.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        infosPanel.add(descTitre);
         infosPanel.add(Box.createVerticalStrut(5));
 
         JLabel descriptionLabel = new JLabel("<html><p style='width:800px'>" + h.getDescription() + "</p></html>");
@@ -107,10 +111,14 @@ public class HebergementDetailFenetre extends JFrame {
         infosPanel.add(descriptionLabel);
         infosPanel.add(Box.createVerticalStrut(15));
 
-        infosPanel.add(new JLabel("Spécification : " + h.getSpecification()));
+// === SPÉCIFICATION ===
+        infosPanel.add(createInfoLigne("Spécification :", h.getSpecification()));
         infosPanel.add(Box.createVerticalStrut(20));
 
-        infosPanel.add(new JLabel("Points forts de l'établissement :"));
+// === POINTS FORTS ===
+        JLabel pointsTitre = new JLabel("Points forts de l'établissement :");
+        pointsTitre.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        infosPanel.add(pointsTitre);
         infosPanel.add(Box.createVerticalStrut(10));
 
         JPanel pointsFortsPanel = new JPanel();
@@ -148,9 +156,9 @@ public class HebergementDetailFenetre extends JFrame {
         infosPanel.add(pointsFortsPanel);
         infosPanel.add(Box.createVerticalStrut(25));
 
-        // === BOUTON CARTE ===
+// === BOUTON CARTE ===
         JButton btnCarte = new JButton("Voir sur la carte");
-        btnCarte.setBackground(bleuBooking);
+        btnCarte.setBackground(new Color(0, 113, 194));
         btnCarte.setForeground(Color.WHITE);
         btnCarte.setFocusPainted(false);
         btnCarte.setFont(new Font("Segoe UI", Font.BOLD, 13));
@@ -168,12 +176,25 @@ public class HebergementDetailFenetre extends JFrame {
 
         infosPanel.add(btnCarte);
 
+        // === SCROLLPANE WRAP ===
         JScrollPane scrollPane = new JScrollPane(infosPanel);
         scrollPane.setBorder(null);
         scrollPane.setPreferredSize(new Dimension(1000, 350));
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPane.getViewport().setBackground(Color.WHITE);
         mainPanel.add(scrollPane, BorderLayout.SOUTH);
+    }
+
+    private JPanel createInfoLigne(String label, String value) {
+        JPanel line = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        line.setBackground(Color.WHITE);
+        JLabel l1 = new JLabel(label);
+        l1.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        JLabel l2 = new JLabel(value);
+        l2.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        line.add(l1);
+        line.add(l2);
+        return line;
     }
 
     private JPanel createPointFort(String emoji, String titre, String details) {
