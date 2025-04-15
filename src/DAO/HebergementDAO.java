@@ -12,25 +12,53 @@ import java.util.*;
 public class HebergementDAO {
 
     private void updateHebergementBase(Connection conn, Hebergement h) throws SQLException {
-        String sql = "UPDATE hebergement SET nom = ?, adresse = ?, prix_par_nuit = ?, description = ?, specification = ?, image_url = ? WHERE id_hebergement = ?";
+        String sql = "UPDATE hebergement SET nom = ?, adresse = ?, prix_par_nuit = ?, description = ?, specification = ? WHERE id_hebergement = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, h.getNom());
             ps.setString(2, h.getAdresse());
             ps.setBigDecimal(3, h.getPrixParNuit());
             ps.setString(4, h.getDescription());
             ps.setString(5, h.getSpecification());
-            ps.setString(6, h.getImageUrl());
-            ps.setLong(7, h.getIdHebergement());
+            ps.setLong(6, h.getIdHebergement());
             ps.executeUpdate();
         }
     }
 
+
+    private void insererImagesHebergement(Connection conn, long idHebergement, List<String> imageUrls) throws SQLException {
+        if (imageUrls == null || imageUrls.isEmpty()) return;
+        String sql = "INSERT INTO hebergement_images (id_hebergement, image_url) VALUES (?, ?)";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            for (String url : imageUrls) {
+                ps.setLong(1, idHebergement);
+                ps.setString(2, url);
+                ps.addBatch();
+            }
+            ps.executeBatch();
+        }
+    }
+
+
+    private List<String> recupererImagesHebergement(Connection conn, long idHebergement) throws SQLException {
+        List<String> images = new ArrayList<>();
+        String sql = "SELECT image_url FROM hebergement_images WHERE id_hebergement = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, idHebergement);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                images.add(rs.getString("image_url"));
+            }
+        }
+        return images;
+    }
+
+
     public void ajouterHotel(Hotel h) {
-        String sql = "INSERT INTO hebergement (nom, adresse, prix_par_nuit, description, specification, image_url) VALUES (?, ?, ?, ?, ?, ?)";
-        String sqlHotel = "INSERT INTO hotel (id_hebergement, nombre_etoiles, petit_dejeuner, piscine, spa) VALUES (LAST_INSERT_ID(), ?, ?, ?, ?)";
+        String sql = "INSERT INTO hebergement (nom, adresse, prix_par_nuit, description, specification) VALUES (?, ?, ?, ?, ?)";
+        String sqlHotel = "INSERT INTO hotel (id_hebergement, nombre_etoiles, petit_dejeuner, piscine, spa) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = ConnexionBdd.seConnecter();
-             PreparedStatement ps = conn.prepareStatement(sql);
+             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
              PreparedStatement psHotel = conn.prepareStatement(sqlHotel)) {
 
             ps.setString(1, h.getNom());
@@ -38,14 +66,20 @@ public class HebergementDAO {
             ps.setBigDecimal(3, h.getPrixParNuit());
             ps.setString(4, h.getDescription());
             ps.setString(5, h.getSpecification());
-            ps.setString(6, h.getImageUrl());
             ps.executeUpdate();
 
-            psHotel.setInt(1, h.getNombreEtoiles());
-            psHotel.setBoolean(2, h.isPetitDejeuner());
-            psHotel.setBoolean(3, h.isPiscine());
-            psHotel.setBoolean(4, h.isSpa());
-            psHotel.executeUpdate();
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                long idGenere = rs.getLong(1);
+                psHotel.setLong(1, idGenere);
+                psHotel.setInt(2, h.getNombreEtoiles());
+                psHotel.setBoolean(3, h.isPetitDejeuner());
+                psHotel.setBoolean(4, h.isPiscine());
+                psHotel.setBoolean(5, h.isSpa());
+                psHotel.executeUpdate();
+
+                insererImagesHebergement(conn, idGenere, h.getImageUrls());
+            }
 
             System.out.println("✅ Hôtel inséré : " + h.getNom());
         } catch (SQLException e) {
@@ -53,58 +87,85 @@ public class HebergementDAO {
         }
     }
 
+
     public void ajouterAppartement(Appartement a) {
-        String sql = "INSERT INTO hebergement (nom, adresse, prix_par_nuit, description, specification, image_url) VALUES (?, ?, ?, ?, ?, ?)";
-        String sqlAppart = "INSERT INTO appartement (id_hebergement, nombre_pieces, petit_dejeuner, etage) VALUES (LAST_INSERT_ID(), ?, ?, ?)";
+        String sql = "INSERT INTO hebergement (nom, adresse, prix_par_nuit, description, specification) VALUES (?, ?, ?, ?, ?)";
+        String sqlAppart = "INSERT INTO appartement (id_hebergement, nombre_pieces, petit_dejeuner, etage) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = ConnexionBdd.seConnecter();
-             PreparedStatement ps = conn.prepareStatement(sql);
+             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
              PreparedStatement psAppart = conn.prepareStatement(sqlAppart)) {
 
+            // Insertion dans hebergement
             ps.setString(1, a.getNom());
             ps.setString(2, a.getAdresse());
             ps.setBigDecimal(3, a.getPrixParNuit());
             ps.setString(4, a.getDescription());
             ps.setString(5, a.getSpecification());
-            ps.setString(6, a.getImageUrl());
             ps.executeUpdate();
 
-            psAppart.setInt(1, a.getNombrePieces());
-            psAppart.setBoolean(2, a.isPetitDejeuner());
-            psAppart.setInt(3, a.getEtage());
-            psAppart.executeUpdate();
+            // Récupération de l'ID généré
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                long idGenere = rs.getLong(1);
 
-            System.out.println("✅ Appartement inséré : " + a.getNom());
+                // Insertion dans appartement
+                psAppart.setLong(1, idGenere);
+                psAppart.setInt(2, a.getNombrePieces());
+                psAppart.setBoolean(3, a.isPetitDejeuner());
+                psAppart.setInt(4, a.getEtage());
+                psAppart.executeUpdate();
+
+                // Insertion des images dans hebergement_images
+                insererImagesHebergement(conn, idGenere, a.getImageUrls());
+
+                System.out.println("✅ Appartement inséré : " + a.getNom());
+            }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
+
     public void ajouterMaisonHotes(MaisonHotes m) {
-        String sql = "INSERT INTO hebergement (nom, adresse, prix_par_nuit, description, specification, image_url) VALUES (?, ?, ?, ?, ?, ?)";
-        String sqlMaison = "INSERT INTO maisonhotes (id_hebergement, petit_dejeuner, jardin) VALUES (LAST_INSERT_ID(), ?, ?)";
+        String sql = "INSERT INTO hebergement (nom, adresse, prix_par_nuit, description, specification) VALUES (?, ?, ?, ?, ?)";
+        String sqlMaison = "INSERT INTO maisonhotes (id_hebergement, petit_dejeuner, jardin) VALUES (?, ?, ?)";
 
         try (Connection conn = ConnexionBdd.seConnecter();
-             PreparedStatement ps = conn.prepareStatement(sql);
+             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
              PreparedStatement psMaison = conn.prepareStatement(sqlMaison)) {
 
+            // Insertion dans hebergement
             ps.setString(1, m.getNom());
             ps.setString(2, m.getAdresse());
             ps.setBigDecimal(3, m.getPrixParNuit());
             ps.setString(4, m.getDescription());
             ps.setString(5, m.getSpecification());
-            ps.setString(6, m.getImageUrl());
             ps.executeUpdate();
 
-            psMaison.setBoolean(1, m.isPetitDejeuner());
-            psMaison.setBoolean(2, m.isJardin());
-            psMaison.executeUpdate();
+            // Récupérer l'ID généré
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                long idGenere = rs.getLong(1);
 
-            System.out.println("✅ Maison d'hôtes insérée : " + m.getNom());
+                // Insertion dans maisonhotes
+                psMaison.setLong(1, idGenere);
+                psMaison.setBoolean(2, m.isPetitDejeuner());
+                psMaison.setBoolean(3, m.isJardin());
+                psMaison.executeUpdate();
+
+                // Insertion des images
+                insererImagesHebergement(conn, idGenere, m.getImageUrls());
+
+                System.out.println("✅ Maison d'hôtes insérée : " + m.getNom());
+            }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
 
 
     // ---------------------- READ ----------------------
@@ -130,12 +191,13 @@ public class HebergementDAO {
                 BigDecimal prix = rs1.getBigDecimal("prix_par_nuit");
                 String description = rs1.getString("description");
                 String specification = rs1.getString("specification");
-                String imageUrl = rs1.getString("image_url");
+
+                List<String> images = recupererImagesHebergement(conn, idHebergement);
 
                 boolean petitDejeuner = rs2.getInt("petit_dejeuner") == 1;
                 boolean jardin = rs2.getInt("jardin") == 1;
 
-                return new MaisonHotes(idHebergement, nom, adresse, prix, description, specification, imageUrl, petitDejeuner, jardin);
+                return new MaisonHotes(idHebergement, nom, adresse, prix, description, specification, images, petitDejeuner, jardin);
             }
 
         } catch (SQLException e) {
@@ -167,14 +229,15 @@ public class HebergementDAO {
                 BigDecimal prix = rs1.getBigDecimal("prix_par_nuit");
                 String description = rs1.getString("description");
                 String specification = rs1.getString("specification");
-                String imageUrl = rs1.getString("image_url");
+
+                List<String> images = recupererImagesHebergement(conn, idHebergement);
 
                 int nombreEtoiles = rs2.getInt("nombre_etoiles");
                 boolean petitDejeuner = rs2.getInt("petit_dejeuner") == 1;
                 boolean piscine = rs2.getInt("piscine") == 1;
                 boolean spa = rs2.getInt("spa") == 1;
 
-                return new Hotel(idHebergement, nom, adresse, prix, description, specification, imageUrl, nombreEtoiles, petitDejeuner, piscine, spa);
+                return new Hotel(idHebergement, nom, adresse, prix, description, specification, images, nombreEtoiles, petitDejeuner, piscine, spa);
             }
 
         } catch (SQLException e) {
@@ -183,6 +246,7 @@ public class HebergementDAO {
 
         return null;
     }
+
 
     public Appartement findAppartementById(int id) {
         String sqlHebergement = "SELECT * FROM hebergement WHERE id_hebergement = ?";
@@ -205,13 +269,14 @@ public class HebergementDAO {
                 BigDecimal prix = rs1.getBigDecimal("prix_par_nuit");
                 String description = rs1.getString("description");
                 String specification = rs1.getString("specification");
-                String imageUrl = rs1.getString("image_url");
+
+                List<String> images = recupererImagesHebergement(conn, idHebergement);
 
                 int nombrePieces = rs2.getInt("nombre_pieces");
                 boolean petitDejeuner = rs2.getInt("petit_dejeuner") == 1;
                 int etage = rs2.getInt("etage");
 
-                return new Appartement(idHebergement, nom, adresse, prix, description, specification, imageUrl, nombrePieces, petitDejeuner, etage);
+                return new Appartement(idHebergement, nom, adresse, prix, description, specification, images, nombrePieces, petitDejeuner, etage);
             }
 
         } catch (SQLException e) {
@@ -221,7 +286,44 @@ public class HebergementDAO {
         return null;
     }
 
+
     // ---------------------- FILTRAGE ----------------------
+
+    public List<Hebergement> getAllHebergements() {
+        List<Hebergement> hebergements = new ArrayList<>();
+        String sql = "SELECT id_hebergement FROM hebergement";
+
+        try (Connection conn = ConnexionBdd.seConnecter();
+             Statement st = conn.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+
+            while (rs.next()) {
+                int id = rs.getInt("id_hebergement");
+
+                Appartement app = findAppartementById(id);
+                if (app != null) {
+                    hebergements.add(app);
+                    continue;
+                }
+
+                Hotel hotel = findHotelById(id);
+                if (hotel != null) {
+                    hebergements.add(hotel);
+                    continue;
+                }
+
+                MaisonHotes mh = findMaisonHotesById(id);
+                if (mh != null) {
+                    hebergements.add(mh);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return hebergements;
+    }
 
     public List<Hebergement> getHebergementsAvecFiltres(String type, BigDecimal prixMin, BigDecimal prixMax,
                                                         Boolean piscine, Boolean petitDejeuner, Boolean jardin) {
@@ -242,7 +344,7 @@ public class HebergementDAO {
             if (prixMin != null && h.getPrixParNuit().compareTo(prixMin) < 0) correspond = false;
             if (prixMax != null && h.getPrixParNuit().compareTo(prixMax) > 0) correspond = false;
 
-            // Piscine (pour hôtels uniquement)
+            // Piscine
             if (piscine != null && h instanceof Hotel) {
                 if (((Hotel) h).isPiscine() != piscine) correspond = false;
             }
@@ -256,7 +358,7 @@ public class HebergementDAO {
                 if (offrePd != petitDejeuner) correspond = false;
             }
 
-            // Jardin (pour maisons d’hôtes uniquement)
+            // Jardin
             if (jardin != null && h instanceof MaisonHotes) {
                 if (((MaisonHotes) h).isJardin() != jardin) correspond = false;
             }
@@ -266,6 +368,7 @@ public class HebergementDAO {
 
         return filtres;
     }
+
 
     //Supprimer des hebergements
     public boolean supprimerHebergementParNom(String nom) {
@@ -282,45 +385,4 @@ public class HebergementDAO {
         }
     }
 
-
-    // Récupérer tous les hébergements (sans filtrage)
-    public List<Hebergement> getAllHebergements() {
-        List<Hebergement> hebergements = new ArrayList<>();
-        String sql = "SELECT * FROM hebergement";
-
-        try (Connection conn = ConnexionBdd.seConnecter();
-             Statement st = conn.createStatement();
-             ResultSet rs = st.executeQuery(sql)) {
-
-            while (rs.next()) {
-                long id = rs.getLong("id_hebergement");
-                String imageUrl = rs.getString("image_url");
-
-                Appartement app = findAppartementById((int) id);
-                if (app != null) {
-                    app.setImageUrl(imageUrl);
-                    hebergements.add(app);
-                    continue;
-                }
-
-                Hotel hotel = findHotelById((int) id);
-                if (hotel != null) {
-                    hotel.setImageUrl(imageUrl);
-                    hebergements.add(hotel);
-                    continue;
-                }
-
-                MaisonHotes mh = findMaisonHotesById((int) id);
-                if (mh != null) {
-                    mh.setImageUrl(imageUrl);
-                    hebergements.add(mh);
-                }
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return hebergements;
-    }
 }

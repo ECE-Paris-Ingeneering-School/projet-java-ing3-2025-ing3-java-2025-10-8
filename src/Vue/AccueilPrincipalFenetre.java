@@ -9,6 +9,7 @@ import java.awt.*;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.ArrayList;
+import DAO.InitialisationBDD;
 
 public class AccueilPrincipalFenetre extends JFrame {
 
@@ -209,21 +210,22 @@ public class AccueilPrincipalFenetre extends JFrame {
         imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         try {
-            if (h.getImageUrl() != null && !h.getImageUrl().isEmpty()) {
-                java.net.URL imageUrl = getClass().getClassLoader().getResource(h.getImageUrl());
+            List<String> images = h.getImageUrls();
+            if (images != null && !images.isEmpty()) {
+                java.net.URL imageUrl = getClass().getClassLoader().getResource(images.get(0));
                 if (imageUrl != null) {
                     ImageIcon icon = new ImageIcon(imageUrl);
                     Image img = icon.getImage().getScaledInstance(220, 150, Image.SCALE_SMOOTH);
                     imageLabel.setIcon(new ImageIcon(img));
                     imageLabel.setText("");
                 } else {
-                    imageLabel.setText("[Image]");
+                    imageLabel.setText("[Image introuvable]");
                 }
             } else {
-                imageLabel.setText("[Image]");
+                imageLabel.setText("[Aucune image]");
             }
         } catch (Exception e) {
-            imageLabel.setText("[Image]");
+            imageLabel.setText("[Erreur image]");
         }
 
         carte.add(imageLabel, BorderLayout.WEST);
