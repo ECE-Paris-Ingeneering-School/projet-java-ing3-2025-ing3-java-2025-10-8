@@ -9,7 +9,7 @@ import java.awt.*;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.ArrayList;
-import DAO.InitialisationBDD;
+import java.awt.event.*;
 
 public class AccueilPrincipalFenetre extends JFrame {
 
@@ -23,6 +23,11 @@ public class AccueilPrincipalFenetre extends JFrame {
     public AccueilPrincipalFenetre(Client clientConnecte) {
         this.clientConnecte = clientConnecte;
 
+        // Style global
+        UIManager.put("Label.font", new Font("Segoe UI", Font.PLAIN, 14));
+        UIManager.put("Button.font", new Font("Segoe UI", Font.BOLD, 13));
+        UIManager.put("CheckBox.font", new Font("Segoe UI", Font.PLAIN, 13));
+
         setTitle("Booking App");
         setSize(1200, 700);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -32,10 +37,13 @@ public class AccueilPrincipalFenetre extends JFrame {
         Color bleuBooking = new Color(0, 113, 194);
         Color orangeBooking = new Color(255, 128, 0);
 
-        // Filtres à gauche
+        // Filtres
         filtrePanel = new JPanel();
         filtrePanel.setLayout(new BoxLayout(filtrePanel, BoxLayout.Y_AXIS));
-        filtrePanel.setBorder(BorderFactory.createTitledBorder("Filtrer par :"));
+        filtrePanel.setBackground(new Color(250, 250, 250));
+        filtrePanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 0, 0, 1, Color.LIGHT_GRAY),
+                BorderFactory.createEmptyBorder(15, 15, 15, 15)));
         filtrePanel.setPreferredSize(new Dimension(250, getHeight()));
 
         cbHotel = new JCheckBox("Hôtel");
@@ -46,7 +54,8 @@ public class AccueilPrincipalFenetre extends JFrame {
         cbSpa = new JCheckBox("Spa");
         cbJardin = new JCheckBox("Jardin");
 
-        JPanel prixPanel = new JPanel(new FlowLayout());
+        JPanel prixPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        prixPanel.setBackground(filtrePanel.getBackground());
         prixPanel.add(new JLabel("Min (€) :"));
         prixMinField = new JTextField(5);
         prixPanel.add(prixMinField);
@@ -77,7 +86,7 @@ public class AccueilPrincipalFenetre extends JFrame {
         JScrollPane scrollPane = new JScrollPane(resultPanel);
         add(scrollPane, BorderLayout.CENTER);
 
-        // Bas - Déconnexion + Profil
+        // Bas
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         deconnexionButton = new JButton("Déconnexion");
         bottomPanel.add(deconnexionButton);
@@ -88,7 +97,7 @@ public class AccueilPrincipalFenetre extends JFrame {
             new ConnexionFenetre().setVisible(true);
         });
 
-        // Profil utilisateur à gauche si connecté
+        // Profil utilisateur
         JPanel profilPanel = new JPanel();
         profilPanel.setLayout(new BoxLayout(profilPanel, BoxLayout.Y_AXIS));
         profilPanel.setBorder(BorderFactory.createTitledBorder("Mon profil"));
@@ -132,8 +141,7 @@ public class AccueilPrincipalFenetre extends JFrame {
         add(profilPanel, BorderLayout.EAST);
 
         btnFiltrer.addActionListener(e -> filtrerHebergements());
-
-        filtrerHebergements(); // Chargement initial
+        filtrerHebergements();
     }
 
     private void filtrerHebergements() {
@@ -175,7 +183,6 @@ public class AccueilPrincipalFenetre extends JFrame {
             if (ok) filtres.add(h);
         }
 
-        // Affichage
         resultPanel.removeAll();
 
         if (filtres.isEmpty()) {
@@ -196,17 +203,17 @@ public class AccueilPrincipalFenetre extends JFrame {
 
     private JPanel creerCarteHebergement(Hebergement h) {
         JPanel carte = new JPanel();
+        carte.setBackground(new Color(245, 245, 245));
         carte.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(Color.LIGHT_GRAY),
-                BorderFactory.createEmptyBorder(10, 10, 10, 10)
+                BorderFactory.createEmptyBorder(15, 15, 15, 15)
         ));
-        carte.setBackground(Color.WHITE);
         carte.setLayout(new BorderLayout());
-        carte.setPreferredSize(new Dimension(1000, 180)); // Plus grand en largeur et hauteur
+        carte.setPreferredSize(new Dimension(1000, 180));
 
-        // Partie gauche - image
+        // === Image ===
         JLabel imageLabel = new JLabel();
-        imageLabel.setPreferredSize(new Dimension(220, 150)); // Image plus grande
+        imageLabel.setPreferredSize(new Dimension(220, 150));
         imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         try {
@@ -230,14 +237,36 @@ public class AccueilPrincipalFenetre extends JFrame {
 
         carte.add(imageLabel, BorderLayout.WEST);
 
-        // Partie droite - infos
+        // === Infos ===
         JPanel infos = new JPanel();
         infos.setLayout(new BoxLayout(infos, BoxLayout.Y_AXIS));
         infos.setBackground(Color.WHITE);
-        infos.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10)); // Padding interne
+        infos.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10));
 
-        JLabel nom = new JLabel(h.getNom());
-        nom.setFont(new Font("Arial", Font.BOLD, 20));
+        JPanel nomEtEtoiles = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        nomEtEtoiles.setBackground(Color.WHITE);
+
+        JLabel nomLabel = new JLabel(h.getNom());
+        nomLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
+        nomEtEtoiles.add(nomLabel);
+
+        if (h instanceof Hotel) {
+            int nbEtoiles = ((Hotel) h).getNombreEtoiles();
+            for (int i = 0; i < nbEtoiles; i++) {
+                JLabel star = new JLabel("★");
+                star.setForeground(new Color(255, 191, 0));
+                star.setFont(new Font("SansSerif", Font.PLAIN, 18));
+                nomEtEtoiles.add(star);
+            }
+            for (int i = nbEtoiles; i < 5; i++) {
+                JLabel starEmpty = new JLabel("★");
+                starEmpty.setForeground(Color.LIGHT_GRAY);
+                starEmpty.setFont(new Font("SansSerif", Font.PLAIN, 18));
+                nomEtEtoiles.add(starEmpty);
+            }
+        }
+
+        infos.add(nomEtEtoiles);
 
         JLabel adresse = new JLabel(h.getAdresse());
         adresse.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -249,7 +278,6 @@ public class AccueilPrincipalFenetre extends JFrame {
         JLabel desc = new JLabel("<html><p style='width:700px'>" + h.getDescription() + "</p></html>");
         desc.setFont(new Font("Arial", Font.PLAIN, 14));
 
-        infos.add(nom);
         infos.add(Box.createVerticalStrut(5));
         infos.add(adresse);
         infos.add(Box.createVerticalStrut(5));
@@ -257,14 +285,49 @@ public class AccueilPrincipalFenetre extends JFrame {
         infos.add(Box.createVerticalStrut(5));
         infos.add(desc);
 
+        // === Boutons ===
+        JButton btnDispo = new JButton("Voir les disponibilités");
+        btnDispo.setBackground(new Color(0, 113, 194));
+        btnDispo.setForeground(Color.WHITE);
+        btnDispo.setFocusPainted(false);
+
+        btnDispo.addActionListener(e -> {
+            JOptionPane.showMessageDialog(this, "Affichage des disponibilités pour : " + h.getNom());
+        });
+
+        JButton btnCarte = new JButton("Voir sur la carte");
+        btnCarte.setBackground(new Color(0, 113, 194));
+        btnCarte.setForeground(Color.WHITE);
+        btnCarte.setFocusPainted(false);
+
+        btnCarte.addActionListener(e -> {
+            try {
+                String adresseUrl = h.getAdresse().replace(" ", "+");
+                String url = "https://www.google.com/maps/search/?api=1&query=" + adresseUrl;
+                Desktop.getDesktop().browse(new java.net.URI(url));
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Erreur lors de l'ouverture de la carte.");
+            }
+        });
+
+        JPanel boutonsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        boutonsPanel.setBackground(Color.WHITE);
+        boutonsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        boutonsPanel.add(btnDispo);
+        boutonsPanel.add(btnCarte);
+
+        infos.add(Box.createVerticalStrut(10));
+        infos.add(boutonsPanel);
+
         carte.add(infos, BorderLayout.CENTER);
 
+        // ✅ Clic sur la carte
         carte.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 new HebergementDetailFenetre(h).setVisible(true);
             }
         });
-
 
         return carte;
     }
