@@ -7,14 +7,16 @@ public class Appartement extends Hebergement {
     private boolean petitDejeuner;
     private int etage;
 
-    public Appartement(long idHebergement, String nom, String adresse, BigDecimal prixParNuit, String description, String specification,
+    public Appartement(int idHebergement, String nom, String adresse, BigDecimal prixParNuit,
+                       String description, String specification, String imageUrl,
                        int nombrePieces, boolean petitDejeuner, int etage) {
-        super(idHebergement, nom, adresse, prixParNuit, description, specification);
+        super(idHebergement, nom, adresse, prixParNuit, description, specification, imageUrl);
         this.nombrePieces = nombrePieces;
         this.petitDejeuner = petitDejeuner;
         this.etage = etage;
     }
 
+    // Getters & Setters
     public int getNombrePieces() {
         return nombrePieces;
     }

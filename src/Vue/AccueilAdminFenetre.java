@@ -30,16 +30,40 @@ public class AccueilAdminFenetre extends JFrame {
         ajouterHebergementButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
         ajouterHebergementButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        JButton supprimerHebergementButton = new JButton("Supprimer un hébergement");
+        supprimerHebergementButton.setFont(new Font("Arial", Font.BOLD, 14));
+        supprimerHebergementButton.setBackground(new Color(0, 102, 204));
+        supprimerHebergementButton.setForeground(Color.WHITE);
+        supprimerHebergementButton.setFocusPainted(false);
+        supprimerHebergementButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+        supprimerHebergementButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JButton modifierHebergementButton = new JButton("Modifier un hébergement");
+        modifierHebergementButton.setFont(new Font("Arial", Font.BOLD, 14));
+        modifierHebergementButton.setBackground(new Color(0, 102, 204));
+        modifierHebergementButton.setForeground(Color.WHITE);
+        modifierHebergementButton.setFocusPainted(false);
+        modifierHebergementButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+        modifierHebergementButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
         // Action pour ajouter un hébergement (à implémenter)
         ajouterHebergementButton.addActionListener(e -> {
             JOptionPane.showMessageDialog(this, "Redirection vers le formulaire d'ajout...");
              new AjoutHebergementFenetre().setVisible(true);
         });
 
-        panel.add(titleLabel);
-        panel.add(Box.createVerticalStrut(40));
-        panel.add(ajouterHebergementButton);
+        // Action pour supprimer un hébergement
+        supprimerHebergementButton.addActionListener(e -> {
+            new SupprimerHebergementFenetre().setVisible(true);
+        });
 
+        panel.add(titleLabel);
+        panel.add(Box.createVerticalStrut(60));
+        panel.add(ajouterHebergementButton);
+        panel.add(Box.createVerticalStrut(20));
+        panel.add(modifierHebergementButton);
+        panel.add(Box.createVerticalStrut(20));
+        panel.add(supprimerHebergementButton);
         add(panel);
     }
 

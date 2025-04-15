@@ -1,4 +1,4 @@
-package model;
+package Modele;
 
 import java.sql.Date;
 
@@ -36,7 +36,7 @@ public class OffreReduction {
         return idOffre;
     }
 
-    public void setIdOffre(int idOffre) {
+    public void setIdPromotion(int idOffre) {
         this.idOffre = idOffre;
     }
 

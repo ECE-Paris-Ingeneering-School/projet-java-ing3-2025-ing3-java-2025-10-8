@@ -1,4 +1,4 @@
-package gui;
+package Vue;
 
 import DAO.PaiementDAO;
 import DAO.ConnexionBdd;
@@ -10,7 +10,7 @@ import java.awt.*;
 import java.sql.Connection;
 import java.sql.Date;
 
-public class PaiementGUI extends JFrame {
+public class PaiementVue extends JFrame {
 
     private JLabel recapReservationLabel;
     private JLabel recapMontantLabel;
@@ -32,7 +32,7 @@ public class PaiementGUI extends JFrame {
     // Composants pour le traitement avec la barre de progression
     private JProgressBar progressBar;
 
-    public PaiementGUI() {
+    public PaiementVue() {
         setTitle("Paiement Réservation");
         setSize(500, 400);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -297,6 +297,6 @@ public class PaiementGUI extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(PaiementGUI::new);
+        SwingUtilities.invokeLater(Vue.PaiementVue::new);
     }
 }
