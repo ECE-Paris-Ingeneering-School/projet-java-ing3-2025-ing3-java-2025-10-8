@@ -8,9 +8,21 @@ import Modele.MaisonHotes;
 import java.sql.*;
 import java.math.BigDecimal;
 import java.util.*;
+import java.sql.Connection;
 import DAO.ConnexionBdd;
 
 public class HebergementDAO {
+
+    private Connection connection;
+
+    public HebergementDAO(Connection connection) {
+        this.connection = connection; // Initialisation de la connexion avec celle passée en paramètre
+    }
+
+    public HebergementDAO() {
+        this.connection = ConnexionBdd.seConnecter(); // Utilisation de la connexion globale
+    }
+
 
     private void updateHebergementBase(Connection conn, Hebergement h) throws SQLException {
         String sql = "UPDATE hebergement SET nom = ?, adresse = ?, prix_par_nuit = ?, description = ?, specification = ? WHERE id_hebergement = ?";
@@ -424,6 +436,23 @@ public class HebergementDAO {
 
         return hebergement;
     }
+
+    public boolean mettreAJourChambresDisponibles(int idHebergement, int chambresReservees) {
+        String sql = "UPDATE hebergement SET chambres_disponibles = chambres_disponibles - ? WHERE id_hebergement = ?";
+        try (Connection conn = ConnexionBdd.seConnecter();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, chambresReservees);
+            ps.setInt(2, idHebergement);
+            int rows = ps.executeUpdate();
+            return rows > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 
 
 

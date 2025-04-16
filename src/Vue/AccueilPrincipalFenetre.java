@@ -122,21 +122,15 @@ public class AccueilPrincipalFenetre extends JFrame {
             btnVoirReservations.addActionListener(e -> {
                 Connection connection = ConnexionBdd.seConnecter();
                 if (connection != null) {
-                    ReservationDAO reservationDAO = new ReservationDAO(connection);
-                    List<Reservation> reservations = reservationDAO.getReservationsByClient(clientConnecte.getIdUtilisateur());
+                    HebergementDAO hebergementDAO = new HebergementDAO(connection);
+                    ReservationDAO reservationDAO = new ReservationDAO(connection, hebergementDAO);
 
-                    if (reservations == null || reservations.isEmpty()) {
-                        JOptionPane.showMessageDialog(this, "Aucune réservation trouvée.");
-                    } else {
-                        for (Reservation r : reservations) {
-                            RecapitulatifFenetre recap = new RecapitulatifFenetre(r);
-                            recap.setVisible(true);
-                        }
-                    }
+                    new MesReservationsFenetre(clientConnecte, reservationDAO).setVisible(true);
                 } else {
                     JOptionPane.showMessageDialog(this, "Erreur de connexion à la base de données.");
                 }
             });
+
 
 
             btnSupprimer.addActionListener(e -> {
@@ -315,7 +309,8 @@ public class AccueilPrincipalFenetre extends JFrame {
 
             if (connection != null) {
                 // Initialiser ReservationDAO avec la connexion
-                ReservationDAO reservationDAO = new ReservationDAO(connection);
+                HebergementDAO hebergementDAO = new HebergementDAO(connection);
+                ReservationDAO reservationDAO = new ReservationDAO(connection, hebergementDAO);
 
                 // Puis instancier DisponibiliteFenetre en passant les trois arguments nécessaires
                 new DisponibiliteFenetre(h, clientConnecte, reservationDAO).setVisible(true);

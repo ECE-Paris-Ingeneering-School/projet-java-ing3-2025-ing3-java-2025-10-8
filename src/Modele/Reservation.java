@@ -17,7 +17,7 @@ public class Reservation {
 
     // Enum pour le statut de la réservation
     public enum Statut {
-        CONFIRMEE("Confirmée"),
+        PAYE("Payée"),
         ANNULEE("Annulée"),
         EN_ATTENTE("En attente");
 
@@ -41,7 +41,7 @@ public class Reservation {
         }
     }
 
-    // Constructeur
+    // Constructeur avec idUtilisateur
     public Reservation(int idReservation, int idUtilisateur, int idHebergement,
                        LocalDate dateArrivee, LocalDate dateDepart,
                        int nombreAdultes, int nombreEnfants,
@@ -57,11 +57,26 @@ public class Reservation {
         this.statut = statut;
     }
 
+    // Constructeur sans idUtilisateur
+    public Reservation(int idReservation, int idHebergement,
+                       LocalDate dateArrivee, LocalDate dateDepart,
+                       int nombreAdultes, int nombreEnfants,
+                       int nombreChambres, Statut statut) {
+        this.idReservation = idReservation;
+        this.idHebergement = idHebergement;
+        this.dateArrivee = dateArrivee;
+        this.dateDepart = dateDepart;
+        this.nombreAdultes = nombreAdultes;
+        this.nombreEnfants = nombreEnfants;
+        this.nombreChambres = nombreChambres;
+        this.statut = statut;
+    }
+
+    // Méthode pour récupérer l'hébergement associé à la réservation
     public Hebergement getHebergement() {
         HebergementDAO hebergementDAO = new HebergementDAO(); // Créer ou récupérer une instance de ton DAO Hebergement
         return hebergementDAO.getHebergementById(this.idHebergement);  // Recherche de l'hébergement par ID
     }
-
 
     // Getters et Setters
     public int getIdReservation() {
@@ -76,6 +91,7 @@ public class Reservation {
         return idUtilisateur;
     }
 
+    // Setter pour définir l'ID de l'utilisateur
     public void setIdUtilisateur(int idUtilisateur) {
         this.idUtilisateur = idUtilisateur;
     }

@@ -1,20 +1,25 @@
 package Vue;
 
 import Modele.Reservation;
+import DAO.ReservationDAO;
+import DAO.ConnexionBdd;
+import Modele.Client;
+import DAO.HebergementDAO;
 
 import javax.swing.*;
 import java.awt.*;
+import java.sql.Connection;
 
 public class RecapitulatifFenetre extends JFrame {
 
-    public RecapitulatifFenetre(Reservation reservation) {
+    public RecapitulatifFenetre(Reservation reservation, Client client) {
         setTitle("Récapitulatif de la réservation");
-        setSize(400, 300);
+        setSize(400, 350);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // Panel pour afficher les détails
+        // Panel des détails
         JPanel detailsPanel = new JPanel(new GridLayout(8, 2, 10, 10));
         detailsPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
@@ -39,16 +44,28 @@ public class RecapitulatifFenetre extends JFrame {
         detailsPanel.add(new JLabel("Statut :"));
         detailsPanel.add(new JLabel(reservation.getStatut().getValue()));
 
-        // Panel pour les boutons de confirmation et annulation
+        // Boutons
         JPanel buttonPanel = new JPanel(new FlowLayout());
-        JButton confirmerBtn = new JButton("Confirmer la réservation");
-        JButton annulerBtn = new JButton("Annuler");
+
+        JButton confirmerBtn = new JButton("✅ Confirmer");
+        JButton annulerBtn = new JButton("❌ Annuler");
+        JButton voirReservationsBtn = new JButton("📋 Mes Réservations");
 
         confirmerBtn.addActionListener(e -> {
-            // Effectuer l'action de confirmation de la réservation ici
-            // Exemple : appel à la méthode pour finaliser la réservation dans la BDD
-            JOptionPane.showMessageDialog(this, "✅ Réservation confirmée !");
-            this.dispose();
+            Connection connection = ConnexionBdd.seConnecter();
+            if (connection != null) {
+                HebergementDAO hebergementDAO = new HebergementDAO(connection);
+                ReservationDAO reservationDAO = new ReservationDAO(connection, hebergementDAO);
+
+                reservation.setStatut(Reservation.Statut.PAYE);
+                boolean success = reservationDAO.modifierReservation(reservation);
+                if (success) {
+                    JOptionPane.showMessageDialog(this, "✅ Réservation confirmée !");
+                    this.dispose();
+                } else {
+                    JOptionPane.showMessageDialog(this, "❌ Échec de la confirmation.");
+                }
+            }
         });
 
         annulerBtn.addActionListener(e -> {
@@ -56,11 +73,16 @@ public class RecapitulatifFenetre extends JFrame {
             this.dispose();
         });
 
+        voirReservationsBtn.addActionListener(e -> {
+            //new MesReservationsFenetre(client, new ReservationDAO(ConnexionBdd.seConnecter())).setVisible(true);
+            this.dispose();
+        });
+
         buttonPanel.add(confirmerBtn);
         buttonPanel.add(annulerBtn);
+        buttonPanel.add(voirReservationsBtn);
 
         add(detailsPanel, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
     }
-
 }
