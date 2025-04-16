@@ -349,6 +349,7 @@ public class AccueilPrincipalFenetre extends JFrame {
         boutonsPanel.add(btnDispo);
         boutonsPanel.add(btnCarte);
 
+
         infos.add(Box.createVerticalStrut(10));
         infos.add(boutonsPanel);
 
@@ -358,7 +359,7 @@ public class AccueilPrincipalFenetre extends JFrame {
         carte.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
-                new HebergementDetailFenetre(h).setVisible(true);
+                new HebergementDetailFenetre(h, clientConnecte).setVisible(true);
             }
         });
 

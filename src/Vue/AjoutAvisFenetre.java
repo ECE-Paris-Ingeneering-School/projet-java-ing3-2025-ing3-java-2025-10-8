@@ -10,6 +10,7 @@ import java.awt.*;
 import java.time.LocalDate;
 import java.util.Collections;
 
+
 public class AjoutAvisFenetre extends JFrame {
 
     public AjoutAvisFenetre(Hebergement hebergement, Client client) {
@@ -107,7 +108,7 @@ public class AjoutAvisFenetre extends JFrame {
 
                 JOptionPane.showMessageDialog(this, "Merci pour votre avis !");
                 dispose();
-                new HebergementDetailFenetre(hebergement).setVisible(true);
+                new HebergementDetailFenetre(hebergement, client).setVisible(true);
 
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this, "La note doit être un nombre entier entre 0 et 5.");
