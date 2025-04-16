@@ -52,6 +52,11 @@ public class AccueilAdminFenetre extends JFrame {
              new AjoutHebergementFenetre().setVisible(true);
         });
 
+        // Action pour modifier un hébergement
+        modifierHebergementButton.addActionListener(e -> {
+            new ModifierHebergementFenetre().setVisible(true);
+        });
+
         // Action pour supprimer un hébergement
         supprimerHebergementButton.addActionListener(e -> {
             new SupprimerHebergementFenetre().setVisible(true);

@@ -398,6 +398,26 @@ public class HebergementDAO {
         }
     }
 
+    public boolean modifierHebergement(Hebergement h) {
+        String sql = "UPDATE hebergement SET nom = ?, adresse = ?, prix_par_nuit = ?, description = ? WHERE id_hebergement = ?";
+        try (Connection conn = ConnexionBdd.seConnecter();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, h.getNom());
+            ps.setString(2, h.getAdresse());
+            ps.setBigDecimal(3, h.getPrixParNuit());
+            ps.setString(4, h.getDescription());
+            ps.setInt(5, h.getIdHebergement());
+
+            return ps.executeUpdate() > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
     public boolean estDisponible(long idHebergement, String dateArrivee, String dateDepart) {
         boolean dispo = false;
         try (Connection conn = ConnexionBdd.seConnecter()) {
