@@ -1,6 +1,7 @@
 package Modele;
 
 import java.sql.Date;
+import java.time.LocalDate;
 
 public class Avis {
     private int idAvis;
@@ -21,6 +22,9 @@ public class Avis {
 
     public Avis(int idUtilisateur, int idHebergement, int note, String commentaire) {
         this(0, idUtilisateur, idHebergement, note, commentaire, new Date(System.currentTimeMillis()));
+    }
+
+    public Avis(int idAvis, int idUtilisateur, int idHebergement, int note, String commentaire, LocalDate now) {
     }
 
     // Getters et Setters
