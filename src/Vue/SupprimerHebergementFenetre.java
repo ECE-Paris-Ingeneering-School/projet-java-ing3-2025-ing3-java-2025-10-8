@@ -1,7 +1,10 @@
 package Vue;
 
 import DAO.HebergementDAO;
-import Modele.*;
+import Modele.Hebergement;
+import Modele.Appartement;
+import Modele.MaisonHotes;
+import Modele.Hotel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -68,8 +71,7 @@ public class SupprimerHebergementFenetre extends JFrame {
         carte.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
         carte.setBackground(Color.WHITE);
         carte.setLayout(new BorderLayout());
-        //carte.setPreferredSize(new Dimension(850, 120));
-        carte.setMaximumSize(new Dimension(1000 , 120));
+        carte.setPreferredSize(new Dimension(850, 120));
 
         // Image à gauche
         JLabel imageLabel = new JLabel("[Image]");
@@ -112,19 +114,20 @@ public class SupprimerHebergementFenetre extends JFrame {
         carte.add(infos, BorderLayout.CENTER);
 
         // Bouton suppression à droite
-        JButton boutonSupprimer = new JButton("🗑");
+        JButton boutonSupprimer = new JButton("X");
         boutonSupprimer.setFont(new Font("Arial", Font.BOLD, 20));
+        boutonSupprimer.setForeground(new Color(255, 128, 0));
         boutonSupprimer.setBackground(Color.WHITE);
         boutonSupprimer.setFocusPainted(false);
         boutonSupprimer.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
         boutonSupprimer.addActionListener(e -> {
-            int confirm = JOptionPane.showConfirmDialog(carte,
+            int confirmation = JOptionPane.showConfirmDialog(carte,
                     "Supprimer l'hébergement \"" + h.getNom() + "\" ?",
                     "Confirmation", JOptionPane.YES_NO_OPTION);
-            if (confirm == JOptionPane.YES_OPTION) {
-                boolean success = new HebergementDAO().supprimerHebergementParNom(h.getNom());
-                if (success) {
+            if (confirmation == JOptionPane.YES_OPTION) {
+                boolean succes = new HebergementDAO().supprimerHebergementParId(h.getIdHebergement());
+                if (succes) {
                     JOptionPane.showMessageDialog(carte, "Hébergement supprimé !");
                     carte.setVisible(false); // Retire visuellement la carte
                 } else {
@@ -132,6 +135,7 @@ public class SupprimerHebergementFenetre extends JFrame {
                 }
             }
         });
+
 
         carte.add(boutonSupprimer, BorderLayout.EAST);
         return carte;

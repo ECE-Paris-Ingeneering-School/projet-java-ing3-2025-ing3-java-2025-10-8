@@ -23,8 +23,6 @@ public class Paiement {
         ANNULE
     }
 
-    public Paiement() {}
-
     public Paiement(int idReservation, double montant, MethodePaiement methodePaiement, StatutPaiement statut, Date datePaiement) {
         this.idReservation = idReservation;
         this.montant = montant;
@@ -138,4 +136,5 @@ public class Paiement {
             default: throw new IllegalArgumentException("Statut inconnu : " + value);
         }
     }
+
 }

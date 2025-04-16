@@ -1,14 +1,15 @@
 package Modele;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public class MaisonHotes extends Hebergement {
-    private boolean petitDejeuner; // = petit_dejeuner dans la BDD
-    private boolean jardin;        // = jardin dans la BDD
+    private boolean petitDejeuner;
+    private boolean jardin;
 
     public MaisonHotes(int idHebergement, String nom, String adresse, BigDecimal prixParNuit, String description,
-                       String specification, String imageUrl, boolean petitDejeuner, boolean jardin) {
-        super(idHebergement, nom, adresse, prixParNuit, description, specification, imageUrl);
+                       String specification, List<String> imageUrls, boolean petitDejeuner, boolean jardin) {
+        super(idHebergement, nom, adresse, prixParNuit, description, specification, imageUrls);
         this.petitDejeuner = petitDejeuner;
         this.jardin = jardin;
     }

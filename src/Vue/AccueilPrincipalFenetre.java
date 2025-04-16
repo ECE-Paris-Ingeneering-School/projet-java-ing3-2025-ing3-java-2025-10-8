@@ -3,12 +3,16 @@ package Vue;
 import DAO.HebergementDAO;
 import Modele.*;
 import DAO.ClientDAO;
+import DAO.ReservationDAO;
+import java.sql.Connection;
+import DAO.ConnexionBdd;
 
 import javax.swing.*;
 import java.awt.*;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.ArrayList;
+import java.awt.event.*;
 
 public class AccueilPrincipalFenetre extends JFrame {
 
@@ -22,6 +26,11 @@ public class AccueilPrincipalFenetre extends JFrame {
     public AccueilPrincipalFenetre(Client clientConnecte) {
         this.clientConnecte = clientConnecte;
 
+        // Style global
+        UIManager.put("Label.font", new Font("Segoe UI", Font.PLAIN, 14));
+        UIManager.put("Button.font", new Font("Segoe UI", Font.BOLD, 13));
+        UIManager.put("CheckBox.font", new Font("Segoe UI", Font.PLAIN, 13));
+
         setTitle("Booking App");
         setSize(1200, 700);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -31,10 +40,13 @@ public class AccueilPrincipalFenetre extends JFrame {
         Color bleuBooking = new Color(0, 113, 194);
         Color orangeBooking = new Color(255, 128, 0);
 
-        // Filtres à gauche
+        // Filtres
         filtrePanel = new JPanel();
         filtrePanel.setLayout(new BoxLayout(filtrePanel, BoxLayout.Y_AXIS));
-        filtrePanel.setBorder(BorderFactory.createTitledBorder("Filtrer par :"));
+        filtrePanel.setBackground(new Color(250, 250, 250));
+        filtrePanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 0, 0, 1, Color.LIGHT_GRAY),
+                BorderFactory.createEmptyBorder(15, 15, 15, 15)));
         filtrePanel.setPreferredSize(new Dimension(250, getHeight()));
 
         cbHotel = new JCheckBox("Hôtel");
@@ -45,7 +57,8 @@ public class AccueilPrincipalFenetre extends JFrame {
         cbSpa = new JCheckBox("Spa");
         cbJardin = new JCheckBox("Jardin");
 
-        JPanel prixPanel = new JPanel(new FlowLayout());
+        JPanel prixPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        prixPanel.setBackground(filtrePanel.getBackground());
         prixPanel.add(new JLabel("Min (€) :"));
         prixMinField = new JTextField(5);
         prixPanel.add(prixMinField);
@@ -76,7 +89,7 @@ public class AccueilPrincipalFenetre extends JFrame {
         JScrollPane scrollPane = new JScrollPane(resultPanel);
         add(scrollPane, BorderLayout.CENTER);
 
-        // Bas - Déconnexion + Profil
+        // Bas
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         deconnexionButton = new JButton("Déconnexion");
         bottomPanel.add(deconnexionButton);
@@ -87,7 +100,7 @@ public class AccueilPrincipalFenetre extends JFrame {
             new ConnexionFenetre().setVisible(true);
         });
 
-        // Profil utilisateur à gauche si connecté
+        // Profil utilisateur
         JPanel profilPanel = new JPanel();
         profilPanel.setLayout(new BoxLayout(profilPanel, BoxLayout.Y_AXIS));
         profilPanel.setBorder(BorderFactory.createTitledBorder("Mon profil"));
@@ -106,9 +119,25 @@ public class AccueilPrincipalFenetre extends JFrame {
             profilPanel.add(Box.createVerticalStrut(5));
             profilPanel.add(btnSupprimer);
 
-            btnVoirReservations.addActionListener(e ->
-                    JOptionPane.showMessageDialog(this, "👉 Affichage des réservations de " + clientConnecte.getPrenom())
-            );
+            btnVoirReservations.addActionListener(e -> {
+                Connection connection = ConnexionBdd.seConnecter();
+                if (connection != null) {
+                    ReservationDAO reservationDAO = new ReservationDAO(connection);
+                    List<Reservation> reservations = reservationDAO.getReservationsByClient(clientConnecte.getIdUtilisateur());
+
+                    if (reservations == null || reservations.isEmpty()) {
+                        JOptionPane.showMessageDialog(this, "Aucune réservation trouvée.");
+                    } else {
+                        for (Reservation r : reservations) {
+                            RecapitulatifFenetre recap = new RecapitulatifFenetre(r);
+                            recap.setVisible(true);
+                        }
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "Erreur de connexion à la base de données.");
+                }
+            });
+
 
             btnSupprimer.addActionListener(e -> {
                 int confirm = JOptionPane.showConfirmDialog(this, "Supprimer votre compte ?", "Confirmation", JOptionPane.YES_NO_OPTION);
@@ -131,8 +160,7 @@ public class AccueilPrincipalFenetre extends JFrame {
         add(profilPanel, BorderLayout.EAST);
 
         btnFiltrer.addActionListener(e -> filtrerHebergements());
-
-        filtrerHebergements(); // Chargement initial
+        filtrerHebergements();
     }
 
     private void filtrerHebergements() {
@@ -174,7 +202,6 @@ public class AccueilPrincipalFenetre extends JFrame {
             if (ok) filtres.add(h);
         }
 
-        // Affichage
         resultPanel.removeAll();
 
         if (filtres.isEmpty()) {
@@ -195,57 +222,145 @@ public class AccueilPrincipalFenetre extends JFrame {
 
     private JPanel creerCarteHebergement(Hebergement h) {
         JPanel carte = new JPanel();
-        carte.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-        carte.setBackground(Color.WHITE);
+        carte.setBackground(new Color(245, 245, 245));
+        carte.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(Color.LIGHT_GRAY),
+                BorderFactory.createEmptyBorder(15, 15, 15, 15)
+        ));
         carte.setLayout(new BorderLayout());
-        carte.setPreferredSize(new Dimension(800, 120));
+        carte.setPreferredSize(new Dimension(1000, 180));
 
-        // Partie gauche - image
+        // === Image ===
         JLabel imageLabel = new JLabel();
-        imageLabel.setPreferredSize(new Dimension(150, 100));
+        imageLabel.setPreferredSize(new Dimension(220, 150));
         imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         try {
-            if (h.getImageUrl() != null && !h.getImageUrl().isEmpty()) {
-                // Chargement depuis le classpath
-                java.net.URL imageUrl = getClass().getClassLoader().getResource(h.getImageUrl());
+            List<String> images = h.getImageUrls();
+            if (images != null && !images.isEmpty()) {
+                java.net.URL imageUrl = getClass().getClassLoader().getResource(images.get(0));
                 if (imageUrl != null) {
                     ImageIcon icon = new ImageIcon(imageUrl);
-                    Image img = icon.getImage().getScaledInstance(150, 100, Image.SCALE_SMOOTH);
+                    Image img = icon.getImage().getScaledInstance(220, 150, Image.SCALE_SMOOTH);
                     imageLabel.setIcon(new ImageIcon(img));
                     imageLabel.setText("");
                 } else {
-                    imageLabel.setText("[Image]");
+                    imageLabel.setText("[Image introuvable]");
                 }
             } else {
-                imageLabel.setText("[Image]");
+                imageLabel.setText("[Aucune image]");
             }
         } catch (Exception e) {
-            imageLabel.setText("[Image]");
+            imageLabel.setText("[Erreur image]");
         }
 
         carte.add(imageLabel, BorderLayout.WEST);
 
-        // Partie droite - infos
+        // === Infos ===
         JPanel infos = new JPanel();
         infos.setLayout(new BoxLayout(infos, BoxLayout.Y_AXIS));
         infos.setBackground(Color.WHITE);
+        infos.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10));
 
-        JLabel nom = new JLabel(h.getNom());
-        nom.setFont(new Font("Arial", Font.BOLD, 16));
+        JPanel nomEtEtoiles = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        nomEtEtoiles.setBackground(Color.WHITE);
+
+        JLabel nomLabel = new JLabel(h.getNom());
+        nomLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
+        nomEtEtoiles.add(nomLabel);
+
+        if (h instanceof Hotel) {
+            int nbEtoiles = ((Hotel) h).getNombreEtoiles();
+            for (int i = 0; i < nbEtoiles; i++) {
+                JLabel star = new JLabel("★");
+                star.setForeground(new Color(255, 191, 0));
+                star.setFont(new Font("SansSerif", Font.PLAIN, 18));
+                nomEtEtoiles.add(star);
+            }
+            for (int i = nbEtoiles; i < 5; i++) {
+                JLabel starEmpty = new JLabel("★");
+                starEmpty.setForeground(Color.LIGHT_GRAY);
+                starEmpty.setFont(new Font("SansSerif", Font.PLAIN, 18));
+                nomEtEtoiles.add(starEmpty);
+            }
+        }
+
+        infos.add(nomEtEtoiles);
 
         JLabel adresse = new JLabel(h.getAdresse());
+        adresse.setFont(new Font("Arial", Font.PLAIN, 14));
+
         JLabel prix = new JLabel(h.getPrixParNuit() + " € / nuit");
         prix.setForeground(new Color(255, 128, 0));
+        prix.setFont(new Font("Arial", Font.BOLD, 16));
 
-        JLabel desc = new JLabel(h.getDescription());
+        JLabel desc = new JLabel("<html><p style='width:700px'>" + h.getDescription() + "</p></html>");
+        desc.setFont(new Font("Arial", Font.PLAIN, 14));
 
-        infos.add(nom);
+        infos.add(Box.createVerticalStrut(5));
         infos.add(adresse);
+        infos.add(Box.createVerticalStrut(5));
         infos.add(prix);
-        infos.add(desc);
+        infos.add(Box.createVerticalStrut(5));
+
+        // === Boutons ===
+        JButton btnDispo = new JButton("Voir les disponibilités");
+        btnDispo.setBackground(new Color(0, 113, 194));
+        btnDispo.setForeground(Color.WHITE);
+        btnDispo.setFocusPainted(false);
+
+        btnDispo.addActionListener(e -> {
+            // Récupérer la connexion via la classe ConnexionBdd
+            Connection connection = ConnexionBdd.seConnecter();
+
+            if (connection != null) {
+                // Initialiser ReservationDAO avec la connexion
+                ReservationDAO reservationDAO = new ReservationDAO(connection);
+
+                // Puis instancier DisponibiliteFenetre en passant les trois arguments nécessaires
+                new DisponibiliteFenetre(h, clientConnecte, reservationDAO).setVisible(true);
+            } else {
+                // Gérer le cas où la connexion à la base de données échoue
+                JOptionPane.showMessageDialog(null, "Erreur de connexion à la base de données.", "Erreur", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+
+
+
+        JButton btnCarte = new JButton("Voir sur la carte");
+        btnCarte.setBackground(new Color(0, 113, 194));
+        btnCarte.setForeground(Color.WHITE);
+        btnCarte.setFocusPainted(false);
+
+        btnCarte.addActionListener(e -> {
+            try {
+                String adresseUrl = h.getAdresse().replace(" ", "+");
+                String url = "https://www.google.com/maps/search/?api=1&query=" + adresseUrl;
+                Desktop.getDesktop().browse(new java.net.URI(url));
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Erreur lors de l'ouverture de la carte.");
+            }
+        });
+
+        JPanel boutonsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        boutonsPanel.setBackground(Color.WHITE);
+        boutonsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        boutonsPanel.add(btnDispo);
+        boutonsPanel.add(btnCarte);
+
+        infos.add(Box.createVerticalStrut(10));
+        infos.add(boutonsPanel);
 
         carte.add(infos, BorderLayout.CENTER);
+
+        carte.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        carte.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                new HebergementDetailFenetre(h).setVisible(true);
+            }
+        });
 
         return carte;
     }
