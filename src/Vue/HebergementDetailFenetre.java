@@ -228,17 +228,7 @@ public class HebergementDetailFenetre extends JFrame {
         lienAvis.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                // Vérifie les réservations
-                ReservationDAO reservationDAO = new ReservationDAO(ConnexionBdd.seConnecter());
-                List<Reservation> reservations = reservationDAO.getReservationsByClient(idClient);
-
-                boolean aReserve = false;
-                for (Reservation r : reservations) {
-                    if ((long) r.getIdHebergement() == h.getIdHebergement()) {
-                        aReserve = true;
-                        break;
-                    }
-                }
+                boolean aReserve = ReservationDAO.utilisateurAReserve(clientConnecte.getIdUtilisateur(), h.getIdHebergement());
 
                 if (aReserve) {
                     new AjoutAvisFenetre(h, clientConnecte).setVisible(true);
@@ -251,9 +241,10 @@ public class HebergementDetailFenetre extends JFrame {
             }
         });
 
+
         infosPanel.add(Box.createVerticalStrut(20));  // plus d'espace avant
         infosPanel.add(lienAvis);
-        infosPanel.add(Box.createVerticalStrut(30));  // plus d’espace après
+        infosPanel.add(Box.createVerticalStrut(30));  // plus d’espace après*/
 
 
 
