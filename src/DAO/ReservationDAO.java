@@ -44,7 +44,7 @@ public class ReservationDAO {
         try (Connection conn = ConnexionBdd.seConnecter()) {
             String sql = "SELECT COUNT(*) AS nb FROM Reservation " +
                     "WHERE id_hebergement = ? " +
-                    "AND statut = 'payée' " +
+                    "AND statut = 'Confirmée' " +
                     "AND (date_arrivee < ? AND date_depart > ?)";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setLong(1, idHebergement);

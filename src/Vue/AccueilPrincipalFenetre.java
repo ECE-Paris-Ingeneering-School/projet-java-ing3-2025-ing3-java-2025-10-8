@@ -12,7 +12,6 @@ import java.awt.*;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.ArrayList;
-import java.awt.event.*;
 
 public class AccueilPrincipalFenetre extends JFrame {
 
@@ -319,9 +318,6 @@ public class AccueilPrincipalFenetre extends JFrame {
                 JOptionPane.showMessageDialog(null, "Erreur de connexion à la base de données.", "Erreur", JOptionPane.ERROR_MESSAGE);
             }
         });
-
-
-
 
         JButton btnCarte = new JButton("Voir sur la carte");
         btnCarte.setBackground(new Color(0, 113, 194));
