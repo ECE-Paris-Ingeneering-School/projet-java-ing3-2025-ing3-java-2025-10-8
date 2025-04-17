@@ -356,7 +356,6 @@ public class AccueilPrincipalFenetre extends JFrame {
         return carte;
     }
 
-
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new AccueilPrincipalFenetre(null).setVisible(true));
     }

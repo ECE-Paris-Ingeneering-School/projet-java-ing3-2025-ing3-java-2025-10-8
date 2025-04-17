@@ -39,7 +39,7 @@ public class ReservationDAO {
         }
     }
 
-    public boolean estDisponible(long idHebergement, LocalDate dateArrivee, LocalDate dateDepart) {
+    public boolean estDisponible(int idHebergement, LocalDate dateArrivee, LocalDate dateDepart) {
         boolean dispo = false;
         try (Connection conn = ConnexionBdd.seConnecter()) {
             String sql = "SELECT COUNT(*) AS nb FROM Reservation " +
