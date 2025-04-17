@@ -225,5 +225,25 @@ public class ReservationDAO {
         }
     }
 
+    public static boolean utilisateurAReserve(int idUtilisateur, int idHebergement) {
+        boolean aReserve = false;
+        try {
+            Connection conn = ConnexionBdd.seConnecter();
+            String sql = "SELECT COUNT(*) FROM reservation WHERE id_utilisateur = ? AND id_hebergement = ?";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, idUtilisateur);
+            pstmt.setInt(2, idHebergement);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                aReserve = rs.getInt(1) > 0;
+            }
+            pstmt.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return aReserve;
+    }
+
+
 
 }

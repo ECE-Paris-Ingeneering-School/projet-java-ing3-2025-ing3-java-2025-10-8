@@ -7,6 +7,8 @@ import Modele.Client;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class ConnexionFenetre extends JFrame {
 
@@ -17,37 +19,41 @@ public class ConnexionFenetre extends JFrame {
 
     public ConnexionFenetre() {
         setTitle("Connexion - Booking");
-        setSize(430, 480);
+        setSize(430, 500);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // Logo et titre
-        ImageIcon icon = new ImageIcon(getClass().getResource("/Vue/BookingLogo.png"));
-        Image image = icon.getImage().getScaledInstance(45, 45, Image.SCALE_SMOOTH);
-        JLabel logoLabel = new JLabel(new ImageIcon(image));
-        JLabel titreLabel = new JLabel("Reservation");
-        titreLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        titreLabel.setForeground(new Color(0, 45, 114));
+        // ----- BANNIÈRE BLEUE AVEC LOGO -----
+        JPanel topBanner = new JPanel(new BorderLayout());
+        topBanner.setBackground(Color.decode("#003580")); // Bleu Booking
 
-        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 20));
-        headerPanel.setBackground(Color.WHITE);
-        headerPanel.add(logoLabel);
-        headerPanel.add(titreLabel);
-        add(headerPanel, BorderLayout.NORTH);
+        JLabel logo = new JLabel(new ImageIcon(new ImageIcon(getClass().getResource("/Vue/BookingLogo.png"))
+                .getImage().getScaledInstance(45, 45, Image.SCALE_SMOOTH)));
+        logo.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10));
+        topBanner.add(logo, BorderLayout.WEST);
 
-        // Centre avec BoxLayout (vertical)
+        JLabel titre = new JLabel("Connexion");
+        titre.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        titre.setForeground(Color.WHITE);
+        titre.setHorizontalAlignment(SwingConstants.CENTER);
+        topBanner.add(titre, BorderLayout.CENTER);
+
+        add(topBanner, BorderLayout.NORTH);
+
+        // ----- CENTRE -----
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
         centerPanel.setBackground(Color.WHITE);
 
-        // Titre "Log in"
-        JLabel loginLabel = new JLabel("Log in");
-        loginLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        loginLabel.setForeground(new Color(0, 45, 114));
+        centerPanel.add(Box.createRigidArea(new Dimension(0, 25)));
+
+        JLabel loginLabel = new JLabel("Bienvenue sur notre application Booking");
+        loginLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        loginLabel.setForeground(Color.decode("#003580"));
         loginLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         centerPanel.add(loginLabel);
-        centerPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        centerPanel.add(Box.createRigidArea(new Dimension(0, 25)));
 
         // Email
         centerPanel.add(createLabel("Adresse email :"));
@@ -63,18 +69,34 @@ public class ConnexionFenetre extends JFrame {
         centerPanel.add(mdpField);
         centerPanel.add(Box.createRigidArea(new Dimension(0, 25)));
 
-        // Bouton Connexion
-        loginButton = new RoundedButton("Connexion", new Color(0, 45, 114), Color.WHITE);
+        // Connexion
+        loginButton = new RoundedButton("Connexion", Color.decode("#003580"), Color.WHITE);
         loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         centerPanel.add(loginButton);
         centerPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 
-        // Bouton Inscription
-        signupButton = new RoundedButton("Inscription", new Color(255, 128, 0), Color.WHITE);
-        signupButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        centerPanel.add(signupButton);
+        // Inscription
+        // Panel horizontal pour le texte + lien
+        JPanel inscriptionPanel = new JPanel();
+        inscriptionPanel.setBackground(Color.WHITE);
+        inscriptionPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 0));
 
-        // Wrapper pour centrer
+        JLabel questionLabel = new JLabel("Vous n’avez pas de compte ?");
+        questionLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        questionLabel.setForeground(Color.DARK_GRAY);
+
+        JLabel signupLink = new JLabel("<html><u>S'inscrire</u></html>");
+        signupLink.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        signupLink.setForeground(Color.decode("#FF8000"));
+        signupLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+        inscriptionPanel.add(questionLabel);
+        inscriptionPanel.add(signupLink);
+        centerPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        centerPanel.add(inscriptionPanel);
+
+
+        // Centrage global
         JPanel wrapper = new JPanel(new GridBagLayout());
         wrapper.setBackground(Color.WHITE);
         wrapper.add(centerPanel);
@@ -117,13 +139,16 @@ public class ConnexionFenetre extends JFrame {
         });
 
         // Redirection vers Inscription
-        signupButton.addActionListener(e -> {
-            dispose();
-            new InscriptionFenetre().setVisible(true);
+        signupLink.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                dispose();
+                new InscriptionFenetre().setVisible(true);
+            }
         });
     }
 
-    private JLabel createLabel(String text) {
+        private JLabel createLabel(String text) {
         JLabel label = new JLabel(text);
         label.setFont(new Font("Arial", Font.BOLD, 13));
         label.setForeground(Color.DARK_GRAY);

@@ -1,10 +1,16 @@
 package Vue;
 
-import Modele.Hebergement;
-import Modele.Hotel;
-import Modele.Appartement;
-import Modele.MaisonHotes;
+import Modele.*;
+import DAO.AvisDAO;
+import DAO.ReservationDAO;
 
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.stream.Collectors;
+
+import java.text.SimpleDateFormat;
+
+import DAO.ConnexionBdd;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
@@ -12,8 +18,15 @@ import java.util.List;
 public class HebergementDetailFenetre extends JFrame {
 
     private int imageIndex = 0;
+    private Client clientConnecte;
 
-    public HebergementDetailFenetre(Hebergement h) {
+
+    public HebergementDetailFenetre(Hebergement h, Client c ) {
+
+        this.clientConnecte = c;
+        int idClient = c.getIdUtilisateur();
+
+
         setTitle("Détails de l'hébergement : " + h.getNom());
         setSize(1000, 750);
         setLocationRelativeTo(null);
@@ -156,6 +169,85 @@ public class HebergementDetailFenetre extends JFrame {
         infosPanel.add(pointsFortsPanel);
         infosPanel.add(Box.createVerticalStrut(25));
 
+        // === AVIS ===
+        AvisDAO avisDAO = new AvisDAO();
+        List<Avis> avisList = avisDAO.getAvisParHebergement(h.getIdHebergement());
+
+        infosPanel.add(Box.createVerticalStrut(30));
+        JLabel titreAvis = new JLabel("Avis des clients :");
+        titreAvis.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        infosPanel.add(titreAvis);
+        infosPanel.add(Box.createVerticalStrut(10));
+
+        if (!avisList.isEmpty()) {
+            for (Avis avis : avisList) {
+                JPanel avisPanel = new JPanel();
+                avisPanel.setLayout(new BoxLayout(avisPanel, BoxLayout.Y_AXIS));
+                avisPanel.setBackground(new Color(250, 250, 250));
+                avisPanel.setBorder(BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(Color.LIGHT_GRAY),
+                        BorderFactory.createEmptyBorder(10, 15, 10, 15)
+                ));
+
+                JLabel noteLabel = new JLabel("★ " + avis.getNote() + "/5");
+                noteLabel.setFont(new Font("Arial", Font.BOLD, 14));
+                noteLabel.setForeground(new Color(255, 128, 0));
+
+                JLabel dateLabel = new JLabel(new SimpleDateFormat("dd/MM/yyyy").format(avis.getDateAvis()));
+                dateLabel.setFont(new Font("Arial", Font.ITALIC, 12));
+                dateLabel.setForeground(Color.GRAY);
+
+                JLabel commentaireLabel = new JLabel("<html><p style='width:700px'>" + avis.getCommentaire() + "</p></html>");
+                commentaireLabel.setFont(new Font("Arial", Font.PLAIN, 13));
+
+                avisPanel.add(noteLabel);
+                avisPanel.add(Box.createVerticalStrut(5));
+                avisPanel.add(commentaireLabel);
+                avisPanel.add(Box.createVerticalStrut(5));
+                avisPanel.add(dateLabel);
+
+                infosPanel.add(Box.createVerticalStrut(10));
+                infosPanel.add(avisPanel);
+            }
+        } else {
+            JLabel aucun = new JLabel("Aucun avis pour le moment.");
+            aucun.setFont(new Font("Arial", Font.ITALIC, 13));
+            infosPanel.add(aucun);
+        }
+
+        infosPanel.add(Box.createVerticalStrut(20));
+
+// === BOUTON LAISSER UN AVIS (même sans avoir réservé)
+
+        JLabel lienAvis = new JLabel("<html><u>Laisser un avis</u></html>");
+        lienAvis.setForeground(new Color(0, 102, 204)); // Bleu Booking
+        lienAvis.setFont(new Font("Arial", Font.BOLD, 13));
+        lienAvis.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        lienAvis.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        lienAvis.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                boolean aReserve = ReservationDAO.utilisateurAReserve(clientConnecte.getIdUtilisateur(), h.getIdHebergement());
+
+                if (aReserve) {
+                    new AjoutAvisFenetre(h, clientConnecte).setVisible(true);
+                } else {
+                    JOptionPane.showMessageDialog(null,
+                            "⚠️ Vous ne pouvez pas laisser un avis sur cet hébergement car vous n'y avez pas séjourné.",
+                            "Accès refusé",
+                            JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        });
+
+
+        infosPanel.add(Box.createVerticalStrut(20));  // plus d'espace avant
+        infosPanel.add(lienAvis);
+        infosPanel.add(Box.createVerticalStrut(30));  // plus d’espace après*/
+
+
+
 // === BOUTON CARTE ===
         JButton btnCarte = new JButton("Voir sur la carte");
         btnCarte.setBackground(new Color(0, 113, 194));
@@ -175,6 +267,7 @@ public class HebergementDetailFenetre extends JFrame {
         });
 
         infosPanel.add(btnCarte);
+
 
         // === SCROLLPANE WRAP ===
         JScrollPane scrollPane = new JScrollPane(infosPanel);
@@ -246,4 +339,6 @@ public class HebergementDetailFenetre extends JFrame {
             imageLabel.setText("[Erreur chargement]");
         }
     }
+
+
 }
