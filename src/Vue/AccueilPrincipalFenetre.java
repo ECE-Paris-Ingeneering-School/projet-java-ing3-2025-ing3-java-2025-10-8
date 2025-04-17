@@ -12,7 +12,6 @@ import java.awt.*;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.ArrayList;
-import java.awt.event.*;
 
 public class AccueilPrincipalFenetre extends JFrame {
 
@@ -122,21 +121,15 @@ public class AccueilPrincipalFenetre extends JFrame {
             btnVoirReservations.addActionListener(e -> {
                 Connection connection = ConnexionBdd.seConnecter();
                 if (connection != null) {
-                    ReservationDAO reservationDAO = new ReservationDAO(connection);
-                    List<Reservation> reservations = reservationDAO.getReservationsByClient(clientConnecte.getIdUtilisateur());
+                    HebergementDAO hebergementDAO = new HebergementDAO(connection);
+                    ReservationDAO reservationDAO = new ReservationDAO(connection, hebergementDAO);
 
-                    if (reservations == null || reservations.isEmpty()) {
-                        JOptionPane.showMessageDialog(this, "Aucune réservation trouvée.");
-                    } else {
-                        for (Reservation r : reservations) {
-                            RecapitulatifFenetre recap = new RecapitulatifFenetre(r);
-                            recap.setVisible(true);
-                        }
-                    }
+                    new MesReservationsFenetre(clientConnecte, reservationDAO).setVisible(true);
                 } else {
                     JOptionPane.showMessageDialog(this, "Erreur de connexion à la base de données.");
                 }
             });
+
 
 
             btnSupprimer.addActionListener(e -> {
@@ -315,7 +308,8 @@ public class AccueilPrincipalFenetre extends JFrame {
 
             if (connection != null) {
                 // Initialiser ReservationDAO avec la connexion
-                ReservationDAO reservationDAO = new ReservationDAO(connection);
+                HebergementDAO hebergementDAO = new HebergementDAO(connection);
+                ReservationDAO reservationDAO = new ReservationDAO(connection, hebergementDAO);
 
                 // Puis instancier DisponibiliteFenetre en passant les trois arguments nécessaires
                 new DisponibiliteFenetre(h, clientConnecte, reservationDAO).setVisible(true);
@@ -324,9 +318,6 @@ public class AccueilPrincipalFenetre extends JFrame {
                 JOptionPane.showMessageDialog(null, "Erreur de connexion à la base de données.", "Erreur", JOptionPane.ERROR_MESSAGE);
             }
         });
-
-
-
 
         JButton btnCarte = new JButton("Voir sur la carte");
         btnCarte.setBackground(new Color(0, 113, 194));

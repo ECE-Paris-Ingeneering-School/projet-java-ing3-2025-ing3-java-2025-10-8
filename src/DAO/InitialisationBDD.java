@@ -33,7 +33,7 @@ public class InitialisationBDD {
 
         // Appartements
         hebergementDAO.ajouterAppartement(new Appartement(0, "Studio Chic", "1 rue de Rome, Paris", new BigDecimal("75.00"), "Studio moderne et pratique", "appartement", List.of("images/a1/1.jpg", "images/a1/2.jpg", "images/a1/3.jpg"), 1, true, 2));
-        hebergementDAO.ajouterAppartement(new Appartement(0,"Appartement Vue Seine", "3 quai Voltaire, Paris", new BigDecimal("95.00"), "Vue exceptionnelle sur la Seine", "appartement", List.of("images/a2/1.jpg", "images/a2/2.jpg", "images/a2/3.jpg"), 2, false, 5));
+        hebergementDAO.ajouterAppartement(new Appartement(0, "Appartement Vue Seine", "3 quai Voltaire, Paris", new BigDecimal("95.00"), "Vue exceptionnelle sur la Seine", "appartement", List.of("images/a2/1.jpg", "images/a2/2.jpg", "images/a2/3.jpg"), 2, false, 5));
         hebergementDAO.ajouterAppartement(new Appartement(0, "Loft Industriel", "10 rue Oberkampf, Paris", new BigDecimal("120.00"), "Loft tendance au cœur du Marais", "appartement", List.of("images/a3/1.jpg", "images/a3/2.jpg", "images/a3/3.jpg"), 3, true, 1));
         hebergementDAO.ajouterAppartement(new Appartement(0, "Appartement Design", "22 avenue Victor Hugo, Paris", new BigDecimal("105.00"), "Design contemporain et lumineux", "appartement", List.of("images/a4/1.jpg", "images/a4/2.jpg", "images/a4/3.jpg"), 2, false, 4));
         hebergementDAO.ajouterAppartement(new Appartement(0, "Appartement Cosy Paris", "12 rue Lafayette, Paris", new BigDecimal("89.99"), "Appartement lumineux avec balcon", "appartement", List.of("images/a5/1.jpg", "images/a5/2.jpg", "images/a5/3.jpg"), 2, true, 3));

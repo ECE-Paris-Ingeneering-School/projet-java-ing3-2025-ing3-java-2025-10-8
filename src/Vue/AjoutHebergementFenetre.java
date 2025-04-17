@@ -4,7 +4,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.math.BigDecimal;
 import DAO.HebergementDAO;
-import DAO.InitialisationBDD;
 import Modele.Appartement;
 import Modele.Hotel;
 import Modele.MaisonHotes;
@@ -165,7 +164,7 @@ public class AjoutHebergementFenetre extends JFrame {
             return;
         }
 
-        // ✅ Création de la liste d’images
+        //Création de la liste d’images
         java.util.List<String> imageUrls = java.util.Arrays.stream(imageUrlRaw.split(","))
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())

@@ -1,9 +1,8 @@
 package Vue;
 
-import DAO.PaiementDAO;
-import DAO.ConnexionBdd;
+import DAO.*;
 import Modele.Paiement;
-import DAO.OffreReductionDAO;
+import Modele.Reservation;
 
 import javax.swing.*;
 import javax.swing.text.*;
@@ -248,6 +247,32 @@ public class PaiementVue extends JFrame {
             Paiement paiement = new Paiement(idReservation, montant, methode, statut, new Date(System.currentTimeMillis()));
             paiementDAO.ajouterPaiement(paiement);
 
+            //Mise à jour de la disponibilité après paiement
+            HebergementDAO hebergementDAO = new HebergementDAO(connection);
+            ReservationDAO reservationDAO = new ReservationDAO(connection, hebergementDAO);
+            Reservation reservation = reservationDAO.getReservationById(idReservation);
+
+            if (reservation != null) {
+                int idHebergement = reservation.getIdHebergement();
+
+                boolean updated = hebergementDAO.mettreAJourDisponibilite(idHebergement, false); // false = non dispo
+
+                if (updated) {
+                    System.out.println("Hébergement rendu indisponible après paiement !");
+                } else {
+                    System.out.println("Échec de mise à jour de la disponibilité.");
+                }
+            }
+
+            //Met à jour le statut de la réservation à PAYE
+
+            boolean statutOui = reservationDAO.mettreAJourStatutReservation(idReservation, Reservation.Statut.PAYE);
+            if (statutOui) {
+                System.out.println("Statut de la réservation : PAYÉ ");
+            } else {
+                System.out.println("Échec de la mise à jour du statut de réservation");
+            }
+
             // Ajouter la réduction dans la table `offrereduction`
             OffreReductionDAO offreReductionDAO = new OffreReductionDAO(connection);
             double reduction = reductionAppliquee ? 10.0 : 0.0; // 10% si true, sinon 0%
@@ -256,7 +281,7 @@ public class PaiementVue extends JFrame {
             cacherTraitement();
 
             JOptionPane.showMessageDialog(this,
-                    statut == Paiement.StatutPaiement.PAYE ? "🎉 Paiement réussi !" : "❌ Paiement annulé.",
+                    statut == Paiement.StatutPaiement.PAYE ? "Paiement réussi !" : "Paiement annulé.",
                     "Info",
                     JOptionPane.INFORMATION_MESSAGE);
 
@@ -268,6 +293,10 @@ public class PaiementVue extends JFrame {
                     JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
+
+
+
+
     }
 
     private void enregistrerEnAttente() {
