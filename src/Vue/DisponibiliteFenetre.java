@@ -1,5 +1,6 @@
 package Vue;
 
+import DAO.HebergementDAO;
 import Modele.Hebergement;
 import Modele.Client;
 import DAO.ReservationDAO;
@@ -68,9 +69,9 @@ public class DisponibiliteFenetre extends JFrame {
                 );
 
                 if (disponible) {
-                    JOptionPane.showMessageDialog(this, "✅ Hébergement disponible !");
+                    JOptionPane.showMessageDialog(this, "Hébergement disponible !");
                 } else {
-                    JOptionPane.showMessageDialog(this, "❌ Hébergement non disponible à ces dates.");
+                    JOptionPane.showMessageDialog(this, "Hébergement non disponible à ces dates.");
                 }
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "⚠️ Erreur de format de date. Utilise AAAA-MM-JJ.");
@@ -114,6 +115,9 @@ public class DisponibiliteFenetre extends JFrame {
 
                 // Ajouter la réservation dans la base de données
                 boolean success = reservationDAO.ajouterReservation(reservation);
+
+                new HebergementDAO().mettreAJourDisponibilite((int) hebergement.getIdHebergement(), false);
+
 
                 if (success) {
                     JOptionPane.showMessageDialog(this, "✅ Réservation enregistrée ! Vous pouvez procéder au paiement depuis la page 'Mes réservations'.");

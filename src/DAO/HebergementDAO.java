@@ -67,23 +67,28 @@ public class HebergementDAO {
 
 
     public void ajouterHotel(Hotel h) {
-        String sql = "INSERT INTO hebergement (nom, adresse, prix_par_nuit, description, specification) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO hebergement (nom, adresse, prix_par_nuit, description, specification, disponibilite) VALUES (?, ?, ?, ?, ?, ?)";
         String sqlHotel = "INSERT INTO hotel (id_hebergement, nombre_etoiles, petit_dejeuner, piscine, spa) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = ConnexionBdd.seConnecter();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
              PreparedStatement psHotel = conn.prepareStatement(sqlHotel)) {
 
+            System.out.println(">>> Insertion hôtel : " + h.getNom());
+
             ps.setString(1, h.getNom());
             ps.setString(2, h.getAdresse());
             ps.setBigDecimal(3, h.getPrixParNuit());
             ps.setString(4, h.getDescription());
             ps.setString(5, h.getSpecification());
+            ps.setBoolean(6, true);  // ou h.getDisponibilite()
+
             ps.executeUpdate();
 
             ResultSet rs = ps.getGeneratedKeys();
             if (rs.next()) {
                 long idGenere = rs.getLong(1);
+
                 psHotel.setLong(1, idGenere);
                 psHotel.setInt(2, h.getNombreEtoiles());
                 psHotel.setBoolean(3, h.isPetitDejeuner());
@@ -92,17 +97,22 @@ public class HebergementDAO {
                 psHotel.executeUpdate();
 
                 insererImagesHebergement(conn, idGenere, h.getImageUrls());
+
+                System.out.println("Hôtel ajouté avec ID : " + idGenere);
+            } else {
+                System.out.println("Aucune clé générée !");
             }
 
-            System.out.println("✅ Hôtel inséré : " + h.getNom());
         } catch (SQLException e) {
+            System.out.println("Erreur lors de l'ajout de l'hôtel : " + e.getMessage());
             e.printStackTrace();
         }
     }
 
 
+
     public void ajouterAppartement(Appartement a) {
-        String sql = "INSERT INTO hebergement (nom, adresse, prix_par_nuit, description, specification) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO hebergement (nom, adresse, prix_par_nuit, description, specification, disponibilite) VALUES (?, ?, ?, ?, ?, ?)";
         String sqlAppart = "INSERT INTO appartement (id_hebergement, nombre_pieces, petit_dejeuner, etage) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = ConnexionBdd.seConnecter();
@@ -115,6 +125,8 @@ public class HebergementDAO {
             ps.setBigDecimal(3, a.getPrixParNuit());
             ps.setString(4, a.getDescription());
             ps.setString(5, a.getSpecification());
+            ps.setBoolean(6, true);
+
             ps.executeUpdate();
 
             // Récupération de l'ID généré
@@ -142,7 +154,7 @@ public class HebergementDAO {
 
 
     public void ajouterMaisonHotes(MaisonHotes m) {
-        String sql = "INSERT INTO hebergement (nom, adresse, prix_par_nuit, description, specification) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO hebergement (nom, adresse, prix_par_nuit, description, specification, disponibilite) VALUES (?, ?, ?, ?, ?, ?)";
         String sqlMaison = "INSERT INTO maisonhotes (id_hebergement, petit_dejeuner, jardin) VALUES (?, ?, ?)";
 
         try (Connection conn = ConnexionBdd.seConnecter();
@@ -155,6 +167,8 @@ public class HebergementDAO {
             ps.setBigDecimal(3, m.getPrixParNuit());
             ps.setString(4, m.getDescription());
             ps.setString(5, m.getSpecification());
+            ps.setBoolean(6, true);
+
             ps.executeUpdate();
 
             // Récupérer l'ID généré
@@ -421,18 +435,25 @@ public class HebergementDAO {
     public boolean estDisponible(long idHebergement, String dateArrivee, String dateDepart) {
         boolean dispo = false;
         try (Connection conn = ConnexionBdd.seConnecter()) {
-            String sql = "SELECT disponibilite FROM Hebergement WHERE idHebergement = ?"; // ou une requête plus complexe avec les dates
+            String sql = "SELECT COUNT(*) AS nb FROM Reservation " +
+                    "WHERE idHebergement = ? " +
+                    "AND statut = 'payée' " +
+                    "AND (dateArrivee < ? AND dateDepart > ?)";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setLong(1, idHebergement);
+            stmt.setString(2, dateDepart);   // La nouvelle date de départ
+            stmt.setString(3, dateArrivee);  // La nouvelle date d’arrivée
             ResultSet rs = stmt.executeQuery();
+
             if (rs.next()) {
-                dispo = rs.getInt("disponibilite") == 1;
+                dispo = rs.getInt("nb") == 0; // S’il n’y a pas de chevauchement
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return dispo;
     }
+
 
     public Hebergement getHebergementById(int idHebergement) {
         Hebergement hebergement = null;
@@ -472,6 +493,23 @@ public class HebergementDAO {
             return false;
         }
     }
+
+    public boolean mettreAJourDisponibilite(int idHebergement, boolean disponible) {
+        String sql = "UPDATE hebergement SET disponibilite = ? WHERE id_hebergement = ?";
+        try (Connection conn = ConnexionBdd.seConnecter();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setBoolean(1, disponible); // true = disponible (1), false = non disponible (0)
+            ps.setInt(2, idHebergement);
+
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 
 
 

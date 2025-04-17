@@ -17,7 +17,7 @@ public class Reservation {
 
     // Enum pour le statut de la réservation
     public enum Statut {
-        PAYE("Payée"),
+        PAYE("Confirmée"),
         ANNULEE("Annulée"),
         EN_ATTENTE("En attente");
 
