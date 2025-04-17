@@ -30,7 +30,7 @@ public class MesReservationsFenetre extends JFrame {
         listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
 
         if (reservations.isEmpty()) {
-            listPanel.add(new JLabel("😕 Aucune réservation trouvée."));
+            listPanel.add(new JLabel("Aucune réservation trouvée."));
         } else {
             for (Reservation res : reservations) {
                 JPanel resPanel = new JPanel(new BorderLayout());
@@ -49,7 +49,7 @@ public class MesReservationsFenetre extends JFrame {
                     JButton payerBtn = new JButton("💳 Payer");
                     payerBtn.addActionListener(e -> {
                         double montant = calculerMontantTotal(res);
-                        new PaiementVue(client.getIdUtilisateur(), res.getIdReservation(), montant).setVisible(true);
+                        new PaiementVue(client.getIdUtilisateur(), res.getIdReservation()).setVisible(true);
                     });
                     resPanel.add(payerBtn, BorderLayout.EAST);
                 }
@@ -65,11 +65,11 @@ public class MesReservationsFenetre extends JFrame {
     }
 
     private String genererRecap(Reservation res) {
-        return "🏨 Hébergement : " + res.getHebergement().getNom() + "\n" +
-                "📅 Du " + res.getDateArrivee() + " au " + res.getDateDepart() + "\n" +
-                "👨‍👩‍👧‍👦 Adultes : " + res.getNombreAdultes() + ", Enfants : " + res.getNombreEnfants() + "\n" +
-                "🛏️ Chambres : " + res.getNombreChambres() + "\n" +
-                "📌 Statut : " + res.getStatut().getValue();
+        return "Hébergement : " + res.getHebergement().getNom() + "\n" +
+                "Du " + res.getDateArrivee() + " au " + res.getDateDepart() + "\n" +
+                "Adultes : " + res.getNombreAdultes() + ", Enfants : " + res.getNombreEnfants() + "\n" +
+                "Chambres : " + res.getNombreChambres() + "\n" +
+                "Statut : " + res.getStatut().getValue();
     }
 
     private double calculerMontantTotal(Reservation reservation) {
