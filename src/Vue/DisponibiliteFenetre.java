@@ -133,7 +133,7 @@ public class DisponibiliteFenetre extends JFrame {
                             new HebergementDAO().mettreAJourDisponibilite((int) hebergement.getIdHebergement(), false);
                             JOptionPane.showMessageDialog(this, "Paiement réussi ! Statut mis à jour.");
                         } else {
-                            JOptionPane.showMessageDialog(this, "Erreur lors de la mise à jour du statut.");
+                            //JOptionPane.showMessageDialog(this, "Erreur lors de la mise à jour du statut.");
                         }
                     }
 
