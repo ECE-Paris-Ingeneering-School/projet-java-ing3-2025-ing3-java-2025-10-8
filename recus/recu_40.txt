@@ -1,0 +1,8 @@
+----- Reçu de Paiement -----
+Date        : 2025-04-19
+Client      : clara
+Réservation : #40
+Montant     : 210,00 €
+Méthode     : Carte bancaire
+-----------------------------
+Merci pour votre confiance !
