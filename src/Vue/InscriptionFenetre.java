@@ -7,6 +7,8 @@ import Modele.Client;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class InscriptionFenetre extends JFrame {
 
@@ -19,72 +21,83 @@ public class InscriptionFenetre extends JFrame {
     private JButton retourButton;
 
     public InscriptionFenetre() {
-        setTitle("Inscription - Booking App");
-        setSize(430, 500);
+        setTitle("Inscription - Booking");
+        setSize(450, 520);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // Logo et titre
-        ImageIcon icon = new ImageIcon(getClass().getResource("/Vue/BookingLogo.png"));
-        Image image = icon.getImage().getScaledInstance(45, 45, Image.SCALE_SMOOTH);
-        JLabel logoLabel = new JLabel(new ImageIcon(image));
-        JLabel titreLabel = new JLabel("Reservation");
-        titreLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        titreLabel.setForeground(new Color(0, 45, 114));
+        // ----- BANNIÈRE BLEUE -----
+        JPanel topBanner = new JPanel(new BorderLayout());
+        topBanner.setBackground(Color.decode("#003580"));
 
-        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 20));
-        headerPanel.setBackground(Color.WHITE);
-        headerPanel.add(logoLabel);
-        headerPanel.add(titreLabel);
-        add(headerPanel, BorderLayout.NORTH);
+        JLabel logo = new JLabel(new ImageIcon(new ImageIcon(getClass().getResource("/Vue/BookingLogo.png"))
+                .getImage().getScaledInstance(45, 45, Image.SCALE_SMOOTH)));
+        logo.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10));
+        topBanner.add(logo, BorderLayout.WEST);
 
-        // Centre vertical
+        JLabel titre = new JLabel("Inscription");
+        titre.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        titre.setForeground(Color.WHITE);
+        titre.setHorizontalAlignment(SwingConstants.CENTER);
+        topBanner.add(titre, BorderLayout.CENTER);
+
+        add(topBanner, BorderLayout.NORTH);
+
+        // ----- CONTENU CENTRAL -----
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
         centerPanel.setBackground(Color.WHITE);
 
+        centerPanel.add(Box.createRigidArea(new Dimension(0, 25)));
+
+        // Champs
         centerPanel.add(createLabel("Nom :"));
-        nomField = new JTextField(20);
+        JTextField nomField = new JTextField(20);
         styleField(nomField);
         centerPanel.add(nomField);
 
+        centerPanel.add(Box.createRigidArea(new Dimension(0, 15)));
         centerPanel.add(createLabel("Prénom :"));
-        prenomField = new JTextField(20);
+        JTextField prenomField = new JTextField(20);
         styleField(prenomField);
         centerPanel.add(prenomField);
 
-        centerPanel.add(createLabel("Email :"));
-        emailField = new JTextField(20);
+        centerPanel.add(Box.createRigidArea(new Dimension(0, 15)));
+        centerPanel.add(createLabel("Adresse email :"));
+        JTextField emailField = new JTextField(20);
         styleField(emailField);
         centerPanel.add(emailField);
 
+        centerPanel.add(Box.createRigidArea(new Dimension(0, 15)));
         centerPanel.add(createLabel("Mot de passe :"));
-        mdpField = new JPasswordField(20);
+        JPasswordField mdpField = new JPasswordField(20);
         styleField(mdpField);
         centerPanel.add(mdpField);
 
-        centerPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        // Option admin
 
-        // Checkbox admin
-        adminCheckbox = new JCheckBox("Je suis administrateur");
-        adminCheckbox.setAlignmentX(Component.CENTER_ALIGNMENT);
-        adminCheckbox.setBackground(Color.WHITE);
-        adminCheckbox.setFont(new Font("Arial", Font.PLAIN, 13));
-        centerPanel.add(adminCheckbox);
 
         centerPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 
-        // Bouton Inscription
-        registerButton = new RoundedButton("S'inscrire", new Color(0, 45, 114), Color.WHITE);
-        registerButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        centerPanel.add(registerButton);
-        centerPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        // Bouton s'inscrire
+        RoundedButton inscrireButton = new RoundedButton("S'inscrire", Color.decode("#003580"), Color.WHITE);
+        inscrireButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        centerPanel.add(inscrireButton);
 
-        // Bouton retour
-        retourButton = new RoundedButton("Retour", new Color(255, 128, 0), Color.WHITE);
-        retourButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        centerPanel.add(retourButton);
+        // Lien vers connexion
+        JPanel retourPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
+        retourPanel.setBackground(Color.WHITE);
+        JLabel dejaCompte = new JLabel("Vous avez déjà un compte ?");
+        dejaCompte.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        JLabel lienConnexion = new JLabel("<html><u>Se connecter</u></html>");
+        lienConnexion.setForeground(Color.decode("#FF8000"));
+        lienConnexion.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        lienConnexion.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        retourPanel.add(dejaCompte);
+        retourPanel.add(lienConnexion);
+        centerPanel.add(Box.createRigidArea(new Dimension(0, 15)));
+        centerPanel.add(retourPanel);
 
         JPanel wrapper = new JPanel(new GridBagLayout());
         wrapper.setBackground(Color.WHITE);
@@ -92,23 +105,13 @@ public class InscriptionFenetre extends JFrame {
         add(wrapper, BorderLayout.CENTER);
 
         // Action inscription
-        registerButton.addActionListener(e -> {
+        inscrireButton.addActionListener(e -> {
             String nom = nomField.getText();
             String prenom = prenomField.getText();
             String email = emailField.getText();
             String mdp = new String(mdpField.getPassword());
 
-            if (adminCheckbox.isSelected()) {
-                Admin admin = new Admin(0, nom, prenom, email, mdp, "Responsable");
-                AdminDAO dao = new AdminDAO();
-                if (dao.ajouterAdmin(admin)) {
-                    JOptionPane.showMessageDialog(this, "Administrateur inscrit !");
-                    dispose();
-                    new ConnexionFenetre().setVisible(true);
-                } else {
-                    JOptionPane.showMessageDialog(this, "Erreur d'inscription admin.");
-                }
-            } else {
+
                 Client client = new Client(0, nom, prenom, email, mdp, Client.TypeClient.PARTICULIER);
                 ClientDAO dao = new ClientDAO();
                 if (dao.ajouterClient(client)) {
@@ -118,13 +121,16 @@ public class InscriptionFenetre extends JFrame {
                 } else {
                     JOptionPane.showMessageDialog(this, "Erreur d'inscription client.");
                 }
-            }
+
         });
 
         // Retour
-        retourButton.addActionListener(e -> {
-            dispose();
-            new ConnexionFenetre().setVisible(true);
+        lienConnexion.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                dispose();
+                new ConnexionFenetre().setVisible(true);
+            }
         });
     }
 

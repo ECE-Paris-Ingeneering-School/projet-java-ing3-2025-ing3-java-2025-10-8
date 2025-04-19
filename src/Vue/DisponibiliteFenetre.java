@@ -1,5 +1,6 @@
 package Vue;
 
+import DAO.HebergementDAO;
 import Modele.Hebergement;
 import Modele.Client;
 import DAO.ReservationDAO;
@@ -68,9 +69,9 @@ public class DisponibiliteFenetre extends JFrame {
                 );
 
                 if (disponible) {
-                    JOptionPane.showMessageDialog(this, "✅ Hébergement disponible !");
+                    JOptionPane.showMessageDialog(this, "Hébergement disponible !");
                 } else {
-                    JOptionPane.showMessageDialog(this, "❌ Hébergement non disponible à ces dates.");
+                    JOptionPane.showMessageDialog(this, "Hébergement non disponible à ces dates.");
                 }
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "⚠️ Erreur de format de date. Utilise AAAA-MM-JJ.");
@@ -95,7 +96,7 @@ public class DisponibiliteFenetre extends JFrame {
                         dateDepartLocalDate
                 );
                 if (!disponible) {
-                    JOptionPane.showMessageDialog(this, "❌ Cet hébergement n'est plus disponible à ces dates.");
+                    JOptionPane.showMessageDialog(this, "Cet hébergement n'est plus disponible à ces dates.");
                     return;
                 }
 
@@ -115,8 +116,11 @@ public class DisponibiliteFenetre extends JFrame {
                 // Ajouter la réservation dans la base de données
                 boolean success = reservationDAO.ajouterReservation(reservation);
 
+                new HebergementDAO().mettreAJourDisponibilite((int) hebergement.getIdHebergement(), false);
+
+
                 if (success) {
-                    JOptionPane.showMessageDialog(this, "✅ Réservation enregistrée ! Vous pouvez procéder au paiement depuis la page 'Mes réservations'.");
+                    JOptionPane.showMessageDialog(this, "Réservation enregistrée ! Vous pouvez procéder au paiement depuis la page 'Mes réservations'.");
 
                     // Supposons que le paiement soit effectué ici, maintenant nous mettons à jour le statut
                     boolean paiementReussi = true; // Remplace par la logique réelle de paiement
@@ -126,20 +130,21 @@ public class DisponibiliteFenetre extends JFrame {
                         boolean updateStatutOk = reservationDAO.mettreAJourStatutReservation(reservation.getIdReservation(), Reservation.Statut.PAYE);
 
                         if (updateStatutOk) {
-                            JOptionPane.showMessageDialog(this, "✅ Paiement réussi ! Statut mis à jour.");
+                            new HebergementDAO().mettreAJourDisponibilite((int) hebergement.getIdHebergement(), false);
+                            JOptionPane.showMessageDialog(this, "Paiement réussi ! Statut mis à jour.");
                         } else {
-                            JOptionPane.showMessageDialog(this, "❌ Erreur lors de la mise à jour du statut.");
+                            JOptionPane.showMessageDialog(this, "Erreur lors de la mise à jour du statut.");
                         }
                     }
 
                     this.dispose(); // Ferme la fenêtre de disponibilité
 
                 } else {
-                    JOptionPane.showMessageDialog(this, "❌ Une erreur est survenue lors de l'enregistrement.");
+                    JOptionPane.showMessageDialog(this, "Une erreur est survenue lors de l'enregistrement.");
                 }
 
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "⚠️ Erreur lors de la réservation : " + ex.getMessage());
+                JOptionPane.showMessageDialog(this, "Erreur lors de la réservation : " + ex.getMessage());
             }
         });
 
@@ -153,7 +158,7 @@ public class DisponibiliteFenetre extends JFrame {
         buttonPanel.add(validerCommandeBtn);
 
         // 🔥 Nouveau bouton "Mes Réservations"
-        JButton mesReservationsBtn = new JButton("📋 Mes Réservations");
+        JButton mesReservationsBtn = new JButton("Mes Réservations");
         mesReservationsBtn.addActionListener(e -> {
             MesReservationsFenetre fenetre = new MesReservationsFenetre(client, reservationDAO);
             fenetre.setVisible(true);

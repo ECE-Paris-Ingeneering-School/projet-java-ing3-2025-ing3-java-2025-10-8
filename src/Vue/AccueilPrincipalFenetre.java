@@ -12,21 +12,18 @@ import java.awt.*;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.ArrayList;
-import java.awt.event.*;
 
 public class AccueilPrincipalFenetre extends JFrame {
 
-    private JPanel filtrePanel, resultPanel;
-    private JCheckBox cbHotel, cbAppartement, cbMaison;
-    private JCheckBox cbPetitDej, cbPiscine, cbSpa, cbJardin;
+    private JPanel resultPanel;
     private JTextField prixMinField, prixMaxField;
-    private JButton deconnexionButton;
     private Client clientConnecte;
+    private JCheckBoxMenuItem cbHotel, cbAppartement, cbMaison;
+    private JCheckBoxMenuItem cbPetitDej, cbPiscine, cbSpa, cbJardin;
 
     public AccueilPrincipalFenetre(Client clientConnecte) {
         this.clientConnecte = clientConnecte;
 
-        // Style global
         UIManager.put("Label.font", new Font("Segoe UI", Font.PLAIN, 14));
         UIManager.put("Button.font", new Font("Segoe UI", Font.BOLD, 13));
         UIManager.put("CheckBox.font", new Font("Segoe UI", Font.PLAIN, 13));
@@ -37,125 +34,137 @@ public class AccueilPrincipalFenetre extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        Color bleuBooking = new Color(0, 113, 194);
+        Color bleuBooking = Color.decode("#003580");
         Color orangeBooking = new Color(255, 128, 0);
 
-        // Filtres
-        filtrePanel = new JPanel();
-        filtrePanel.setLayout(new BoxLayout(filtrePanel, BoxLayout.Y_AXIS));
-        filtrePanel.setBackground(new Color(250, 250, 250));
-        filtrePanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 0, 0, 1, Color.LIGHT_GRAY),
-                BorderFactory.createEmptyBorder(15, 15, 15, 15)));
-        filtrePanel.setPreferredSize(new Dimension(250, getHeight()));
+        // --- BARRE SUPERIEURE ---
+        JPanel topBar = new JPanel(null);
+        topBar.setBackground(bleuBooking);
+        topBar.setPreferredSize(new Dimension(getWidth(), 120));
 
-        cbHotel = new JCheckBox("Hôtel");
-        cbAppartement = new JCheckBox("Appartement");
-        cbMaison = new JCheckBox("Maison d'hôtes");
-        cbPetitDej = new JCheckBox("Petit déjeuner inclus");
-        cbPiscine = new JCheckBox("Spa et centre de bien-être");
-        cbSpa = new JCheckBox("Spa");
-        cbJardin = new JCheckBox("Jardin");
+        JLabel logo = new JLabel(new ImageIcon(new ImageIcon(getClass().getResource("/Vue/BookingLogo.png"))
+                .getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH)));
+        logo.setBounds(20, 20, 50, 50);
+        topBar.add(logo);
 
-        JPanel prixPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        prixPanel.setBackground(filtrePanel.getBackground());
-        prixPanel.add(new JLabel("Min (€) :"));
-        prixMinField = new JTextField(5);
-        prixPanel.add(prixMinField);
-        prixPanel.add(new JLabel("Max (€) :"));
-        prixMaxField = new JTextField(5);
-        prixPanel.add(prixMaxField);
+        JLabel titleLabel = new JLabel("Trouvez votre hébergement");
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        titleLabel.setForeground(Color.WHITE);
+        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        titleLabel.setBounds(300, 10, 600, 30);
+        topBar.add(titleLabel);
 
-        JButton btnFiltrer = new JButton("Appliquer les filtres");
-        btnFiltrer.setBackground(orangeBooking);
-        btnFiltrer.setForeground(Color.WHITE);
+        JLabel profileIcon = new JLabel(new ImageIcon(new ImageIcon(getClass().getResource("/Vue/profile.png"))
+                .getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH)));
+        profileIcon.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        profileIcon.setBounds(1120, 20, 40, 40);
+        topBar.add(profileIcon);
 
-        filtrePanel.add(cbHotel);
-        filtrePanel.add(cbAppartement);
-        filtrePanel.add(cbMaison);
-        filtrePanel.add(Box.createVerticalStrut(10));
-        filtrePanel.add(cbPetitDej);
-        filtrePanel.add(cbPiscine);
-        filtrePanel.add(cbSpa);
-        filtrePanel.add(cbJardin);
-        filtrePanel.add(Box.createVerticalStrut(10));
-        filtrePanel.add(prixPanel);
-        filtrePanel.add(btnFiltrer);
+        JButton btnFiltrePrincipal = new JButton("Filtrez votre recherche");
+        btnFiltrePrincipal.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btnFiltrePrincipal.setBackground(Color.WHITE);
+        btnFiltrePrincipal.setForeground(bleuBooking);
+        btnFiltrePrincipal.setFocusPainted(false);
+        btnFiltrePrincipal.setBounds(500, 55, 200, 35);
+        topBar.add(btnFiltrePrincipal);
 
-        add(filtrePanel, BorderLayout.WEST);
-
-        resultPanel = new JPanel();
-        resultPanel.setLayout(new BoxLayout(resultPanel, BoxLayout.Y_AXIS));
-        JScrollPane scrollPane = new JScrollPane(resultPanel);
-        add(scrollPane, BorderLayout.CENTER);
-
-        // Bas
-        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        deconnexionButton = new JButton("Déconnexion");
-        bottomPanel.add(deconnexionButton);
-        add(bottomPanel, BorderLayout.SOUTH);
-
-        deconnexionButton.addActionListener(e -> {
-            dispose();
-            new ConnexionFenetre().setVisible(true);
-        });
-
-        // Profil utilisateur
-        JPanel profilPanel = new JPanel();
-        profilPanel.setLayout(new BoxLayout(profilPanel, BoxLayout.Y_AXIS));
-        profilPanel.setBorder(BorderFactory.createTitledBorder("Mon profil"));
-        profilPanel.setBackground(Color.WHITE);
+        JPopupMenu menuProfil = new JPopupMenu();
 
         if (clientConnecte != null) {
-            profilPanel.add(new JLabel("Nom : " + clientConnecte.getNom()));
-            profilPanel.add(new JLabel("Prénom : " + clientConnecte.getPrenom()));
-            profilPanel.add(new JLabel("Email : " + clientConnecte.getEmail()));
+            JMenuItem itemResa = new JMenuItem("Mes réservations");
+            JMenuItem itemDeconnexion = new JMenuItem("Se déconnecter");
+            menuProfil.add(itemResa);
+            menuProfil.add(itemDeconnexion);
 
-            JButton btnVoirReservations = new JButton("Voir mes réservations");
-            JButton btnSupprimer = new JButton("Supprimer mon compte");
-
-            profilPanel.add(Box.createVerticalStrut(10));
-            profilPanel.add(btnVoirReservations);
-            profilPanel.add(Box.createVerticalStrut(5));
-            profilPanel.add(btnSupprimer);
-
-            btnVoirReservations.addActionListener(e -> {
+            itemResa.addActionListener(e -> {
                 Connection connection = ConnexionBdd.seConnecter();
                 if (connection != null) {
                     HebergementDAO hebergementDAO = new HebergementDAO(connection);
                     ReservationDAO reservationDAO = new ReservationDAO(connection, hebergementDAO);
-
                     new MesReservationsFenetre(clientConnecte, reservationDAO).setVisible(true);
                 } else {
                     JOptionPane.showMessageDialog(this, "Erreur de connexion à la base de données.");
                 }
             });
 
-
-
-            btnSupprimer.addActionListener(e -> {
-                int confirm = JOptionPane.showConfirmDialog(this, "Supprimer votre compte ?", "Confirmation", JOptionPane.YES_NO_OPTION);
-                if (confirm == JOptionPane.YES_OPTION) {
-                    new ClientDAO().supprimerClient(clientConnecte.getIdUtilisateur());
-                    JOptionPane.showMessageDialog(this, "Compte supprimé.");
-                    dispose();
-                    new ConnexionFenetre().setVisible(true);
-                }
+            itemDeconnexion.addActionListener(e -> {
+                dispose();
+                new ConnexionFenetre().setVisible(true);
             });
         } else {
-            JButton btnConnexion = new JButton("Se connecter");
-            profilPanel.add(btnConnexion);
-            btnConnexion.addActionListener(e -> {
+            JMenuItem itemConnexion = new JMenuItem("Se connecter");
+            menuProfil.add(itemConnexion);
+            itemConnexion.addActionListener(e -> {
                 dispose();
                 new ConnexionFenetre().setVisible(true);
             });
         }
 
-        add(profilPanel, BorderLayout.EAST);
+        profileIcon.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                menuProfil.show(profileIcon, 0, profileIcon.getHeight());
+            }
+        });
 
-        btnFiltrer.addActionListener(e -> filtrerHebergements());
+        // Menu déroulant filtres (invisible pour l’instant — lié à btnFiltrePrincipal)
+        JPopupMenu menuFiltre = new JPopupMenu();
+        cbHotel = new JCheckBoxMenuItem("Hôtel");
+        cbAppartement = new JCheckBoxMenuItem("Appartement");
+        cbMaison = new JCheckBoxMenuItem("Maison d'hôtes");
+        cbPetitDej = new JCheckBoxMenuItem("Petit déjeuner inclus");
+        cbPiscine = new JCheckBoxMenuItem("Spa et centre de bien-être");
+        cbSpa = new JCheckBoxMenuItem("Spa");
+        cbJardin = new JCheckBoxMenuItem("Jardin");
+
+        prixMinField = new JTextField(5);
+        prixMaxField = new JTextField(5);
+        prixMinField.setBackground(Color.WHITE);
+        prixMaxField.setBackground(Color.WHITE);
+
+        JLabel minLabel = new JLabel("Min €:");
+        JLabel maxLabel = new JLabel("Max €:");
+
+        JPanel prixPanel = new JPanel();
+        prixPanel.setBackground(Color.WHITE);
+        prixPanel.add(minLabel);
+        prixPanel.add(prixMinField);
+        prixPanel.add(maxLabel);
+        prixPanel.add(prixMaxField);
+
+        JButton appliquerFiltreBtn = new JButton("Appliquer les filtres");
+        appliquerFiltreBtn.setBackground(Color.decode("#003580"));
+        appliquerFiltreBtn.setForeground(Color.WHITE);
+        appliquerFiltreBtn.setFocusPainted(false);
+        appliquerFiltreBtn.setFont(new Font("Segoe UI", Font.BOLD, 13));
+
+        appliquerFiltreBtn.addActionListener(e -> filtrerHebergements());
+
+        menuFiltre.add(cbHotel);
+        menuFiltre.add(cbAppartement);
+        menuFiltre.add(cbMaison);
+        menuFiltre.addSeparator();
+        menuFiltre.add(cbPetitDej);
+        menuFiltre.add(cbPiscine);
+        menuFiltre.add(cbSpa);
+        menuFiltre.add(cbJardin);
+        menuFiltre.addSeparator();
+        menuFiltre.add(prixPanel);
+        menuFiltre.add(appliquerFiltreBtn);
+
+        btnFiltrePrincipal.addActionListener(e -> menuFiltre.show(btnFiltrePrincipal, 0, btnFiltrePrincipal.getHeight()));
+
+        add(topBar, BorderLayout.NORTH);
+
+        resultPanel = new JPanel();
+        resultPanel.setLayout(new BoxLayout(resultPanel, BoxLayout.Y_AXIS));
+        JScrollPane scrollPane = new JScrollPane(resultPanel);
+        add(scrollPane, BorderLayout.CENTER);
+
         filtrerHebergements();
     }
+
+
 
     private void filtrerHebergements() {
         HebergementDAO dao = new HebergementDAO();
@@ -298,7 +307,7 @@ public class AccueilPrincipalFenetre extends JFrame {
         infos.add(Box.createVerticalStrut(5));
 
         // === Boutons ===
-        JButton btnDispo = new JButton("Voir les disponibilités");
+        JButton btnDispo = new JButton("Réservez");
         btnDispo.setBackground(new Color(0, 113, 194));
         btnDispo.setForeground(Color.WHITE);
         btnDispo.setFocusPainted(false);
@@ -319,9 +328,6 @@ public class AccueilPrincipalFenetre extends JFrame {
                 JOptionPane.showMessageDialog(null, "Erreur de connexion à la base de données.", "Erreur", JOptionPane.ERROR_MESSAGE);
             }
         });
-
-
-
 
         JButton btnCarte = new JButton("Voir sur la carte");
         btnCarte.setBackground(new Color(0, 113, 194));
@@ -344,6 +350,7 @@ public class AccueilPrincipalFenetre extends JFrame {
         boutonsPanel.add(btnDispo);
         boutonsPanel.add(btnCarte);
 
+
         infos.add(Box.createVerticalStrut(10));
         infos.add(boutonsPanel);
 
@@ -353,13 +360,12 @@ public class AccueilPrincipalFenetre extends JFrame {
         carte.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
-                new HebergementDetailFenetre(h).setVisible(true);
+                new HebergementDetailFenetre(h, clientConnecte).setVisible(true);
             }
         });
 
         return carte;
     }
-
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new AccueilPrincipalFenetre(null).setVisible(true));

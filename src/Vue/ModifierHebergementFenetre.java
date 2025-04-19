@@ -123,7 +123,7 @@ public class ModifierHebergementFenetre extends JFrame{
         boutonModifier.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
         boutonModifier.addActionListener(e -> {
-            new ModificationHebergementFenetre().setVisible(true);
+            new ModificationHebergementFenetre(h).setVisible(true);
         });
 
 

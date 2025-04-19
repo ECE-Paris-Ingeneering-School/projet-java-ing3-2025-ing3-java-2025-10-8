@@ -1,24 +1,24 @@
 package Vue;
 
-import DAO.PaiementDAO;
-import DAO.ConnexionBdd;
+import DAO.*;
+import Modele.Client;
 import Modele.Paiement;
-import DAO.OffreReductionDAO;
+import Modele.Reservation;
 
 import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.time.temporal.ChronoUnit;
 
 public class PaiementVue extends JFrame {
 
     private JLabel recapReservationLabel;
     private JLabel recapMontantLabel;
-    private JLabel recapMontantReductionLabel; // Nouveau label pour afficher la réduction
+    private JLabel recapMontantReductionLabel;
 
     private JComboBox<String> methodeCombo;
     private JPanel methodeDetailsPanel;
@@ -29,60 +29,76 @@ public class PaiementVue extends JFrame {
     private JTextField virementIbanField;
 
     private JButton confirmerBtn, sauvegarderBtn;
-    private PaiementDAO paiementDAO;
 
+    private JProgressBar progressBar;
+
+    private Connection connection;
+    private Client client;
+    private Reservation reservation;
+
+    private int idUtilisateur;
     private int idReservation;
     private double montant;
 
-    // Composants pour le traitement avec la barre de progression
-    private JProgressBar progressBar;
-    private Connection connection;
-    private int idUtilisateur = 3; // À remplacer par l'ID réel de l'utilisateur
+    public PaiementVue(int idUtilisateur, int idReservation) {
+        this.idUtilisateur = idUtilisateur;
+        this.idReservation = idReservation;
 
-    public PaiementVue() {
         setTitle("Paiement Réservation");
         setSize(500, 400);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        this.connection = ConnexionBdd.seConnecter();
+        connection = ConnexionBdd.seConnecter();
         if (connection == null) {
             JOptionPane.showMessageDialog(this, "Erreur de connexion à la base de données");
             System.exit(1);
         }
-        paiementDAO = new PaiementDAO(connection);
+
+        try {
+            ClientDAO clientDAO = new ClientDAO();
+            this.client = clientDAO.getClientParId(idUtilisateur);
+
+            HebergementDAO hebergementDAO = new HebergementDAO(connection);
+            ReservationDAO reservationDAO = new ReservationDAO(connection, hebergementDAO);
+            this.reservation = reservationDAO.getReservationById(idReservation);
+
+            if (client == null || reservation == null) {
+                JOptionPane.showMessageDialog(this, "Client ou réservation introuvable.");
+                return;
+            }
+
+            LocalDate debut = reservation.getDateArrivee();
+            LocalDate fin = reservation.getDateDepart();
+            long nbJours = ChronoUnit.DAYS.between(debut, fin);
+            BigDecimal prixNuit = reservation.getHebergement().getPrixParNuit();
+            BigDecimal montantTotal = prixNuit.multiply(BigDecimal.valueOf(nbJours));
+            this.montant = montantTotal.doubleValue();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Erreur d'initialisation : " + e.getMessage());
+            return;
+        }
 
         initUI();
         setVisible(true);
     }
 
-    public PaiementVue(int idUtilisateur, int idReservation, double montant) {
-        this(); // appelle le constructeur par défaut pour initialiser l'UI et la connexion
-
-        this.idUtilisateur = idUtilisateur;
-        this.idReservation = idReservation;
-        this.montant = montant;
-
-        // Met à jour l'affichage du récap avec les vraies valeurs
-        recapReservationLabel.setText("Réservation n° " + idReservation);
-        recapMontantLabel.setText("Montant à payer : " + montant + " €");
-        recapMontantReductionLabel.setText("Montant après réduction : " + montant + " €");
-    }
-
     private void initUI() {
         JPanel recapPanel = new JPanel(new GridLayout(3, 1));
+        recapPanel.setBorder(BorderFactory.createTitledBorder("Récapitulatif"));
+
         recapReservationLabel = new JLabel("Réservation n° " + idReservation);
-        recapMontantLabel = new JLabel("Montant à payer : " + montant + " €");
-        recapMontantReductionLabel = new JLabel("Montant après réduction : " + montant + " €");
+        recapMontantLabel = new JLabel("Montant à payer : " + String.format("%.2f", montant) + " €");
+        recapMontantReductionLabel = new JLabel("Montant après réduction : " + String.format("%.2f", montant) + " €");
         recapMontantReductionLabel.setFont(new Font("SansSerif", Font.ITALIC, 13));
         recapMontantReductionLabel.setForeground(Color.DARK_GRAY);
 
-        recapPanel.setBorder(BorderFactory.createTitledBorder("Récapitulatif"));
         recapPanel.add(recapReservationLabel);
         recapPanel.add(recapMontantLabel);
         recapPanel.add(recapMontantReductionLabel);
-
         add(recapPanel, BorderLayout.NORTH);
 
         JPanel centerPanel = new JPanel(new BorderLayout());
@@ -108,12 +124,11 @@ public class PaiementVue extends JFrame {
 
         bottomPanel.add(sauvegarderBtn);
         bottomPanel.add(confirmerBtn);
-
         add(bottomPanel, BorderLayout.SOUTH);
     }
 
     private JPanel initCartePanel() {
-        JPanel panel = new JPanel(new GridLayout(3, 2));
+        JPanel panel = new JPanel(new GridLayout(2, 2));
         panel.add(new JLabel("Numéro de carte :"));
         carteNumeroField = new JTextField();
         appliquerFormatCarte(carteNumeroField);
@@ -143,6 +158,10 @@ public class PaiementVue extends JFrame {
 
     private void appliquerFormatCarte(JTextField field) {
         ((AbstractDocument) field.getDocument()).setDocumentFilter(new DocumentFilter() {
+            private String formatCarte(String text) {
+                return text.replaceAll("\\D", "").replaceAll("(.{4})", "$1 ").trim();
+            }
+
             @Override
             public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
                 if (string != null) {
@@ -165,157 +184,55 @@ public class PaiementVue extends JFrame {
             @Override
             public void remove(FilterBypass fb, int offset, int length) throws BadLocationException {
                 String currentText = fb.getDocument().getText(0, fb.getDocument().getLength());
-                String newText = currentText.substring(0, offset) + currentText.substring(offset + length);
+                String newText = new StringBuilder(currentText).delete(offset, offset + length).toString();
                 String formatted = formatCarte(newText);
                 fb.replace(0, fb.getDocument().getLength(), formatted, null);
-            }
-
-            private String formatCarte(String input) {
-                return input.replaceAll("\\D", "").replaceAll("(.{4})", "$1 ").trim();
             }
         });
     }
 
-    private void afficherTraitement() {
-        JPanel panelTraitement = new JPanel();
-        panelTraitement.setLayout(new BorderLayout());
-
-        JLabel statusLabel = new JLabel("Traitement en cours... Veuillez patienter.");
-        statusLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        panelTraitement.add(statusLabel, BorderLayout.CENTER);
-
-        progressBar = new JProgressBar();
-        progressBar.setIndeterminate(true); // Barre de progression indéterminée
-        panelTraitement.add(progressBar, BorderLayout.SOUTH);
-
-        this.add(panelTraitement, BorderLayout.CENTER);
-        this.revalidate();
-        this.repaint();
-    }
-
-    private void cacherTraitement() {
-        this.remove(progressBar.getParent());
-        this.revalidate();
-        this.repaint();
-    }
-
     private void confirmerPaiement() {
-        afficherTraitement();
-
         String methodeStr = (String) methodeCombo.getSelectedItem();
         Paiement.MethodePaiement methode = Paiement.fromSQLMethode(methodeStr);
-
-        if (!verifierChamps(methode)) return;
-
-        int confirm = JOptionPane.showConfirmDialog(this,
-                "Confirmez-vous ce paiement de " + montant + " € via " + methodeStr + " ?",
-                "Confirmation",
-                JOptionPane.YES_NO_OPTION);
-
-        Paiement.StatutPaiement statut = (confirm == JOptionPane.YES_OPTION) ? Paiement.StatutPaiement.PAYE : Paiement.StatutPaiement.ANNULE;
+        Paiement.StatutPaiement statut = Paiement.StatutPaiement.PAYE;
 
         try {
-            // Vérification de l'éligibilité à la réduction
-            PreparedStatement ps = connection.prepareStatement("SELECT date_inscription FROM utilisateur WHERE id_utilisateur = ?");
-            ps.setInt(1, idUtilisateur);
-            ResultSet rs = ps.executeQuery();
+            Paiement paiement = new Paiement(idReservation, montant, methode, statut, new Date(System.currentTimeMillis()));
+            PaiementDAO paiementDAO = new PaiementDAO(connection);
+            paiementDAO.ajouterPaiement(paiement);
 
-            boolean reductionAppliquee = false;
-            double montantAvant = montant;
-            double montantReduit = 0;
+            HebergementDAO hebergementDAO = new HebergementDAO(connection);
+            ReservationDAO reservationDAO = new ReservationDAO(connection, hebergementDAO);
+            Reservation reservation = reservationDAO.getReservationById(idReservation);
 
-            if (rs.next()) {
-                Date dateInscription = rs.getDate("date_inscription");
-                LocalDate dateInscriptionLocal = dateInscription.toLocalDate();
-                LocalDate aujourdHui = LocalDate.now();
+            if (reservation != null) {
+                int idHebergement = reservation.getIdHebergement();
+                boolean updated = hebergementDAO.mettreAJourDisponibilite(idHebergement, false);
 
-                if (dateInscriptionLocal.plusMonths(6).isBefore(aujourdHui)) {
-                    // Applique une réduction de 10%
-                    montantReduit = montant * 0.10;
-                    montant -= montantReduit;
-
-                    recapMontantReductionLabel.setText(
-                            "<html><span style='color:green;'>Réduction de 10% appliquée ✅</span><br/>" +
-                                    "<span style='color:#555;'>Avant : " + String.format("%.2f", montantAvant) + " €</span><br/>" +
-                                    "<b>Après : " + String.format("%.2f", montant) + " €</b></html>"
-                    );
-
-                    reductionAppliquee = true;
+                if (updated) {
+                    System.out.println("Hébergement rendu indisponible après paiement !");
+                } else {
+                    System.out.println("Échec de mise à jour de la disponibilité.");
                 }
             }
 
-            // Créer le paiement
-            Paiement paiement = new Paiement(idReservation, montant, methode, statut, new Date(System.currentTimeMillis()));
-            paiementDAO.ajouterPaiement(paiement);
+            boolean statutOui = reservationDAO.mettreAJourStatutReservation(idReservation, Reservation.Statut.PAYE);
+            if (statutOui) {
+                System.out.println("Statut de la réservation : PAYÉ ");
+            } else {
+                System.out.println("Échec de la mise à jour du statut de réservation");
+            }
 
-            // Ajouter la réduction dans la table `offrereduction`
-            OffreReductionDAO offreReductionDAO = new OffreReductionDAO(connection);
-            double reduction = reductionAppliquee ? 10.0 : 0.0; // 10% si true, sinon 0%
-            offreReductionDAO.ajouterReductionPaiement(paiement.getIdPaiement(), reduction, montantReduit);
-
-            cacherTraitement();
-
-            JOptionPane.showMessageDialog(this,
-                    statut == Paiement.StatutPaiement.PAYE ? "🎉 Paiement réussi !" : "❌ Paiement annulé.",
-                    "Info",
-                    JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Paiement confirmé !");
+            this.dispose();
 
         } catch (Exception e) {
-            cacherTraitement();
-            JOptionPane.showMessageDialog(this,
-                    "Erreur lors de l'enregistrement :\n" + e.getMessage(),
-                    "Erreur",
-                    JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Erreur lors du paiement : " + e.getMessage());
             e.printStackTrace();
         }
     }
 
     private void enregistrerEnAttente() {
-        afficherTraitement();
-
-        String methodeStr = (String) methodeCombo.getSelectedItem();
-        Paiement.MethodePaiement methode = Paiement.fromSQLMethode(methodeStr);
-
-        if (!verifierChamps(methode)) return;
-
-        try {
-            Thread.sleep(2000); // Simule un délai de traitement
-
-            Paiement paiement = new Paiement(idReservation, montant, methode, Paiement.StatutPaiement.EN_ATTENTE, new Date(System.currentTimeMillis()));
-            paiementDAO.ajouterPaiement(paiement);
-
-            cacherTraitement();
-            JOptionPane.showMessageDialog(this,
-                    "💾 Paiement enregistré en attente.",
-                    "Info",
-                    JOptionPane.INFORMATION_MESSAGE);
-
-        } catch (Exception e) {
-            cacherTraitement();
-            JOptionPane.showMessageDialog(this,
-                    "Erreur lors de l'enregistrement en attente :\n" + e.getMessage(),
-                    "Erreur",
-                    JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        }
-    }
-
-    private boolean verifierChamps(Paiement.MethodePaiement methode) {
-        if (methode == Paiement.MethodePaiement.CARTE_BANCAIRE &&
-                (carteNumeroField.getText().isEmpty() || carteCVVField.getText().isEmpty())) {
-            JOptionPane.showMessageDialog(this, "Veuillez remplir tous les champs de la carte bancaire.");
-            return false;
-        } else if (methode == Paiement.MethodePaiement.PAYPAL && paypalEmailField.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Veuillez renseigner un email PayPal.");
-            return false;
-        } else if (methode == Paiement.MethodePaiement.VIREMENT && virementIbanField.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Veuillez renseigner un IBAN pour le virement.");
-            return false;
-        }
-        return true;
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new PaiementVue(3, 42, 100.0));
+        JOptionPane.showMessageDialog(this, "Paiement enregistré en attente.");
     }
 }

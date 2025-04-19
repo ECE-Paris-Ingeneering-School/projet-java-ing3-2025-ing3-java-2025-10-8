@@ -22,6 +22,18 @@ public class AccueilAdminFenetre extends JFrame {
         titleLabel.setForeground(new Color(0, 45, 114));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        // Bas
+        JButton deconnexionButton = new JButton("Ajouter un hébergement");
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        deconnexionButton = new JButton("Déconnexion");
+        bottomPanel.add(deconnexionButton);
+        add(bottomPanel, BorderLayout.SOUTH);
+
+        deconnexionButton.addActionListener(e -> {
+            dispose();
+            new ConnexionFenetre().setVisible(true);
+        });
+
         JButton ajouterHebergementButton = new JButton("Ajouter un hébergement");
         ajouterHebergementButton.setFont(new Font("Arial", Font.BOLD, 14));
         ajouterHebergementButton.setBackground(new Color(0, 102, 204));
@@ -50,6 +62,11 @@ public class AccueilAdminFenetre extends JFrame {
         ajouterHebergementButton.addActionListener(e -> {
             JOptionPane.showMessageDialog(this, "Redirection vers le formulaire d'ajout...");
              new AjoutHebergementFenetre().setVisible(true);
+        });
+
+        // Action pour modifier un hébergement
+        modifierHebergementButton.addActionListener(e -> {
+            new ModifierHebergementFenetre().setVisible(true);
         });
 
         // Action pour supprimer un hébergement

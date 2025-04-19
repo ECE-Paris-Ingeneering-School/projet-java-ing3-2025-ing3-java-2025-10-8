@@ -2,6 +2,7 @@ package DAO;
 
 import Modele.Reservation;
 import java.sql.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDate;
@@ -38,22 +39,26 @@ public class ReservationDAO {
         }
     }
 
-    // Vérifier la disponibilité de l'hébergement
     public boolean estDisponible(int idHebergement, LocalDate dateArrivee, LocalDate dateDepart) {
-        String sql = "SELECT * FROM reservation WHERE id_hebergement = ? AND statut = 'Confirmée' " +
-                "AND ((date_arrivee BETWEEN ? AND ?) OR (date_depart BETWEEN ? AND ?))";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setInt(1, idHebergement);
-            ps.setDate(2, Date.valueOf(dateArrivee));
-            ps.setDate(3, Date.valueOf(dateDepart));
-            ps.setDate(4, Date.valueOf(dateArrivee));
-            ps.setDate(5, Date.valueOf(dateDepart));
-            ResultSet rs = ps.executeQuery();
-            return !rs.next();
+        boolean dispo = false;
+        try (Connection conn = ConnexionBdd.seConnecter()) {
+            String sql = "SELECT COUNT(*) AS nb FROM Reservation " +
+                    "WHERE id_hebergement = ? " +
+                    "AND statut = 'Confirmée' " +
+                    "AND (date_arrivee < ? AND date_depart > ?)";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setLong(1, idHebergement);
+            stmt.setDate(2, Date.valueOf(dateDepart));
+            stmt.setDate(3, Date.valueOf(dateArrivee));  // La nouvelle date d’arrivée
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                dispo = rs.getInt("nb") == 0; // S’il n’y a pas de chevauchement
+            }
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
         }
+        return dispo;
     }
 
     // Récupérer une réservation par son ID
@@ -201,16 +206,44 @@ public class ReservationDAO {
     }
 
     // Mise à jour manuelle du statut
-    public boolean mettreAJourStatutReservation(int idReservation, Reservation.Statut statut) {
+    public boolean mettreAJourStatutReservation(int idReservation, Reservation.Statut nouveauStatut) {
         String sql = "UPDATE reservation SET statut = ? WHERE id_reservation = ?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setString(1, statut.getValue());
+        try (Connection conn = ConnexionBdd.seConnecter();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            System.out.println("Statut envoyé à MySQL : " + nouveauStatut.getValue());
+
+            ps.setString(1, nouveauStatut.getValue()); // Attention : .name() renvoie "PAYE", "EN_ATTENTE", ...
             ps.setInt(2, idReservation);
-            int rowsAffected = ps.executeUpdate();
-            return rowsAffected > 0;
+
+            int rows = ps.executeUpdate();
+            System.out.println(">> Mise à jour statut - lignes affectées : " + rows);
+
+            return rows > 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
+
+    public static boolean utilisateurAReserve(int idUtilisateur, int idHebergement) {
+        boolean aReserve = false;
+        try {
+            Connection conn = ConnexionBdd.seConnecter();
+            String sql = "SELECT COUNT(*) FROM reservation WHERE id_utilisateur = ? AND id_hebergement = ?";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, idUtilisateur);
+            pstmt.setInt(2, idHebergement);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                aReserve = rs.getInt(1) > 0;
+            }
+            pstmt.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return aReserve;
+    }
+
+
+
 }
