@@ -1,0 +1,8 @@
+----- Reçu de Paiement -----
+Date        : 2025-04-19
+Client      : clara
+Réservation : #38
+Montant     : 150,00 €
+Méthode     : Virement
+-----------------------------
+Merci pour votre confiance !

@@ -4,17 +4,64 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Représente un hébergement dans le système de réservation.
+ * Un hébergement possède des informations comme le nom, l'adresse, le prix par nuit, la description, la spécification,
+ * les images associées, et sa disponibilité.
+ */
 public class Hebergement {
-    private int idHebergement;
-    private String nom;
-    private String adresse;
-    private BigDecimal prixParNuit;
-    private String description;
-    private String specification;
-    private List<String> imageUrls = new ArrayList<>(); // Liste d’images
-    private int disponibilite; // ajout de la variable pour les disponibilites
 
-    // Constructeur
+    /**
+     * L'identifiant de l'hébergement.
+     */
+    private int idHebergement;
+
+    /**
+     * Le nom de l'hébergement.
+     */
+    private String nom;
+
+    /**
+     * L'adresse de l'hébergement.
+     */
+    private String adresse;
+
+    /**
+     * Le prix par nuit pour l'hébergement.
+     */
+    private BigDecimal prixParNuit;
+
+    /**
+     * La description de l'hébergement.
+     */
+    private String description;
+
+    /**
+     * Des spécifications supplémentaires pour l'hébergement.
+     */
+    private String specification;
+
+    /**
+     * La liste des URLs des images de l'hébergement.
+     */
+    private List<String> imageUrls = new ArrayList<>();
+
+    /**
+     * Le nombre de chambres disponibles pour cet hébergement.
+     */
+    private int disponibilite;
+
+    /**
+     * Constructeur de l'hébergement.
+     *
+     * @param idHebergement L'identifiant de l'hébergement.
+     * @param nom Le nom de l'hébergement.
+     * @param adresse L'adresse de l'hébergement.
+     * @param prixParNuit Le prix par nuit pour cet hébergement.
+     * @param description Une description détaillée de l'hébergement.
+     * @param specification Des spécifications supplémentaires pour l'hébergement.
+     * @param imageUrls Une liste d'URLs des images de l'hébergement.
+     */
     public Hebergement(int idHebergement, String nom, String adresse, BigDecimal prixParNuit, String description, String specification, List<String> imageUrls) {
         this.idHebergement = idHebergement;
         this.nom = nom;
@@ -26,47 +73,103 @@ public class Hebergement {
     }
 
     // Getters et Setters
+
+    /**
+     * Retourne l'identifiant de l'hébergement.
+     *
+     * @return L'identifiant de l'hébergement.
+     */
     public int getIdHebergement() {
         return idHebergement;
     }
 
+    /**
+     * Définit l'identifiant de l'hébergement.
+     *
+     * @param idHebergement L'identifiant de l'hébergement.
+     */
     public void setIdHebergement(int idHebergement) {
         this.idHebergement = idHebergement;
     }
 
+    /**
+     * Retourne le nom de l'hébergement.
+     *
+     * @return Le nom de l'hébergement.
+     */
     public String getNom() {
         return nom;
     }
 
+    /**
+     * Définit le nom de l'hébergement.
+     *
+     * @param nom Le nom de l'hébergement.
+     */
     public void setNom(String nom) {
         this.nom = nom;
     }
 
+    /**
+     * Retourne l'adresse de l'hébergement.
+     *
+     * @return L'adresse de l'hébergement.
+     */
     public String getAdresse() {
         return adresse;
     }
 
+    /**
+     * Définit l'adresse de l'hébergement.
+     *
+     * @param adresse L'adresse de l'hébergement.
+     */
     public void setAdresse(String adresse) {
         this.adresse = adresse;
     }
 
+    /**
+     * Retourne le prix par nuit de l'hébergement.
+     *
+     * @return Le prix par nuit.
+     */
     public BigDecimal getPrixParNuit() {
         return prixParNuit;
     }
 
+    /**
+     * Définit le prix par nuit de l'hébergement.
+     *
+     * @param prixParNuit Le prix par nuit.
+     */
     public void setPrixParNuit(BigDecimal prixParNuit) {
         this.prixParNuit = prixParNuit;
     }
 
+    /**
+     * Retourne la disponibilité de l'hébergement.
+     *
+     * @return La disponibilité de l'hébergement.
+     */
     public int getDisponibilite() {
         return disponibilite;
     }
 
+    /**
+     * Définit la disponibilité de l'hébergement.
+     *
+     * @param disponibilite La disponibilité de l'hébergement.
+     */
     public void setDisponibilite(int disponibilite) {
         this.disponibilite = disponibilite;
     }
 
-
+    /**
+     * Retourne la description de l'hébergement en fonction de son nom.
+     * Cette méthode retourne des descriptions spécifiques pour certains hébergements.
+     *
+     * @return La description de l'hébergement.
+     */
     public String getDescription() {
         switch (nom) {
             case "Studio Chic":
@@ -97,27 +200,57 @@ public class Hebergement {
 
     }
 
+    /**
+     * Définit la description de l'hébergement.
+     *
+     * @param description La description à définir.
+     */
     public void setDescription(String description) {
         this.description = description;
     }
 
+    /**
+     * Retourne les spécifications de l'hébergement.
+     *
+     * @return Les spécifications de l'hébergement.
+     */
     public String getSpecification() {
         return specification;
     }
 
+    /**
+     * Définit les spécifications de l'hébergement.
+     *
+     * @param specification Les spécifications à définir.
+     */
     public void setSpecification(String specification) {
         this.specification = specification;
     }
 
+    /**
+     * Retourne la liste des URLs des images de l'hébergement.
+     *
+     * @return La liste des URLs des images.
+     */
     public List<String> getImageUrls() {
         return imageUrls;
     }
 
+    /**
+     * Définit les URLs des images de l'hébergement.
+     *
+     * @param imageUrls La liste des URLs des images.
+     */
     public void setImageUrls(List<String> imageUrls) {
         this.imageUrls = imageUrls;
     }
 
-    // Pour garder une image principale si nécessaire
+    /**
+     * Retourne l'URL de la première image de l'hébergement.
+     * Utilisé pour afficher une image principale si nécessaire.
+     *
+     * @return L'URL de la première image.
+     */
     public String getImageUrl() {
         return imageUrls != null && !imageUrls.isEmpty() ? imageUrls.get(0) : null;
     }

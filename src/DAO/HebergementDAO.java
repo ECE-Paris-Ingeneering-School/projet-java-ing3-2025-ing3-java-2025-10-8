@@ -11,19 +11,36 @@ import java.util.*;
 import java.sql.Connection;
 import DAO.ConnexionBdd;
 
+/**
+ * Classe HebergementDAO permettant d'effectuer des opérations CRUD sur les hébergements (hôtels, appartements, maisons d'hôtes).
+ * Elle interagit avec les tables hebergement, hotel, appartement, maisonhotes, et hebergement_images.
+ */
 public class HebergementDAO {
 
+    /** Connexion à la base de données. */
     private Connection connection;
 
+    /**
+     * Constructeur avec connexion personnalisée.
+     * @param connection Connexion à la base de données.
+     */
     public HebergementDAO(Connection connection) {
-        this.connection = connection; // Initialisation de la connexion avec celle passée en paramètre
+        this.connection = connection;
     }
 
+    /**
+     * Constructeur par défaut utilisant la connexion globale définie dans ConnexionBdd.
+     */
     public HebergementDAO() {
-        this.connection = ConnexionBdd.seConnecter(); // Utilisation de la connexion globale
+        this.connection = ConnexionBdd.seConnecter();
     }
 
-
+    /**
+     * Met à jour les informations de base d'un hébergement (sans le type spécifique).
+     * @param conn Connexion active.
+     * @param h Hébergement à mettre à jour.
+     * @throws SQLException si erreur SQL.
+     */
     private void updateHebergementBase(Connection conn, Hebergement h) throws SQLException {
         String sql = "UPDATE hebergement SET nom = ?, adresse = ?, prix_par_nuit = ?, description = ?, specification = ? WHERE id_hebergement = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -37,7 +54,13 @@ public class HebergementDAO {
         }
     }
 
-
+    /**
+     * Insère les URLs d'images liées à un hébergement.
+     * @param conn Connexion active.
+     * @param idHebergement ID de l'hébergement.
+     * @param imageUrls Liste des URL d'images.
+     * @throws SQLException si erreur SQL.
+     */
     private void insererImagesHebergement(Connection conn, long idHebergement, List<String> imageUrls) throws SQLException {
         if (imageUrls == null || imageUrls.isEmpty()) return;
         String sql = "INSERT INTO hebergement_images (id_hebergement, image_url) VALUES (?, ?)";
@@ -51,7 +74,13 @@ public class HebergementDAO {
         }
     }
 
-
+    /**
+     * Récupère la liste des URLs d'images associées à un hébergement.
+     * @param conn Connexion active.
+     * @param idHebergement ID de l'hébergement.
+     * @return Liste d'URLs d'images.
+     * @throws SQLException si erreur SQL.
+     */
     private List<String> recupererImagesHebergement(Connection conn, long idHebergement) throws SQLException {
         List<String> images = new ArrayList<>();
         String sql = "SELECT image_url FROM hebergement_images WHERE id_hebergement = ?";
@@ -65,7 +94,10 @@ public class HebergementDAO {
         return images;
     }
 
-
+    /**
+     * Ajoute un hôtel dans la base de données.
+     * @param h L'hôtel à ajouter.
+     */
     public void ajouterHotel(Hotel h) {
         String sql = "INSERT INTO hebergement (nom, adresse, prix_par_nuit, description, specification, disponibilite) VALUES (?, ?, ?, ?, ?, ?)";
         String sqlHotel = "INSERT INTO hotel (id_hebergement, nombre_etoiles, petit_dejeuner, piscine, spa) VALUES (?, ?, ?, ?, ?)";
@@ -110,7 +142,10 @@ public class HebergementDAO {
     }
 
 
-
+    /**
+     * Ajoute un appartement dans la base de données.
+     * @param a L'appartement à ajouter.
+     */
     public void ajouterAppartement(Appartement a) {
         String sql = "INSERT INTO hebergement (nom, adresse, prix_par_nuit, description, specification, disponibilite) VALUES (?, ?, ?, ?, ?, ?)";
         String sqlAppart = "INSERT INTO appartement (id_hebergement, nombre_pieces, petit_dejeuner, etage) VALUES (?, ?, ?, ?)";
@@ -152,7 +187,10 @@ public class HebergementDAO {
         }
     }
 
-
+    /**
+     * Ajoute une maison d'hôtes dans la base de données.
+     * @param m La maison d'hôtes à ajouter.
+     */
     public void ajouterMaisonHotes(MaisonHotes m) {
         String sql = "INSERT INTO hebergement (nom, adresse, prix_par_nuit, description, specification, disponibilite) VALUES (?, ?, ?, ?, ?, ?)";
         String sqlMaison = "INSERT INTO maisonhotes (id_hebergement, petit_dejeuner, jardin) VALUES (?, ?, ?)";
@@ -197,6 +235,11 @@ public class HebergementDAO {
 
     // ---------------------- READ ----------------------
 
+    /**
+     * Recherche une maison d'hôtes par son ID.
+     * @param id ID de la maison d'hôtes.
+     * @return Objet MaisonHotes ou null.
+     */
     public MaisonHotes findMaisonHotesById(int id) {
         String sqlHebergement = "SELECT * FROM hebergement WHERE id_hebergement = ?";
         String sqlMaison = "SELECT * FROM maisonhotes WHERE id_hebergement = ?";
@@ -316,6 +359,10 @@ public class HebergementDAO {
 
     // ---------------------- FILTRAGE ----------------------
 
+    /**
+     * Récupère tous les hébergements enregistrés dans la base.
+     * @return Liste des hébergements.
+     */
     public List<Hebergement> getAllHebergements() {
         List<Hebergement> hebergements = new ArrayList<>();
         String sql = "SELECT id_hebergement FROM hebergement";
@@ -352,6 +399,16 @@ public class HebergementDAO {
         return hebergements;
     }
 
+    /**
+     * Récupère les hébergements filtrés selon différents critères.
+     * @param type Type d'hébergement souhaité (Hotel, Appartement, MaisonHotes).
+     * @param prixMin Prix minimum.
+     * @param prixMax Prix maximum.
+     * @param piscine Si la piscine est souhaitée.
+     * @param petitDejeuner Si le petit-déjeuner est souhaité.
+     * @param jardin Si le jardin est souhaité.
+     * @return Liste d'hébergements correspondant aux filtres.
+     */
     public List<Hebergement> getHebergementsAvecFiltres(String type, BigDecimal prixMin, BigDecimal prixMax,
                                                         Boolean piscine, Boolean petitDejeuner, Boolean jardin) {
         List<Hebergement> tous = getAllHebergements(); // On récupère tout
@@ -397,7 +454,11 @@ public class HebergementDAO {
     }
 
 
-    //Supprimer des hebergements
+    /**
+     * Supprime un hébergement par son ID.
+     * @param idHebergement ID de l'hébergement.
+     * @return true si suppression réussie, false sinon.
+     */
     public boolean supprimerHebergementParId(int idHebergement) {
         String sql = "DELETE FROM hebergement WHERE id_hebergement = ?";
         try (Connection conn = ConnexionBdd.seConnecter();
@@ -412,6 +473,11 @@ public class HebergementDAO {
         }
     }
 
+    /**
+     * Met à jour les informations principales d'un hébergement.
+     * @param h Hébergement avec nouvelles valeurs.
+     * @return true si mise à jour réussie, false sinon.
+     */
     public boolean modifierHebergement(Hebergement h) {
         String sql = "UPDATE hebergement SET nom = ?, adresse = ?, prix_par_nuit = ?, description = ? WHERE id_hebergement = ?";
         try (Connection conn = ConnexionBdd.seConnecter();
@@ -432,6 +498,13 @@ public class HebergementDAO {
     }
 
 
+    /**
+     * Vérifie la disponibilité d'un hébergement entre deux dates.
+     * @param idHebergement ID de l'hébergement.
+     * @param dateArrivee Date d'arrivée souhaitée.
+     * @param dateDepart Date de départ souhaitée.
+     * @return true si disponible, false sinon.
+     */
     public boolean estDisponible(long idHebergement, String dateArrivee, String dateDepart) {
         boolean dispo = false;
         try (Connection conn = ConnexionBdd.seConnecter()) {
@@ -455,6 +528,11 @@ public class HebergementDAO {
     }
 
 
+    /**
+     * Récupère un hébergement selon son ID, en identifiant son type.
+     * @param idHebergement ID de l'hébergement.
+     * @return Objet Hebergement ou null.
+     */
     public Hebergement getHebergementById(int idHebergement) {
         Hebergement hebergement = null;
 
@@ -478,6 +556,12 @@ public class HebergementDAO {
         return hebergement;
     }
 
+    /**
+     * Met à jour le nombre de chambres disponibles après une réservation.
+     * @param idHebergement ID de l'hébergement.
+     * @param chambresReservees Nombre de chambres à soustraire.
+     * @return true si mise à jour effectuée, false sinon.
+     */
     public boolean mettreAJourChambresDisponibles(int idHebergement, int chambresReservees) {
         String sql = "UPDATE hebergement SET chambres_disponibles = chambres_disponibles - ? WHERE id_hebergement = ?";
         try (Connection conn = ConnexionBdd.seConnecter();
@@ -494,6 +578,12 @@ public class HebergementDAO {
         }
     }
 
+    /**
+     * Met à jour l'état de disponibilité d'un hébergement.
+     * @param idHebergement ID de l'hébergement.
+     * @param disponible true si disponible, false sinon.
+     * @return true si mise à jour effectuée, false sinon.
+     */
     public boolean mettreAJourDisponibilite(int idHebergement, boolean disponible) {
         String sql = "UPDATE hebergement SET disponibilite = ? WHERE id_hebergement = ?";
         try (Connection conn = ConnexionBdd.seConnecter();
@@ -509,9 +599,4 @@ public class HebergementDAO {
             return false;
         }
     }
-
-
-
-
-
 }

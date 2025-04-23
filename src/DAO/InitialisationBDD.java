@@ -12,8 +12,16 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * Classe permettant l'initialisation de la base de données avec des données de test.
+ * Elle ajoute des clients, des administrateurs et des hébergements avec images.
+ */
 public class InitialisationBDD {
 
+    /**
+     * Point d'entrée principal qui initialise la base de données avec des données par défaut.
+     * @param args arguments de la ligne de commande (non utilisés).
+     */
     public static void main(String[] args) {
         System.out.println("Initialisation de la base...");
 
@@ -55,6 +63,10 @@ public class InitialisationBDD {
         System.out.println("\u2705 Base initialisée avec 15 hébergements (images incluses) !");
     }
 
+    /**
+     * Récupère l'identifiant de la dernière entrée insérée dans la base de données.
+     * @return ID de la dernière entrée ou -1 en cas d'erreur.
+     */
     private static int getLastInsertedId() {
         try (Connection conn = ConnexionBdd.seConnecter();
              PreparedStatement ps = conn.prepareStatement("SELECT LAST_INSERT_ID()")) {
@@ -68,6 +80,11 @@ public class InitialisationBDD {
         return -1;
     }
 
+    /**
+     * Ajoute une image liée à un hébergement donné dans la table image.
+     * @param idHebergement ID de l'hébergement.
+     * @param url URL de l'image.
+     */
     private static void ajouterImage(int idHebergement, String url) {
         String sql = "INSERT INTO image (id_hebergement, url) VALUES (?, ?)";
         try (Connection conn = ConnexionBdd.seConnecter();

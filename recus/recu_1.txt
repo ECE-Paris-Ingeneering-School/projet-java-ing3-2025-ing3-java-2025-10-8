@@ -1,0 +1,8 @@
+----- Reçu de Paiement -----
+Date        : 2025-04-20
+Client      : elise
+Réservation : #1
+Montant     : 250,00 €
+Méthode     : PayPal
+-----------------------------
+Merci pour votre confiance !

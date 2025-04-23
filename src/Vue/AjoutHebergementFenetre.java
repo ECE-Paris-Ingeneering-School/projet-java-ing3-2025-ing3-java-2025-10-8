@@ -8,6 +8,10 @@ import Modele.Appartement;
 import Modele.Hotel;
 import Modele.MaisonHotes;
 
+/**
+ * Fenêtre permettant d'ajouter un nouvel hébergement dans l'application.
+ * L'utilisateur peut sélectionner le type d'hébergement (hôtel, appartement, maison d'hôtes) et renseigner les informations correspondantes.
+ */
 public class AjoutHebergementFenetre extends JFrame {
 
     private JComboBox<String> typeCombo;
@@ -20,6 +24,10 @@ public class AjoutHebergementFenetre extends JFrame {
 
     private JPanel specificFieldsPanel;
 
+    /**
+     * Constructeur de la fenêtre d'ajout d'hébergement.
+     * Configure l'interface utilisateur et initialise les composants.
+     */
     public AjoutHebergementFenetre() {
         setTitle("Ajouter un hébergement");
         setSize(600, 700);
@@ -103,6 +111,13 @@ public class AjoutHebergementFenetre extends JFrame {
         updateSpecificFields("Hôtel");
     }
 
+    /**
+     * Crée un panneau contenant un champ de saisie avec un label.
+     *
+     * @param label Le label à afficher pour le champ de saisie.
+     * @param field Le champ de saisie à ajouter au panneau.
+     * @return Un panneau avec un label et un champ de saisie.
+     */
     private JPanel createLabeledField(String label, JTextField field) {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(Color.WHITE);
@@ -114,6 +129,11 @@ public class AjoutHebergementFenetre extends JFrame {
         return panel;
     }
 
+    /**
+     * Met à jour les champs spécifiques du formulaire en fonction du type d'hébergement sélectionné.
+     *
+     * @param type Le type d'hébergement sélectionné (Hôtel, Appartement, Maison d'hôtes).
+     */
     private void updateSpecificFields(String type) {
         specificFieldsPanel.removeAll();
 
@@ -142,6 +162,9 @@ public class AjoutHebergementFenetre extends JFrame {
         specificFieldsPanel.repaint();
     }
 
+    /**
+     * Ajoute un hébergement dans la base de données en fonction des informations saisies.
+     */
     private void ajouterHebergement() {
         String nom = nomField.getText().trim();
         String adresse = adresseField.getText().trim();
@@ -164,7 +187,7 @@ public class AjoutHebergementFenetre extends JFrame {
             return;
         }
 
-        //Création de la liste d’images
+        // Création de la liste d'images
         java.util.List<String> imageUrls = java.util.Arrays.stream(imageUrlRaw.split(","))
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
@@ -197,7 +220,6 @@ public class AjoutHebergementFenetre extends JFrame {
             JOptionPane.showMessageDialog(this, "Erreur : " + e.getMessage());
         }
     }
-
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new AjoutHebergementFenetre().setVisible(true));

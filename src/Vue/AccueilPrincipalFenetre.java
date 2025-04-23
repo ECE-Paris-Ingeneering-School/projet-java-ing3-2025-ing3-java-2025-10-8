@@ -13,6 +13,11 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.ArrayList;
 
+/**
+ * Fenêtre principale de l'application de réservation d'hébergements.
+ * Cette fenêtre permet à l'utilisateur de rechercher des hébergements en fonction de critères et de filtrer les résultats.
+ * Elle affiche également des informations détaillées sur chaque hébergement et permet de procéder à une réservation.
+ */
 public class AccueilPrincipalFenetre extends JFrame {
 
     private JPanel resultPanel;
@@ -21,9 +26,15 @@ public class AccueilPrincipalFenetre extends JFrame {
     private JCheckBoxMenuItem cbHotel, cbAppartement, cbMaison;
     private JCheckBoxMenuItem cbPetitDej, cbPiscine, cbSpa, cbJardin;
 
+    /**
+     * Constructeur de la fenêtre principale.
+     *
+     * @param clientConnecte Le client connecté à l'application.
+     */
     public AccueilPrincipalFenetre(Client clientConnecte) {
         this.clientConnecte = clientConnecte;
 
+        // Configuration de l'interface utilisateur
         UIManager.put("Label.font", new Font("Segoe UI", Font.PLAIN, 14));
         UIManager.put("Button.font", new Font("Segoe UI", Font.BOLD, 13));
         UIManager.put("CheckBox.font", new Font("Segoe UI", Font.PLAIN, 13));
@@ -68,6 +79,7 @@ public class AccueilPrincipalFenetre extends JFrame {
         btnFiltrePrincipal.setBounds(500, 55, 200, 35);
         topBar.add(btnFiltrePrincipal);
 
+        // Menu déroulant profil
         JPopupMenu menuProfil = new JPopupMenu();
 
         if (clientConnecte != null) {
@@ -164,8 +176,9 @@ public class AccueilPrincipalFenetre extends JFrame {
         filtrerHebergements();
     }
 
-
-
+    /**
+     * Applique les filtres sur les hébergements et met à jour l'affichage des résultats.
+     */
     private void filtrerHebergements() {
         HebergementDAO dao = new HebergementDAO();
         List<Hebergement> tous = dao.getAllHebergements();
@@ -223,6 +236,12 @@ public class AccueilPrincipalFenetre extends JFrame {
         resultPanel.repaint();
     }
 
+    /**
+     * Crée une carte de présentation pour un hébergement.
+     *
+     * @param h L'hébergement à afficher.
+     * @return Le panneau représentant la carte de l'hébergement.
+     */
     private JPanel creerCarteHebergement(Hebergement h) {
         JPanel carte = new JPanel();
         carte.setBackground(new Color(245, 245, 245));
@@ -349,7 +368,6 @@ public class AccueilPrincipalFenetre extends JFrame {
         boutonsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         boutonsPanel.add(btnDispo);
         boutonsPanel.add(btnCarte);
-
 
         infos.add(Box.createVerticalStrut(10));
         infos.add(boutonsPanel);
