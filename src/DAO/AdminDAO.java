@@ -6,9 +6,19 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Classe DAO (Data Access Object) pour la gestion des administrateurs dans la base de données.
+ * Fournit les opérations CRUD sur les objets Admin en interaction avec les tables `utilisateur` et `admin`.
+ * Pattern : DAO, utilisé via JDBC avec gestion transactionnelle.
+ * @author Noa
+ */
 public class AdminDAO {
+    /**
+     * Ajoute un administrateur dans les tables `utilisateur` et `admin`.
+     * @param admin L'objet Admin à ajouter
+     * @return true si l'ajout a réussi, false sinon
+     */
 
-    // Ajouter un nouvel admin
     public boolean ajouterAdmin(Admin admin) {
         String sqlUtilisateur = "INSERT INTO utilisateur (nom, prenom, email, mdp, date_inscription) VALUES (?, ?, ?, ?, ?)";
         String sqlAdmin = "INSERT INTO admin (id_utilisateur, role_specifique) VALUES (?, ?)";
@@ -47,7 +57,11 @@ public class AdminDAO {
         }
     }
 
-    // Récupérer un admin par ID
+    /**
+     * Récupère un administrateur à partir de son identifiant.
+     * @param id Identifiant de l'utilisateur
+     * @return L'objet Admin correspondant, ou null si non trouvé
+     */
     public Admin getAdminParId(int id) {
         String sql = "SELECT u.*, a.role_specifique FROM utilisateur u JOIN admin a ON u.id_utilisateur = a.id_utilisateur WHERE u.id_utilisateur = ?";
 
@@ -74,8 +88,11 @@ public class AdminDAO {
 
         return null;
     }
-
-    // Supprimer un admin
+    /**
+     * Supprime un administrateur via son ID (supprime également l’entrée dans `utilisateur`).
+     * @param id Identifiant de l'utilisateur
+     * @return true si la suppression a réussi, false sinon
+     */
     public boolean supprimerAdmin(int id) {
         String sql = "DELETE FROM utilisateur WHERE id_utilisateur = ?";
 
@@ -90,8 +107,10 @@ public class AdminDAO {
             return false;
         }
     }
-
-    // Liste de tous les admins
+    /**
+     * Récupère tous les administrateurs présents en base.
+     * @return Liste des objets Admin
+     */
     public List<Admin> getTousLesAdmins() {
         List<Admin> admins = new ArrayList<>();
         String sql = "SELECT u.*, a.role_specifique FROM utilisateur u JOIN admin a ON u.id_utilisateur = a.id_utilisateur";
@@ -118,6 +137,11 @@ public class AdminDAO {
 
         return admins;
     }
+    /**
+     * Récupère un administrateur à partir de son email.
+     * @param email Email de l'utilisateur
+     * @return L'objet Admin correspondant, ou null si non trouvé
+     */
     public Admin getAdminParEmail(String email) {
         String sql = "SELECT u.*, a.role_specifique FROM utilisateur u JOIN admin a ON u.id_utilisateur = a.id_utilisateur WHERE u.email = ?";
 
