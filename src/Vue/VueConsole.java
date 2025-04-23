@@ -11,13 +11,22 @@ import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Classe représentant l'interface console pour l'application de réservation d'hébergements.
+ * Permet d'afficher les détails d'un hébergement, d'appliquer des filtres sur les hébergements,
+ * et de permettre à l'utilisateur de choisir des critères de recherche dans un menu interactif.
+ */
 public class VueConsole {
 
     private static final DecimalFormat prixFormat = new DecimalFormat("#0.00");
     private static Scanner scanner = new Scanner(System.in);
     private static HebergementDAO dao = new HebergementDAO();
 
-    // Affichage des détails d'un hébergement
+    /**
+     * Affiche les détails d'un hébergement.
+     *
+     * @param h L'hébergement dont les détails doivent être affichés.
+     */
     public static void afficherHebergement(Hebergement h) {
         System.out.println("===== HÉBERGEMENT =====");
         System.out.println("ID : " + h.getIdHebergement());
@@ -82,8 +91,9 @@ public class VueConsole {
         System.out.println("========================\n");
     }
 
-
-    // Afficher les filtres disponibles
+    /**
+     * Affiche le menu des filtres disponibles pour l'utilisateur.
+     */
     private static void afficherMenuFiltres() {
         System.out.println("Filtres disponibles :");
         System.out.println("1. Filtrer par type d'hébergement");
@@ -96,7 +106,11 @@ public class VueConsole {
         System.out.print("Choisissez un filtre à appliquer : ");
     }
 
-    // Choisir un type d'hébergement
+    /**
+     * Demande à l'utilisateur de choisir un type d'hébergement.
+     *
+     * @return Le type d'hébergement choisi par l'utilisateur.
+     */
     private static String choisirType() {
         System.out.println("Choisissez un type d'hébergement :");
         System.out.println("1. Hôtel");
@@ -114,7 +128,12 @@ public class VueConsole {
         }
     }
 
-    // Demander un prix minimum ou maximum
+    /**
+     * Demande à l'utilisateur d'entrer un prix minimum ou maximum.
+     *
+     * @param type Le type de prix (minimum ou maximum).
+     * @return Le prix choisi par l'utilisateur.
+     */
     private static BigDecimal choisirPrix(String type) {
         System.out.print("Entrez le prix " + type + " (ou appuyez sur Entrée pour ne pas appliquer ce filtre) : ");
         String input = scanner.nextLine();
@@ -124,7 +143,12 @@ public class VueConsole {
         return new BigDecimal(input);
     }
 
-    // Choisir un critère booléen (piscine, petit déjeuner, jardin)
+    /**
+     * Demande à l'utilisateur de choisir un critère booléen (comme piscine, petit déjeuner ou jardin).
+     *
+     * @param critere Le critère à choisir.
+     * @return La valeur choisie (true ou false) ou null si aucune sélection.
+     */
     private static Boolean choisirBool(String critere) {
         System.out.print("Le " + critere + " est-il disponible ? (oui/non) : ");
         String input = scanner.nextLine().toLowerCase();
@@ -136,7 +160,11 @@ public class VueConsole {
         return null;
     }
 
-    // Afficher les hébergements filtrés
+    /**
+     * Affiche les hébergements filtrés par les critères sélectionnés.
+     *
+     * @param hebergements La liste des hébergements filtrés à afficher.
+     */
     private static void afficherHebergements(List<Hebergement> hebergements) {
         if (hebergements.isEmpty()) {
             System.out.println("Aucun hébergement ne correspond à vos critères.");
@@ -149,7 +177,16 @@ public class VueConsole {
         }
     }
 
-
+    /**
+     * Affiche un résumé des filtres appliqués par l'utilisateur.
+     *
+     * @param type          Le type d'hébergement choisi.
+     * @param prixMin       Le prix minimum choisi.
+     * @param prixMax       Le prix maximum choisi.
+     * @param piscine       Si un filtre piscine est appliqué.
+     * @param petitDejeuner Si un filtre petit déjeuner est appliqué.
+     * @param jardin        Si un filtre jardin est appliqué.
+     */
     public static void afficherRésuméFiltres(String type, BigDecimal prixMin, BigDecimal prixMax,
                                              Boolean piscine, Boolean petitDejeuner, Boolean jardin) {
         System.out.println("\nRésumé des filtres appliqués :");
@@ -162,7 +199,11 @@ public class VueConsole {
         System.out.println();
     }
 
-
+    /**
+     * Méthode principale pour lancer l'application console avec des filtres interactifs.
+     *
+     * @param args Les arguments passés à la méthode main (non utilisés ici).
+     */
     public static void main(String[] args) {
         while (true) {
             System.out.println("\n--- MENU DE FILTRES ---");
@@ -216,7 +257,6 @@ public class VueConsole {
             // Récupère et affiche les résultats
             List<Hebergement> hebergementsFiltres = dao.getHebergementsAvecFiltres(type, prixMin, prixMax, piscine, petitDejeuner, jardin);
             afficherHebergements(hebergementsFiltres);
-
         }
     }
 }

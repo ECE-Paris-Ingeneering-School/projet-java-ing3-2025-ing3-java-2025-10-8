@@ -7,7 +7,6 @@ import DAO.ReservationDAO;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.stream.Collectors;
-
 import java.text.SimpleDateFormat;
 
 import DAO.ConnexionBdd;
@@ -15,17 +14,25 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
+/**
+ * Fenêtre d'affichage des détails d'un hébergement.
+ * Cette fenêtre permet à l'utilisateur de consulter les informations d'un hébergement spécifique,
+ * de visualiser les images associées, de lire les avis des clients et d'ajouter un avis si l'utilisateur a réservé.
+ */
 public class HebergementDetailFenetre extends JFrame {
 
     private int imageIndex = 0;
     private Client clientConnecte;
 
-
+    /**
+     * Constructeur de la fenêtre de détails d'un hébergement.
+     *
+     * @param h L'hébergement dont les détails doivent être affichés.
+     * @param c Le client connecté qui consulte les détails de l'hébergement.
+     */
     public HebergementDetailFenetre(Hebergement h, Client c ) {
 
         this.clientConnecte = c;
-        int idClient = c.getIdUtilisateur();
-
 
         setTitle("Détails de l'hébergement : " + h.getNom());
         setSize(1000, 750);
@@ -47,6 +54,7 @@ public class HebergementDetailFenetre extends JFrame {
         nomLabel.setFont(new Font("Segoe UI", Font.BOLD, 26));
         titrePanel.add(nomLabel);
 
+        // Affichage des étoiles si c'est un hôtel
         if (h instanceof Hotel hotel) {
             int nbEtoiles = hotel.getNombreEtoiles();
             for (int i = 0; i < 5; i++) {
@@ -102,18 +110,19 @@ public class HebergementDetailFenetre extends JFrame {
 
         mainPanel.add(imagePanel, BorderLayout.CENTER);
 
+        // === INFOS PANEL ===
         JPanel infosPanel = new JPanel();
         infosPanel.setLayout(new BoxLayout(infosPanel, BoxLayout.Y_AXIS));
         infosPanel.setBackground(Color.WHITE);
         infosPanel.setBorder(BorderFactory.createEmptyBorder(30, 80, 30, 80));
 
-// === INFOS DE BASE ===
+        // === INFOS DE BASE ===
         infosPanel.add(createInfoLigne("Adresse :", h.getAdresse()));
         infosPanel.add(Box.createVerticalStrut(10));
         infosPanel.add(createInfoLigne("Prix par nuit :", h.getPrixParNuit() + " €"));
         infosPanel.add(Box.createVerticalStrut(15));
 
-// === DESCRIPTION ===
+        // === DESCRIPTION ===
         JLabel descTitre = new JLabel("Description :");
         descTitre.setFont(new Font("Segoe UI", Font.BOLD, 14));
         infosPanel.add(descTitre);
@@ -124,11 +133,11 @@ public class HebergementDetailFenetre extends JFrame {
         infosPanel.add(descriptionLabel);
         infosPanel.add(Box.createVerticalStrut(15));
 
-// === SPÉCIFICATION ===
+        // === SPÉCIFICATION ===
         infosPanel.add(createInfoLigne("Spécification :", h.getSpecification()));
         infosPanel.add(Box.createVerticalStrut(20));
 
-// === POINTS FORTS ===
+        // === POINTS FORTS ===
         JLabel pointsTitre = new JLabel("Points forts de l'établissement :");
         pointsTitre.setFont(new Font("Segoe UI", Font.BOLD, 14));
         infosPanel.add(pointsTitre);
@@ -138,6 +147,7 @@ public class HebergementDetailFenetre extends JFrame {
         pointsFortsPanel.setLayout(new BoxLayout(pointsFortsPanel, BoxLayout.Y_AXIS));
         pointsFortsPanel.setBackground(Color.WHITE);
 
+        // Points forts selon le type d'hébergement
         if (h instanceof Hotel hotel) {
             if (hotel.isPetitDejeuner()) {
                 pointsFortsPanel.add(createPointFort("☕", "Petit-déjeuner disponible", "Bon petit-déjeuner"));
@@ -217,8 +227,7 @@ public class HebergementDetailFenetre extends JFrame {
 
         infosPanel.add(Box.createVerticalStrut(20));
 
-// === BOUTON LAISSER UN AVIS (même sans avoir réservé)
-
+        // === BOUTON LAISSER UN AVIS (même sans avoir réservé)
         JLabel lienAvis = new JLabel("<html><u>Laisser un avis</u></html>");
         lienAvis.setForeground(new Color(0, 102, 204)); // Bleu Booking
         lienAvis.setFont(new Font("Arial", Font.BOLD, 13));
@@ -241,14 +250,11 @@ public class HebergementDetailFenetre extends JFrame {
             }
         });
 
-
         infosPanel.add(Box.createVerticalStrut(20));  // plus d'espace avant
         infosPanel.add(lienAvis);
-        infosPanel.add(Box.createVerticalStrut(30));  // plus d’espace après*/
+        infosPanel.add(Box.createVerticalStrut(30));  // plus d’espace après
 
-
-
-// === BOUTON CARTE ===
+        // === BOUTON CARTE ===
         JButton btnCarte = new JButton("Voir sur la carte");
         btnCarte.setBackground(new Color(0, 113, 194));
         btnCarte.setForeground(Color.WHITE);
@@ -268,7 +274,6 @@ public class HebergementDetailFenetre extends JFrame {
 
         infosPanel.add(btnCarte);
 
-
         // === SCROLLPANE WRAP ===
         JScrollPane scrollPane = new JScrollPane(infosPanel);
         scrollPane.setBorder(null);
@@ -278,6 +283,13 @@ public class HebergementDetailFenetre extends JFrame {
         mainPanel.add(scrollPane, BorderLayout.SOUTH);
     }
 
+    /**
+     * Crée une ligne d'information avec un label et une valeur à afficher.
+     *
+     * @param label Le label à afficher.
+     * @param value La valeur à afficher à côté du label.
+     * @return Un panneau contenant un label et sa valeur.
+     */
     private JPanel createInfoLigne(String label, String value) {
         JPanel line = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
         line.setBackground(Color.WHITE);
@@ -290,6 +302,14 @@ public class HebergementDetailFenetre extends JFrame {
         return line;
     }
 
+    /**
+     * Crée un panneau pour afficher un point fort de l'établissement.
+     *
+     * @param emoji L'emoji représentant le point fort.
+     * @param titre Le titre du point fort.
+     * @param details Les détails du point fort.
+     * @return Un panneau représentant le point fort.
+     */
     private JPanel createPointFort(String emoji, String titre, String details) {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
@@ -320,7 +340,13 @@ public class HebergementDetailFenetre extends JFrame {
         return panel;
     }
 
-
+    /**
+     * Met à jour l'image affichée dans le panneau d'images.
+     *
+     * @param imageLabel Le label qui affiche l'image.
+     * @param images La liste des images.
+     * @param index L'index de l'image à afficher.
+     */
     private void updateImage(JLabel imageLabel, List<String> images, int index) {
         try {
             String path = images.get(index);
@@ -339,6 +365,4 @@ public class HebergementDetailFenetre extends JFrame {
             imageLabel.setText("[Erreur chargement]");
         }
     }
-
-
 }
