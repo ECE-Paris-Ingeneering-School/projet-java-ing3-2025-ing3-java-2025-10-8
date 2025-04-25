@@ -8,8 +8,19 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClientDAO {
+/**
+ * DAO (Data Access Object) de la classe Client.
+ * Gère toutes les opérations d’accès et de manipulation des données client dans la base.
+ * Pattern : DAO, utilisé avec JDBC pour la table `client` liée à `utilisateur`.
+ * @author Noa
+ */
 
+public class ClientDAO {
+    /**
+     * Ajoute un nouveau client dans la base (utilisateur + client).
+     * @param client L'objet Client à ajouter
+     * @return true si l'ajout s’est bien déroulé, false sinon
+     */
     // Ajouter un nouveau client
     public boolean ajouterClient(Client client) {
         String sqlUtilisateur = "INSERT INTO utilisateur (nom, prenom, email, mdp, date_inscription) VALUES (?, ?, ?, ?, ?)";
@@ -48,7 +59,11 @@ public class ClientDAO {
             return false;
         }
     }
-
+    /**
+     * Récupère un client par son identifiant.
+     * @param id ID du client
+     * @return Un objet Client si trouvé, sinon null
+     */
     // Récupérer un client par ID
     public Client getClientParId(int id) {
         String sql = "SELECT u.*, c.type_client FROM utilisateur u JOIN client c ON u.id_utilisateur = c.id_utilisateur WHERE u.id_utilisateur = ?";
@@ -76,6 +91,11 @@ public class ClientDAO {
 
         return null;
     }
+    /**
+     * Récupère un client à partir de son adresse email.
+     * @param email Email du client
+     * @return L'objet Client trouvé ou null
+     */
     // Récupérer un client par email
     public Client getClientParEmail(String email) {
         String sql = "SELECT u.*, c.type_client FROM utilisateur u JOIN client c ON u.id_utilisateur = c.id_utilisateur WHERE u.email = ?";
@@ -103,7 +123,11 @@ public class ClientDAO {
 
         return null;
     }
-
+    /**
+     * Supprime un client de la base (supprime dans `utilisateur` et cascade dans `client` si bien paramétré en BDD).
+     * @param id Identifiant du client à supprimer
+     * @return true si la suppression a réussi, false sinon
+     */
     // Supprimer un client par ID
     public boolean supprimerClient(int id) {
         String sql = "DELETE FROM utilisateur WHERE id_utilisateur = ?";
@@ -119,7 +143,10 @@ public class ClientDAO {
             return false;
         }
     }
-
+    /**
+     * Récupère tous les clients enregistrés dans la base de données.
+     * @return Liste des objets Client
+     */
     // Récupérer tous les clients
     public List<Client> getTousLesClients() {
         List<Client> clients = new ArrayList<>();
@@ -147,6 +174,12 @@ public class ClientDAO {
 
         return clients;
     }
+    /**
+     * Vérifie si un client existe avec l’email et mot de passe donnés (authentification).
+     * @param email Email fourni
+     * @param mdp Mot de passe fourni
+     * @return L'objet Client si les identifiants sont valides, null sinon
+     */
     public Client verifierConnexion(String email, String mdp) {
         String sql = "SELECT u.*, c.type_client FROM utilisateur u JOIN client c ON u.id_utilisateur = c.id_utilisateur WHERE u.email = ? AND u.mdp = ?";
 

@@ -1,8 +1,6 @@
 package Vue;
 
-import DAO.AdminDAO;
 import DAO.ClientDAO;
-import Modele.Admin;
 import Modele.Client;
 
 import javax.swing.*;
@@ -112,7 +110,7 @@ public class InscriptionFenetre extends JFrame {
             String mdp = new String(mdpField.getPassword());
 
 
-                Client client = new Client(0, nom, prenom, email, mdp, Client.TypeClient.PARTICULIER);
+                Client client = new Client(0, nom, prenom, email, mdp, Client.TypeClient.NOUVEAU);
                 ClientDAO dao = new ClientDAO();
                 if (dao.ajouterClient(client)) {
                     JOptionPane.showMessageDialog(this, "Client inscrit !");

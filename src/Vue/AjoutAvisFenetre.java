@@ -125,7 +125,7 @@ public class AjoutAvisFenetre extends JFrame {
 
     public static void main(String[] args) {
         Modele.Client client = new Modele.Client(
-                1, "Dupont", "Jean", "jean@booking.com", "motdepasse", Client.TypeClient.PARTICULIER
+                1, "Dupont", "Jean", "jean@booking.com", "motdepasse", Client.TypeClient.NOUVEAU
         );
 
         // Faux hébergement de test

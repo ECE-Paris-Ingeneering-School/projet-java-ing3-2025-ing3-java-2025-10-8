@@ -30,8 +30,8 @@ public class InitialisationBDD {
         AdminDAO adminDAO = new AdminDAO();
 
         // Clients
-        clientDAO.ajouterClient(new Client(0, "Martin", "Alice", "alice@gmail.com", "alice123", Client.TypeClient.PARTICULIER));
-        clientDAO.ajouterClient(new Client(0, "Durand", "Bob", "bob@gmail.com", "bob123", Client.TypeClient.PARTICULIER));
+        clientDAO.ajouterClient(new Client(0, "Martin", "Alice", "alice@gmail.com", "alice123", Client.TypeClient.NOUVEAU));
+        clientDAO.ajouterClient(new Client(0, "Durand", "Bob", "bob@gmail.com", "bob123", Client.TypeClient.NOUVEAU));
 
         // Admins
         adminDAO.ajouterAdmin(new Admin(0, "Kaufman", "Noa", "noa@gmail.com", "admin123", "ajouter des hebergements"));

@@ -30,9 +30,9 @@ public class ClientDAOtest {
             // Vérification du type
             TypeClient typeClient;
             if (type.equalsIgnoreCase("Nouveau")) {
-                typeClient = TypeClient.PARTICULIER;
+                typeClient = TypeClient.NOUVEAU;
             } else if (type.equalsIgnoreCase("Ancien")) {
-                typeClient = TypeClient.ENTREPRISE;
+                typeClient = TypeClient.ANCIEN;
             } else {
                 System.out.println("Type de client invalide");
                 return;
