@@ -187,7 +187,7 @@ public class PaiementVue extends JFrame {
         return panel;
     }
     /**
-     * Initiliasation du formulaire pour paypal.
+     * Initilisation du formulaire pour paypal.
      */
     private JPanel initPaypalPanel() {
         JPanel panel = new JPanel(new GridLayout(1, 2));
@@ -197,7 +197,7 @@ public class PaiementVue extends JFrame {
         return panel;
     }
     /**
-     * Initiliasation du formulaire pour le virement.
+     * Initilisation du formulaire pour le virement.
      */
     private JPanel initVirementPanel() {
         JPanel panel = new JPanel(new GridLayout(1, 2));
