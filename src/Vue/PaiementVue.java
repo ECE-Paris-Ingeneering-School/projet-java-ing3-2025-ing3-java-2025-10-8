@@ -14,23 +14,31 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-
+/**
+ * Vue qui permet à un utilisateur de réaliser le paiement de sa réservation.
+ * Affiche le montant, applique une réduction (si client a un compte depuis 6mois), et propose différents moyens de paiement.
+ */
 public class PaiementVue extends JFrame {
 
+    // Labels pour afficher les infos du récapitulatif
     private JLabel recapReservationLabel;
     private JLabel recapMontantLabel;
     private JLabel recapMontantReductionLabel;
 
+    // Composants liés au choix de la méthode de paiement
     private JComboBox<String> methodeCombo;
     private JPanel methodeDetailsPanel;
     private CardLayout cardLayout;
 
+    // Champs spécifiques selon la méthode de paiement choisie
     private JTextField carteNumeroField, carteCVVField;
     private JTextField paypalEmailField;
     private JTextField virementIbanField;
 
+    // Bouton pour confirmer le paiement
     private JButton confirmerBtn;
 
+    // Connexion BDD et informations de la réservation
     private Connection connection;
     private Client client;
     private Reservation reservation;
@@ -39,7 +47,10 @@ public class PaiementVue extends JFrame {
     private int idReservation;
     private double montant;
     private OffreReduction offreActive;
-
+    /**
+     * Constructeur principal.
+     * Initialise la fenêtre, les données client/réservation et interface graphique.
+     */
     public PaiementVue(int idUtilisateur, int idReservation) {
         this.idUtilisateur = idUtilisateur;
         this.idReservation = idReservation;
@@ -50,6 +61,7 @@ public class PaiementVue extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
+        // Connexion à la bdd
         connection = ConnexionBdd.seConnecter();
         if (connection == null) {
             JOptionPane.showMessageDialog(this, "Erreur de connexion à la base de données");
@@ -57,6 +69,7 @@ public class PaiementVue extends JFrame {
         }
 
         try {
+            // Recupration du client
             ClientDAO clientDAO = new ClientDAO();
             this.client = clientDAO.getClientParId(idUtilisateur);
 
@@ -69,6 +82,7 @@ public class PaiementVue extends JFrame {
                 return;
             }
 
+            // Calcul du montant total
             LocalDate debut = reservation.getDateArrivee();
             LocalDate fin = reservation.getDateDepart();
             long nbJours = ChronoUnit.DAYS.between(debut, fin);
@@ -76,6 +90,7 @@ public class PaiementVue extends JFrame {
             BigDecimal montantTotal = prixNuit.multiply(BigDecimal.valueOf(nbJours));
             this.montant = montantTotal.doubleValue();
 
+            // Vérifier qu'il existe une offre ou non
             OffreReductionDAO offreDAO = new OffreReductionDAO(connection);
             offreDAO.genererOffreSiAncienUtilisateur(idUtilisateur);
             this.offreActive = offreDAO.getOffreActivePourUtilisateur(idUtilisateur);
@@ -91,12 +106,15 @@ public class PaiementVue extends JFrame {
             JOptionPane.showMessageDialog(this, "Erreur d'initialisation : " + e.getMessage());
             return;
         }
-
+        // Initialisation de l'interface graphique
         initUI();
         setVisible(true);
     }
-
+    /**
+     * Initialise toute l'interface utilisateur.
+     */
     private void initUI() {
+        // Panneau récapitulatif
         JPanel recapPanel = new JPanel(new GridLayout(3, 1));
         recapPanel.setBorder(BorderFactory.createTitledBorder("Récapitulatif"));
 
@@ -104,7 +122,7 @@ public class PaiementVue extends JFrame {
         if (offreActive != null) {
             recapText += " — " + offreActive.getDescription();
         }
-
+        // Montant avant réduction
         double montantAvantReduction = offreActive != null ?
                 montant / (1 - offreActive.getPourcentageReduction() / 100.0) :
                 montant;
@@ -112,6 +130,7 @@ public class PaiementVue extends JFrame {
         recapReservationLabel = new JLabel(recapText);
         recapMontantLabel = new JLabel("Montant avant réduction : " + String.format("%.2f", montantAvantReduction) + " €");
 
+        // Label pour afficher la réduction
         recapMontantReductionLabel = new JLabel();
         recapMontantReductionLabel.setFont(new Font("SansSerif", Font.ITALIC, 13));
         recapMontantReductionLabel.setForeground(Color.DARK_GRAY);
@@ -123,16 +142,19 @@ public class PaiementVue extends JFrame {
             recapMontantReductionLabel.setText("Aucune réduction appliquée.");
         }
 
+        // Ajouter les labels au panneau
         recapPanel.add(recapReservationLabel);
         recapPanel.add(recapMontantLabel);
         recapPanel.add(recapMontantReductionLabel);
         add(recapPanel, BorderLayout.NORTH);
 
+        // Choix de la méthode de paiement (au centre)
         JPanel centerPanel = new JPanel(new BorderLayout());
         methodeCombo = new JComboBox<>(new String[]{"Carte bancaire", "PayPal", "Virement"});
         methodeCombo.addActionListener(e -> cardLayout.show(methodeDetailsPanel, (String) methodeCombo.getSelectedItem()));
         centerPanel.add(methodeCombo, BorderLayout.NORTH);
 
+        // Détails selon méthode choisie
         cardLayout = new CardLayout();
         methodeDetailsPanel = new JPanel(cardLayout);
         methodeDetailsPanel.add(initCartePanel(), "Carte bancaire");
@@ -142,13 +164,16 @@ public class PaiementVue extends JFrame {
         centerPanel.add(methodeDetailsPanel, BorderLayout.CENTER);
         add(centerPanel, BorderLayout.CENTER);
 
+        // Bouton de confirmation (tout en bas)
         JPanel bottomPanel = new JPanel(new FlowLayout());
         confirmerBtn = new JButton("Confirmer le paiement");
         confirmerBtn.addActionListener(e -> confirmerPaiement());
         bottomPanel.add(confirmerBtn);
         add(bottomPanel, BorderLayout.SOUTH);
     }
-
+    /**
+     * Initiliasation du formulaire pour la carte.
+     */
     private JPanel initCartePanel() {
         JPanel panel = new JPanel(new GridLayout(2, 2));
         panel.add(new JLabel("Numéro de carte :"));
@@ -161,7 +186,9 @@ public class PaiementVue extends JFrame {
         panel.add(carteCVVField);
         return panel;
     }
-
+    /**
+     * Initiliasation du formulaire pour paypal.
+     */
     private JPanel initPaypalPanel() {
         JPanel panel = new JPanel(new GridLayout(1, 2));
         panel.add(new JLabel("Email PayPal :"));
@@ -169,7 +196,9 @@ public class PaiementVue extends JFrame {
         panel.add(paypalEmailField);
         return panel;
     }
-
+    /**
+     * Initiliasation du formulaire pour le virement.
+     */
     private JPanel initVirementPanel() {
         JPanel panel = new JPanel(new GridLayout(1, 2));
         panel.add(new JLabel("IBAN :"));
@@ -177,7 +206,9 @@ public class PaiementVue extends JFrame {
         panel.add(virementIbanField);
         return panel;
     }
-
+    /**
+     * Application d'un format de type carte bancaire.
+     */
     private void appliquerFormatCarte(JTextField field) {
         ((AbstractDocument) field.getDocument()).setDocumentFilter(new DocumentFilter() {
             private String formatCarte(String text) {
@@ -212,17 +243,22 @@ public class PaiementVue extends JFrame {
             }
         });
     }
-
+    /**
+     * Confirme le paiement après la saisie utilisateur.
+     * Insère le paiement, met à jour la disponibilité et affiche un écran de remerciement.
+     */
     private void confirmerPaiement() {
         String methodeStr = (String) methodeCombo.getSelectedItem();
         Paiement.MethodePaiement methode = Paiement.fromSQLMethode(methodeStr);
         Paiement.StatutPaiement statut = Paiement.StatutPaiement.PAYE;
 
         try {
+            // Créer le paiement et l'enregistrer dans la base
             Paiement paiement = new Paiement(idReservation, montant, methode, statut, new Date(System.currentTimeMillis()));
             PaiementDAO paiementDAO = new PaiementDAO(connection);
             paiementDAO.ajouterPaiement(paiement);
 
+            // Maj de la disponibilité et du statut de la réservation
             HebergementDAO hebergementDAO = new HebergementDAO(connection);
             ReservationDAO reservationDAO = new ReservationDAO(connection, hebergementDAO);
             boolean updated = hebergementDAO.mettreAJourDisponibilite(reservation.getIdHebergement(), false);
@@ -232,13 +268,13 @@ public class PaiementVue extends JFrame {
                 System.out.println("Paiement validé, hébergement et réservation mis à jour.");
             }
 
-            // Appliquer offre de réduction suite à ce paiement (bonus)
+            // Appliquer offre de réduction suite à ce paiement
             if (offreActive != null) {
-                // Ajout éventuel de logique pour désactiver ou marquer l'offre comme utilisée
+
                 System.out.println("Offre fidélité utilisée.");
             }
 
-            // Créer une barre de chargement dans une boîte modale
+            // Barre de progression pour simuler attente paiement
             JDialog loadingDialog = new JDialog(this, "Traitement du paiement...", true);
             JProgressBar progressBar = new JProgressBar();
             progressBar.setIndeterminate(true);
@@ -247,11 +283,10 @@ public class PaiementVue extends JFrame {
             loadingDialog.pack();
             loadingDialog.setLocationRelativeTo(this);
 
-// Lancer le chargement dans un thread séparé
+            // Simulation de traitement avec SwingWorker
             SwingWorker<Void, Void> worker = new SwingWorker<>() {
                 @Override
                 protected Void doInBackground() throws Exception {
-                    // Simule le temps de traitement (tu peux l’enlever en prod)
                     Thread.sleep(1500);
                     return null;
                 }
@@ -266,9 +301,6 @@ public class PaiementVue extends JFrame {
 
             worker.execute();
             loadingDialog.setVisible(true);
-
-
-
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Erreur lors du paiement : " + e.getMessage());
