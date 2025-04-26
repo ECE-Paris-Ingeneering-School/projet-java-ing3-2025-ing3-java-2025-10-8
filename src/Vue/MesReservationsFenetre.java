@@ -3,7 +3,7 @@ package Vue;
 import DAO.ReservationDAO;
 import Modele.Reservation;
 import Modele.Client;
-
+import java.math.BigDecimal;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
@@ -123,11 +123,18 @@ public class MesReservationsFenetre extends JFrame {
      * @return Une chaîne de caractères contenant les détails de la réservation
      */
     private String genererRecap(Reservation res) {
+        long nuits = java.time.temporal.ChronoUnit.DAYS.between(res.getDateArrivee(), res.getDateDepart());
+
+        // Calcul du prix total
+        BigDecimal prixTotal = res.getHebergement().getPrixParNuit().multiply(BigDecimal.valueOf(nuits));
+
+        // Retour du récapitulatif avec la concaténation correcte
         return "Hébergement : " + res.getHebergement().getNom() + "\n" +
                 "Du " + res.getDateArrivee() + " au " + res.getDateDepart() + "\n" +
                 "Adultes : " + res.getNombreAdultes() + ", Enfants : " + res.getNombreEnfants() + "\n" +
                 "Chambres : " + res.getNombreChambres() + "\n" +
-                "Statut : " + res.getStatut().getValue(); // Récupération des informations de la réservation
+                "Statut : " + res.getStatut().getValue() + "\n" +
+                "Prix total : " + prixTotal.setScale(2, BigDecimal.ROUND_HALF_UP) + "€";
     }
     /**
      * Classe représentant un bouton avec des coins arrondis.
