@@ -8,6 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.util.List;
+
 /**
  * Fenêtre qui affiche les réservations du client.
  * Cette classe permet à un client de consulter ses réservations, d'effectuer un paiement ou d'annuler une réservation.
@@ -16,6 +17,7 @@ public class MesReservationsFenetre extends JFrame {
 
     private final Client client;
     private final ReservationDAO reservationDAO;
+
     /**
      * Constructeur de la fenêtre affichant les réservations du client.
      * @param client Le client dont les réservations doivent être affichées
@@ -26,15 +28,26 @@ public class MesReservationsFenetre extends JFrame {
         this.reservationDAO = reservationDAO;
 
         // Paramétrage fenêtre principale
-        setTitle("Mes Réservations"); // Titre
+        setTitle("Mes Réservations");
         setSize(600, 400);
-        setLocationRelativeTo(null); // Centrer la fenêtre
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE); // Fermer la fenêtre sans quitter l'application
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
+
+        // Bannière bleu style du site
+        JPanel topBanner = new JPanel(new BorderLayout());
+        topBanner.setBackground(Color.decode("#003580"));
+
+        JLabel titre = new JLabel("Mes Réservations");
+        titre.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        titre.setForeground(Color.WHITE);
+        titre.setHorizontalAlignment(SwingConstants.CENTER);
+        topBanner.add(titre, BorderLayout.CENTER);
+
+        add(topBanner, BorderLayout.NORTH);
 
         // Récupération des réservations pour ce client
         List<Reservation> reservations = reservationDAO.getReservationsByClient(client.getIdUtilisateur());
-
 
         JPanel listPanel = new JPanel();
         listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS)); // Eléments verticals
@@ -80,13 +93,13 @@ public class MesReservationsFenetre extends JFrame {
                         if (confirmation == JOptionPane.YES_OPTION) {
                             reservationDAO.supprimerReservation(res.getIdReservation()); // Supprimer la réservation
                             JOptionPane.showMessageDialog(this, "Réservation annulée avec succès.");
-                            dispose(); // Fermer la fenetre
+                            dispose(); // Fermer la fenêtre
                             new MesReservationsFenetre(client, reservationDAO).setVisible(true);
                         }
                     });
                     boutonPanel.add(annulerBtn);
                 } else {
-                    // Afficher le reçu ssi paiement effectue
+                    // Afficher le reçu si paiement effectué
                     JButton recuBtn = new RoundedButton("Reçu", Color.decode("#FF8000"), Color.WHITE);
                     recuBtn.setMaximumSize(new Dimension(150, 40));
                     recuBtn.addActionListener(e -> {
@@ -114,9 +127,10 @@ public class MesReservationsFenetre extends JFrame {
             }
         }
 
-        JScrollPane scrollPane = new JScrollPane(listPanel); // Faire defiler les réservations
+        JScrollPane scrollPane = new JScrollPane(listPanel); // Faire défiler les réservations
         add(scrollPane, BorderLayout.CENTER);
     }
+
     /**
      * Génère un récapitulatif des informations de la réservation sous forme de chaîne de caractères.
      * @param res La réservation à récapituler
@@ -136,40 +150,32 @@ public class MesReservationsFenetre extends JFrame {
                 "Statut : " + res.getStatut().getValue() + "\n" +
                 "Prix total : " + prixTotal.setScale(2, BigDecimal.ROUND_HALF_UP) + "€";
     }
+
     /**
      * Classe représentant un bouton avec des coins arrondis.
      * Cette classe personnalise l'apparence des boutons.
      */
     static class RoundedButton extends JButton {
-        /**
-         * Constructeur pour initialiser le bouton avec un texte et des couleurs.
-         * @param text Le texte du bouton
-         * @param bg La couleur de fond du bouton
-         * @param fg La couleur du texte du bouton
-         */
         public RoundedButton(String text, Color bg, Color fg) {
-            super(text); // Appel du constructeur
+            super(text);
             setContentAreaFilled(false);
-            setOpaque(true); // Bouton opaque
-            setBackground(bg); // Ccouleur de fond
+            setOpaque(true);
+            setBackground(bg);
             setForeground(fg);
             setFont(new Font("Arial", Font.BOLD, 15));
             setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
             setFocusPainted(false);
             setPreferredSize(new Dimension(150, 40));
-            setAlignmentX(Component.CENTER_ALIGNMENT);
         }
 
         @Override
         protected void paintComponent(Graphics g) {
-            Graphics2D g2 = (Graphics2D) g.create(); // Création Graphics2D
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON); // Bords plus lisses
-            g2.setColor(getBackground()); // Couleur de fond
-            g2.fillRoundRect(0, 0, getWidth(), getHeight(), 30, 30); // Coins arrondis
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setColor(getBackground());
+            g2.fillRoundRect(0, 0, getWidth(), getHeight(), 30, 30);
             super.paintComponent(g);
-            g2.dispose();
         }
-        // pour cette methode : Source : https://docs.oracle.com/javase/tutorial/uiswing/painting/
 
         @Override
         protected void paintBorder(Graphics g) {
