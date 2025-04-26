@@ -1,0 +1,8 @@
+----- Reçu de Paiement -----
+Date        : 2025-04-26
+Client      : e
+Réservation : #2
+Montant     : 150,00 €
+Méthode     : Carte bancaire
+-----------------------------
+Merci pour votre confiance !

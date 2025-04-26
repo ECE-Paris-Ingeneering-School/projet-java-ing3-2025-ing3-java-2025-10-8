@@ -1,0 +1,8 @@
+----- Reçu de Paiement -----
+Date        : 2025-04-22
+Client      : bruno
+Réservation : #43
+Montant     : 198,00 €
+Méthode     : PayPal
+-----------------------------
+Merci pour votre confiance !
