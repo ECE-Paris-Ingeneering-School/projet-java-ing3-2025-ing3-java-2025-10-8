@@ -115,7 +115,7 @@ public class PaiementVue extends JFrame {
      */
     private void initUI() {
         // Panneau récapitulatif
-        JPanel recapPanel = new JPanel(new GridLayout(3, 1));
+        JPanel recapPanel = new JPanel(new GridLayout(4, 1));
         recapPanel.setBorder(BorderFactory.createTitledBorder("Récapitulatif"));
 
         String recapText = "Réservation n° " + idReservation;
@@ -142,10 +142,21 @@ public class PaiementVue extends JFrame {
             recapMontantReductionLabel.setText("Aucune réduction appliquée.");
         }
 
+        // Afficher la promotion en rouge
+        JLabel promoLabel = new JLabel();
+        promoLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+        promoLabel.setForeground(Color.RED);
+        if (offreActive != null) {
+            promoLabel.setText("Promotion appliquée : " + offreActive.getDescription());
+        } else {
+            promoLabel.setText("Aucune promotion disponible.");
+        }
+
         // Ajouter les labels au panneau
         recapPanel.add(recapReservationLabel);
         recapPanel.add(recapMontantLabel);
         recapPanel.add(recapMontantReductionLabel);
+        recapPanel.add(promoLabel);
         add(recapPanel, BorderLayout.NORTH);
 
         // Choix de la méthode de paiement (au centre)
