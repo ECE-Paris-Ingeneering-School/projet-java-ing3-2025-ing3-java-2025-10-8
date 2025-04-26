@@ -1,5 +1,9 @@
-package DAO;
+package Controleur;
 
+import DAO.AdminDAO;
+import DAO.ClientDAO;
+import DAO.ConnexionBdd;
+import DAO.HebergementDAO;
 import Modele.Client;
 import Modele.Appartement;
 import Modele.Hotel;
