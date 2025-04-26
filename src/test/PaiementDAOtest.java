@@ -3,14 +3,23 @@ package test;
 import DAO.ConnexionBdd;
 import DAO.PaiementDAO;
 import Modele.Paiement;
-
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Classe de test pour gérer les paiements via différentes méthodes de paiement.
+ */
+
 public class PaiementDAOtest {
+    /**
+     * Méthode principale pour tester l'ajout et la gestion des paiements.
+     * Elle permet de choisir un mode de paiement, d'entrer des informations de paiement et de valider ou annuler paiement.
+     *
+     * @param args Arguments la ligne de commande (pas utilisée).
+     */
     public static void main(String[] args) {
         Connection connection = ConnexionBdd.seConnecter();
         Scanner scanner = new Scanner(System.in);
@@ -25,7 +34,7 @@ public class PaiementDAOtest {
                 System.out.println("2. PayPal");
                 System.out.println("3. Virement");
                 int choix = scanner.nextInt();
-                scanner.nextLine(); // Consomme le retour à la ligne
+                scanner.nextLine();
 
                 Paiement.MethodePaiement methode;
 
@@ -40,19 +49,18 @@ public class PaiementDAOtest {
                         methode = Paiement.MethodePaiement.VIREMENT;
                         break;
                     default:
-                        System.out.println("❌ Choix invalide. Paiement annulé.");
+                        System.out.println("Choix invalide. Paiement annulé.");
                         return;
                 }
-
 
                 // Entrée des infos
                 System.out.print("Entrez le montant du paiement : ");
                 double montant = scanner.nextDouble();
-                scanner.nextLine(); // flush
+                scanner.nextLine();
 
                 System.out.print("Entrez l'ID de la réservation : ");
                 int idReservation = scanner.nextInt();
-                scanner.nextLine(); // flush
+                scanner.nextLine();
 
                 // Création du paiement EN_ATTENTE
                 Paiement paiement = new Paiement(
@@ -64,47 +72,45 @@ public class PaiementDAOtest {
                 );
 
                 paiementDAO.ajouterPaiement(paiement);
-                System.out.println("✅ Paiement ajouté pour la réservation " + paiement.getIdReservation());
+                System.out.println("Paiement ajouté pour la réservation " + paiement.getIdReservation());
 
-                // Récupération de l'ID auto-généré (dernière ligne ajoutée)
+                // Récupération de l'ID
                 List<Paiement> paiementsForReservation = paiementDAO.getPaiementsByReservation(idReservation);
                 Paiement paiementRecupere = paiementsForReservation.get(paiementsForReservation.size() - 1);
 
-                System.out.println("📥 Paiement récupéré : " + paiementRecupere);
-
-                // Confirmation
+                System.out.println("Paiement récupéré : " + paiementRecupere);
                 System.out.print("Souhaitez-vous valider le paiement ? (oui/non) : ");
                 String validation = scanner.nextLine().trim().toLowerCase();
 
                 if (validation.equals("oui")) {
                     paiementRecupere.setStatut(Paiement.StatutPaiement.PAYE);
                     paiementDAO.updatePaiement(paiementRecupere);
-                    System.out.println("✅ Paiement validé !");
+                    System.out.println("Paiement validé !");
                 } else if (validation.equals("non")) {
-                    // Confirmation de l'annulation
+                    // Confirmation de l'anulation
                     System.out.print("Voulez-vous vraiment annuler le paiement ? (oui/non) : ");
                     String confirmationAnnulation = scanner.nextLine().trim().toLowerCase();
 
                     if (confirmationAnnulation.equals("oui")) {
                         paiementRecupere.setStatut(Paiement.StatutPaiement.ANNULE);
                         paiementDAO.updatePaiement(paiementRecupere);
-                        System.out.println("❌ Paiement annulé.");
+                        System.out.println(" Paiement annulé.");
                     } else {
-                        System.out.println("ℹ️ Aucun changement effectué. Paiement en attente.");
+                        System.out.println("Aucun changement effectué. Paiement en attente.");
                     }
                 } else {
-                    System.out.println("ℹ️ Réponse non reconnue. Paiement laissé en attente.");
+                    System.out.println("Réponse non reconnue. Paiement laissé en attente.");
                 }
 
-                // Affichage final des paiements liés à la réservation
+                // Affichage paiements
                 List<Paiement> paiements = paiementDAO.getPaiementsByReservation(idReservation);
-                System.out.println("📋 Paiements pour la réservation " + idReservation + " :");
+                System.out.println("Paiements pour la réservation " + idReservation + " :");
                 for (Paiement p : paiements) {
-                    System.out.println("➡️ " + p);
+                    System.out.println(" " + p);
                 }
 
             } catch (SQLException e) {
-                System.out.println("💥 Erreur SQL : " + e.getMessage());
+                System.out.println("Erreur SQL : " + e.getMessage());
             }
         }
     }
