@@ -171,6 +171,11 @@ public class Hebergement {
      * @return La description de l'hébergement.
      */
     public String getDescription() {
+
+        if (description != null && !description.isEmpty()) {
+            return description; // Retourne la description du formulaire
+        }
+
         switch (nom) {
             case "Studio Chic":
                 return "Ce studio lumineux au style haussmannien offre un cadre élégant au cœur de Paris. Son design raffiné, ses moulures dorées et son mobilier chic séduisent immédiatement. Parfait pour les couples ou les voyageurs d'affaires, il dispose d'une cuisine toute équipée et d'une salle de bain moderne. Situé à proximité des musées et des cafés parisiens, c'est un point de départ idéal pour découvrir la ville. Profitez d'une ambiance chaleureuse et d'un confort optimal dans ce cocon citadin.";

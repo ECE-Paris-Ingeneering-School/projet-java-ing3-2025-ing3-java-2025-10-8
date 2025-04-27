@@ -132,8 +132,8 @@ public class PaiementVue extends JFrame {
 
         // Label pour afficher la réduction
         recapMontantReductionLabel = new JLabel();
-        recapMontantReductionLabel.setFont(new Font("SansSerif", Font.ITALIC, 13));
-        recapMontantReductionLabel.setForeground(Color.DARK_GRAY);
+        recapMontantReductionLabel.setFont(new Font("SansSerif", Font.BOLD, 14)); // Gras pour bien voir
+        recapMontantReductionLabel.setForeground(Color.RED); // Rouge directement
 
         if (offreActive != null) {
             double reduction = montantAvantReduction - montant;
@@ -142,22 +142,14 @@ public class PaiementVue extends JFrame {
             recapMontantReductionLabel.setText("Aucune réduction appliquée.");
         }
 
-        // Afficher la promotion en rouge
-        JLabel promoLabel = new JLabel();
-        promoLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
-        promoLabel.setForeground(Color.RED);
-        if (offreActive != null) {
-            promoLabel.setText("Promotion appliquée : " + offreActive.getDescription());
-        } else {
-            promoLabel.setText("Aucune promotion disponible.");
-        }
-
         // Ajouter les labels au panneau
         recapPanel.add(recapReservationLabel);
         recapPanel.add(recapMontantLabel);
         recapPanel.add(recapMontantReductionLabel);
-        recapPanel.add(promoLabel);
         add(recapPanel, BorderLayout.NORTH);
+
+
+
 
         // Choix de la méthode de paiement (au centre)
         JPanel centerPanel = new JPanel(new BorderLayout());
