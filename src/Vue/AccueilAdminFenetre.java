@@ -3,15 +3,25 @@ package Vue;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Fenêtre d'accueil pour l'administrateur
+ * Permet d'ajouter, modifier ou supprimer des hébergements
+ * Offre également la posibilité de se déconnecter
+ */
+
 public class AccueilAdminFenetre extends JFrame {
 
+    /**
+     * Constructeur principal de l'accueil administrateur
+     * Initialise la fenêtre et met en place les differents boutons
+     */
     public AccueilAdminFenetre() {
         setTitle("Espace Administrateur - Booking");
         setSize(600, 400);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // Panel principal
+        //Panneau principal
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBackground(Color.WHITE);
@@ -22,18 +32,20 @@ public class AccueilAdminFenetre extends JFrame {
         titleLabel.setForeground(new Color(0, 45, 114));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Bas
+        //Bas du panneau où le bouton de déconnexion est
         JButton deconnexionButton = new JButton("Ajouter un hébergement");
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         deconnexionButton = new JButton("Déconnexion");
         bottomPanel.add(deconnexionButton);
         add(bottomPanel, BorderLayout.SOUTH);
 
+        // action pour se déconnecter
         deconnexionButton.addActionListener(e -> {
             dispose();
             new ConnexionFenetre().setVisible(true);
         });
 
+        // bouton pour ajouter
         JButton ajouterHebergementButton = new JButton("Ajouter un hébergement");
         ajouterHebergementButton.setFont(new Font("Arial", Font.BOLD, 14));
         ajouterHebergementButton.setBackground(new Color(0, 102, 204));
@@ -42,6 +54,7 @@ public class AccueilAdminFenetre extends JFrame {
         ajouterHebergementButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
         ajouterHebergementButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        // bouton pour supprimer
         JButton supprimerHebergementButton = new JButton("Supprimer un hébergement");
         supprimerHebergementButton.setFont(new Font("Arial", Font.BOLD, 14));
         supprimerHebergementButton.setBackground(new Color(0, 102, 204));
@@ -50,6 +63,7 @@ public class AccueilAdminFenetre extends JFrame {
         supprimerHebergementButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
         supprimerHebergementButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        // bouton pour modifier
         JButton modifierHebergementButton = new JButton("Modifier un hébergement");
         modifierHebergementButton.setFont(new Font("Arial", Font.BOLD, 14));
         modifierHebergementButton.setBackground(new Color(0, 102, 204));
@@ -58,9 +72,8 @@ public class AccueilAdminFenetre extends JFrame {
         modifierHebergementButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
         modifierHebergementButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Action pour ajouter un hébergement (à implémenter)
+        // Action pour ajouter un hébergement
         ajouterHebergementButton.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Redirection vers le formulaire d'ajout...");
              new AjoutHebergementFenetre().setVisible(true);
         });
 
@@ -74,6 +87,7 @@ public class AccueilAdminFenetre extends JFrame {
             new SupprimerHebergementFenetre().setVisible(true);
         });
 
+        //esthétique du panneau
         panel.add(titleLabel);
         panel.add(Box.createVerticalStrut(60));
         panel.add(ajouterHebergementButton);
@@ -83,7 +97,9 @@ public class AccueilAdminFenetre extends JFrame {
         panel.add(supprimerHebergementButton);
         add(panel);
     }
-
+    /**
+     * Lancement de la fenêtre d'administration
+     */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new AccueilAdminFenetre().setVisible(true));
     }
