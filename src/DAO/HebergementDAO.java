@@ -5,6 +5,7 @@ import Modele.Hebergement;
 import Modele.Appartement;
 import Modele.MaisonHotes;
 
+import java.io.File;
 import java.sql.*;
 import java.math.BigDecimal;
 import java.util.*;
@@ -19,6 +20,10 @@ public class HebergementDAO {
 
     /** Connexion à la base de données. */
     private Connection connection;
+
+    /** List d'images. */
+    private List<File> fichiersImages = new ArrayList<>();
+
 
     /**
      * Constructeur avec connexion personnalisée.

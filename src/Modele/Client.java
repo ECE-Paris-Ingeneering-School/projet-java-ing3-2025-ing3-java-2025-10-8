@@ -18,7 +18,7 @@ public class Client extends Utilisateur {
      */
     public enum TypeClient {
         NOUVEAU,
-        ANCIEN
+        ANCIEN,
     }
 
     /** Type du client (Particulier ou Entreprise) */
