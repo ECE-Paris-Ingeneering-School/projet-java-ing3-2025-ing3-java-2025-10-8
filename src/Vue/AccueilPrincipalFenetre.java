@@ -6,6 +6,7 @@ import DAO.ClientDAO;
 import DAO.ReservationDAO;
 import java.sql.Connection;
 import DAO.ConnexionBdd;
+import DAO.AvisDAO;
 
 import javax.swing.*;
 import java.awt.*;
@@ -308,6 +309,30 @@ public class AccueilPrincipalFenetre extends JFrame {
         }
 
         infos.add(nomEtEtoiles);
+
+
+// === Affichage de la moyenne des avis (après le nom et les étoiles) ===
+        AvisDAO avisDAO = new AvisDAO();
+        List<Avis> avisList = avisDAO.getAvisParHebergement(h.getIdHebergement());
+
+        JLabel moyenneAvisLabel;
+        if (!avisList.isEmpty()) {
+            double sommeNotes = 0;
+            for (Avis avis : avisList) {
+                sommeNotes += avis.getNote();
+            }
+            double moyenne = Math.round((sommeNotes / avisList.size()) * 10.0) / 10.0;
+            moyenneAvisLabel = new JLabel("Avis clients : " + moyenne + " / 5");
+            moyenneAvisLabel.setFont(new Font("Arial", Font.BOLD, 13));
+            moyenneAvisLabel.setForeground(Color.BLACK);
+        } else {
+            moyenneAvisLabel = new JLabel("Avis clients : Aucun avis pour le moment");
+            moyenneAvisLabel.setFont(new Font("Arial", Font.ITALIC, 12));
+            moyenneAvisLabel.setForeground(Color.GRAY);
+        }
+
+        infos.add(moyenneAvisLabel);
+        infos.add(Box.createVerticalStrut(10));
 
         JLabel adresse = new JLabel(h.getAdresse());
         adresse.setFont(new Font("Arial", Font.PLAIN, 14));

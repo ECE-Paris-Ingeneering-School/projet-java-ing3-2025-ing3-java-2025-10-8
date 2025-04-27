@@ -184,31 +184,47 @@ public class HebergementDetailFenetre extends JFrame {
         List<Avis> avisList = avisDAO.getAvisParHebergement(h.getIdHebergement());
 
         infosPanel.add(Box.createVerticalStrut(30));
+
         JLabel titreAvis = new JLabel("Avis des clients :");
-        titreAvis.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        titreAvis.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        titreAvis.setForeground(Color.BLACK);
         infosPanel.add(titreAvis);
         infosPanel.add(Box.createVerticalStrut(10));
 
         if (!avisList.isEmpty()) {
+            // --- Calcul et affichage de la moyenne ---
+            double sommeNotes = 0;
+            for (Avis avis : avisList) {
+                sommeNotes += avis.getNote();
+            }
+            double moyenne = Math.round((sommeNotes / avisList.size()) * 10.0) / 10.0;
+
+            JLabel moyenneLabel = new JLabel("Moyenne des avis : " + moyenne + " / 5");
+            moyenneLabel.setFont(new Font("Arial", Font.BOLD, 15));
+            moyenneLabel.setForeground(Color.BLACK);
+            infosPanel.add(moyenneLabel);
+            infosPanel.add(Box.createVerticalStrut(20));
+
             for (Avis avis : avisList) {
                 JPanel avisPanel = new JPanel();
                 avisPanel.setLayout(new BoxLayout(avisPanel, BoxLayout.Y_AXIS));
-                avisPanel.setBackground(new Color(250, 250, 250));
+                avisPanel.setBackground(Color.WHITE);
                 avisPanel.setBorder(BorderFactory.createCompoundBorder(
                         BorderFactory.createLineBorder(Color.LIGHT_GRAY),
                         BorderFactory.createEmptyBorder(10, 15, 10, 15)
                 ));
 
-                JLabel noteLabel = new JLabel("★ " + avis.getNote() + "/5");
+                JLabel noteLabel = new JLabel(avis.getNote() + " / 5");
                 noteLabel.setFont(new Font("Arial", Font.BOLD, 14));
-                noteLabel.setForeground(new Color(255, 128, 0));
-
-                JLabel dateLabel = new JLabel(new SimpleDateFormat("dd/MM/yyyy").format(avis.getDateAvis()));
-                dateLabel.setFont(new Font("Arial", Font.ITALIC, 12));
-                dateLabel.setForeground(Color.GRAY);
+                noteLabel.setForeground(Color.BLACK);
 
                 JLabel commentaireLabel = new JLabel("<html><p style='width:700px'>" + avis.getCommentaire() + "</p></html>");
                 commentaireLabel.setFont(new Font("Arial", Font.PLAIN, 13));
+                commentaireLabel.setForeground(Color.BLACK);
+
+                JLabel dateLabel = new JLabel(new java.text.SimpleDateFormat("dd/MM/yyyy").format(avis.getDateAvis()));
+                dateLabel.setFont(new Font("Arial", Font.ITALIC, 12));
+                dateLabel.setForeground(Color.BLACK);
 
                 avisPanel.add(noteLabel);
                 avisPanel.add(Box.createVerticalStrut(5));
@@ -222,14 +238,15 @@ public class HebergementDetailFenetre extends JFrame {
         } else {
             JLabel aucun = new JLabel("Aucun avis pour le moment.");
             aucun.setFont(new Font("Arial", Font.ITALIC, 13));
+            aucun.setForeground(Color.BLACK);
             infosPanel.add(aucun);
         }
 
         infosPanel.add(Box.createVerticalStrut(20));
 
-        // === BOUTON LAISSER UN AVIS (même sans avoir réservé)
+// === BOUTON "Laisser un avis"
         JLabel lienAvis = new JLabel("<html><u>Laisser un avis</u></html>");
-        lienAvis.setForeground(new Color(0, 102, 204)); // Bleu Booking
+        lienAvis.setForeground(new Color(0, 102, 204)); // bleu booking
         lienAvis.setFont(new Font("Arial", Font.BOLD, 13));
         lienAvis.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         lienAvis.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -250,9 +267,10 @@ public class HebergementDetailFenetre extends JFrame {
             }
         });
 
-        infosPanel.add(Box.createVerticalStrut(20));  // plus d'espace avant
+        infosPanel.add(Box.createVerticalStrut(20));
         infosPanel.add(lienAvis);
-        infosPanel.add(Box.createVerticalStrut(30));  // plus d’espace après
+        infosPanel.add(Box.createVerticalStrut(30));
+
 
         // === BOUTON CARTE ===
         JButton btnCarte = new JButton("Voir sur la carte");
