@@ -10,9 +10,21 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
-
+/**
+ * Fenêtre d'administration qui permet de modifier les hébergements
+ * Cette interface propose trois onglets :
+ * - Hôtels
+ * - Appartements
+ * - Maisons d'hôtes
+ * Chaque hébergement est affiché sous forme de carte avec ses informations comme dans l'accueil
+ * et un bouton pour ouvrir une fenêtre de modification
+ */
 public class ModifierHebergementFenetre extends JFrame{
 
+    /**
+     * Constructeur principal
+     * Initialise l'interface avec les onglets et les boutons
+     */
     public ModifierHebergementFenetre() {
         setTitle("Modifier un hébergement");
         setSize(1000, 600);
@@ -20,6 +32,7 @@ public class ModifierHebergementFenetre extends JFrame{
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
+        //Création des onglets pour chaque type
         JTabbedPane onglets = new JTabbedPane();
         onglets.add("Hôtels", creerPanelParType("Hotel"));
         onglets.add("Appartements", creerPanelParType("Appartement"));
@@ -30,6 +43,7 @@ public class ModifierHebergementFenetre extends JFrame{
 
         add(onglets, BorderLayout.CENTER);
 
+        //bouton retour
         JButton retour = new JButton("Retour à l'accueil admin");
         retour.setBackground(new Color(0, 45, 114)); // couleur de fond
         retour.setForeground(Color.WHITE);
@@ -43,6 +57,12 @@ public class ModifierHebergementFenetre extends JFrame{
         add(bas, BorderLayout.SOUTH);
     }
 
+    /**
+     * Crée un panneau listant les hébergements suivant le type
+     *
+     * @param type le type d'hébergement à afficher
+     * @return Un JScrollPane contenant les cartes d'hébergements
+     */
     private JScrollPane creerPanelParType(String type) {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -67,6 +87,13 @@ public class ModifierHebergementFenetre extends JFrame{
         return scroll;
     }
 
+    /**
+     * Crée une carte visuelle pour un hébergement
+     * Affiche les informations et un bouton pour modifier
+     *
+     * @param h l'hébergement concerné
+     * @return Un JPanel représentant la carte
+     */
     private JPanel creerCarteAvecModification(Hebergement h) {
         JPanel carte = new JPanel();
         carte.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
@@ -131,6 +158,11 @@ public class ModifierHebergementFenetre extends JFrame{
         return carte;
     }
 
+    /**
+     * Méthode principale pour lancer la fenêtre indépendamment
+     *
+     * @param args Arguments de la ligne de commande (non utilisés)
+     */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new ModifierHebergementFenetre().setVisible(true));
     }
