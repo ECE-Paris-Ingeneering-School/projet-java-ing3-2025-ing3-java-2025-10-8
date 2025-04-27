@@ -10,8 +10,18 @@ import java.awt.*;
 import java.time.LocalDate;
 import java.util.Collections;
 
-
+/**
+ * Fenêtre permettant à un utilisateur de laisser un avis sur un hébergement.
+ * L'utilisateur peut saisir une note sur 5 et un commentaire.
+ */
 public class AjoutAvisFenetre extends JFrame {
+
+    /**
+     * Constructeur de la fenêtre d'ajout d'un avis.
+     *
+     * @param hebergement L'hébergement sur lequel l'utilisateur souhaite laisser un avis.
+     * @param client Le client connecté.
+     */
 
     public AjoutAvisFenetre(Hebergement hebergement, Client client) {
         setTitle("Laisser un avis");
