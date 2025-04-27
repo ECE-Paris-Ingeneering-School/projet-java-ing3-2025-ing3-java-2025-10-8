@@ -10,6 +10,11 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+/**
+ * Fenêtre de connexion
+ * Permet aux utilisateurs de se connecter ou de s'inscrire
+ */
+
 public class ConnexionFenetre extends JFrame {
 
     private JTextField emailField;
@@ -17,6 +22,10 @@ public class ConnexionFenetre extends JFrame {
     private JButton loginButton;
     private JButton signupButton;
 
+    /**
+     * Constructeur de la fenêtre de connexion
+     * Initialise les composants et configure les événements
+     */
     public ConnexionFenetre() {
         setTitle("Connexion - Booking");
         setSize(430, 500);
@@ -148,7 +157,13 @@ public class ConnexionFenetre extends JFrame {
         });
     }
 
-        private JLabel createLabel(String text) {
+    /**
+     * Crée un JLabel stylisé pour les champs du formulaire
+     *
+     * @param text le texte du label
+     * @return Un JLabel configuré
+     */
+    private JLabel createLabel(String text) {
         JLabel label = new JLabel(text);
         label.setFont(new Font("Arial", Font.BOLD, 13));
         label.setForeground(Color.DARK_GRAY);
@@ -156,17 +171,38 @@ public class ConnexionFenetre extends JFrame {
         return label;
     }
 
+    /**
+     * Applique un style uniforme aux champs texte
+     *
+     * @param field le champ texte à styliser
+     */
     private void styleField(JTextField field) {
         field.setMaximumSize(new Dimension(280, 35));
         field.setFont(new Font("Arial", Font.PLAIN, 14));
     }
 
+    /**
+     * Point d'entrée principal pour lancer la fenêtre de connexion
+     *
+     * @param args Arguments de la ligne de commande (non utilisés)
+     */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new ConnexionFenetre().setVisible(true));
     }
 
+    /**
+     * Classe interne représentant un bouton avec des coins arrondis.
+     */
     // ----- CLASSE INTERNE POUR BOUTONS ARRONDIS -----
     static class RoundedButton extends JButton {
+
+        /**
+         * Constructeur du bouton arrondi
+         *
+         * @param text Le texte du bouton
+         * @param bg La couleur d'arrière-plan
+         * @param fg La couleur du texte
+         */
         public RoundedButton(String text, Color bg, Color fg) {
             super(text);
             setContentAreaFilled(false);

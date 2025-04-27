@@ -10,7 +10,6 @@ import java.util.List;
  * Classe DAO (Data Access Object) pour la gestion des administrateurs dans la base de données.
  * Fournit les opérations CRUD sur les objets Admin en interaction avec les tables `utilisateur` et `admin`.
  * Pattern : DAO, utilisé via JDBC avec gestion transactionnelle.
- * @author Noa
  */
 public class AdminDAO {
     /**

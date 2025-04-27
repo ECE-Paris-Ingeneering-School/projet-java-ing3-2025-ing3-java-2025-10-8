@@ -5,18 +5,28 @@ import Modele.Hebergement;
 import Modele.Client;
 import DAO.ReservationDAO;
 import Modele.Reservation;
-import Vue.MesReservationsFenetre;
 
 import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
 
+/**
+ * Fenêtre permettant à un client de vérifier la disponibilité
+ * et d'effectuer une réservation
+ */
 public class DisponibiliteFenetre extends JFrame {
 
     private Hebergement hebergement;
     private Client client;
     private ReservationDAO reservationDAO;
 
+    /**
+     * Constructeur de la fenêtre de disponibilité
+     *
+     * @param hebergement   l'hébergement sélectionné
+     * @param client        le client connecté
+     * @param reservationDAO DAO pour gérer les réservations
+     */
     public DisponibiliteFenetre(Hebergement hebergement, Client client, ReservationDAO reservationDAO) {
         this.hebergement = hebergement;
         this.client = client;
@@ -24,7 +34,7 @@ public class DisponibiliteFenetre extends JFrame {
 
         // Vérification que le client est valide
         if (client == null) {
-            JOptionPane.showMessageDialog(this, "❌ Erreur : Le client est invalide.");
+            JOptionPane.showMessageDialog(this, "Le client est invalide");
             dispose();  // Ferme la fenêtre si le client est nul
             return;
         }
@@ -74,7 +84,7 @@ public class DisponibiliteFenetre extends JFrame {
                     JOptionPane.showMessageDialog(this, "Hébergement non disponible à ces dates.");
                 }
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "⚠️ Erreur de format de date. Utilise AAAA-MM-JJ.");
+                JOptionPane.showMessageDialog(this, "Erreur de format de date. Utilise AAAA-MM-JJ.");
             }
         });
 
@@ -122,7 +132,6 @@ public class DisponibiliteFenetre extends JFrame {
                 if (success) {
                     JOptionPane.showMessageDialog(this, "Réservation enregistrée ! Vous pouvez procéder au paiement depuis la page 'Mes réservations'.");
 
-                    // Supposons que le paiement soit effectué ici, maintenant nous mettons à jour le statut
                     boolean paiementReussi = true; // Remplace par la logique réelle de paiement
 
                     if (paiementReussi) {
@@ -137,7 +146,7 @@ public class DisponibiliteFenetre extends JFrame {
                         }
                     }
 
-                    this.dispose(); // Ferme la fenêtre de disponibilité
+                    this.dispose(); // Ferme la fenêtre
 
                 } else {
                     JOptionPane.showMessageDialog(this, "Une erreur est survenue lors de l'enregistrement.");
@@ -151,13 +160,13 @@ public class DisponibiliteFenetre extends JFrame {
         // Panel pour les boutons
         JPanel buttonPanel = new JPanel(new FlowLayout());
 
-        // Bouton Vérifier disponibilité
+        //Bouton Vérifier dispo
         buttonPanel.add(rechercher);
 
-        // Bouton Valider commande
+        //Bouton Valider commande
         buttonPanel.add(validerCommandeBtn);
 
-        // 🔥 Nouveau bouton "Mes Réservations"
+        //Nouveau bouton "Mes Réservations"
         JButton mesReservationsBtn = new JButton("Mes Réservations");
         mesReservationsBtn.addActionListener(e -> {
             MesReservationsFenetre fenetre = new MesReservationsFenetre(client, reservationDAO);
@@ -168,7 +177,6 @@ public class DisponibiliteFenetre extends JFrame {
         // Ajout du panel boutons à la fenêtre
         add(buttonPanel, BorderLayout.SOUTH);
         add(formPanel, BorderLayout.CENTER);
-        add(buttonPanel, BorderLayout.SOUTH);
     }
 
     private double calculerMontantTotal(Reservation reservation) {
