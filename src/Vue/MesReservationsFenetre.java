@@ -8,7 +8,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.util.List;
-
 /**
  * Fenêtre qui affiche les réservations du client.
  * Cette classe permet à un client de consulter ses réservations, d'effectuer un paiement ou d'annuler une réservation.
@@ -17,7 +16,6 @@ public class MesReservationsFenetre extends JFrame {
 
     private final Client client;
     private final ReservationDAO reservationDAO;
-
     /**
      * Constructeur de la fenêtre affichant les réservations du client.
      * @param client Le client dont les réservations doivent être affichées
@@ -86,17 +84,25 @@ public class MesReservationsFenetre extends JFrame {
                     JButton annulerBtn = new RoundedButton("Annuler", Color.RED, Color.WHITE);
                     annulerBtn.setMaximumSize(new Dimension(150, 40));
                     annulerBtn.addActionListener(e -> {
-                        int confirmation = JOptionPane.showConfirmDialog(this,
-                                "Êtes-vous sûr de vouloir annuler cette réservation ?", // Demander confirmation
-                                "Confirmer l'annulation",
-                                JOptionPane.YES_NO_OPTION);
-                        if (confirmation == JOptionPane.YES_OPTION) {
+                        Object[] options = {"Oui", "Non"}; // Boutons personnalisés "Oui" "Non"
+                        int confirmation = JOptionPane.showOptionDialog(
+                                this,
+                                "Êtes-vous sûr de vouloir annuler cette réservation ?", // Message
+                                "Confirmer l'annulation",     // Titre
+                                JOptionPane.YES_NO_OPTION,
+                                JOptionPane.QUESTION_MESSAGE,
+                                null,
+                                options,
+                                options[0]
+                        );
+                        if (confirmation == 0) { // 0 = Oui
                             reservationDAO.supprimerReservation(res.getIdReservation()); // Supprimer la réservation
                             JOptionPane.showMessageDialog(this, "Réservation annulée avec succès.");
                             dispose(); // Fermer la fenêtre
                             new MesReservationsFenetre(client, reservationDAO).setVisible(true);
                         }
                     });
+
                     boutonPanel.add(annulerBtn);
                 } else {
                     // Afficher le reçu si paiement effectué
@@ -130,7 +136,6 @@ public class MesReservationsFenetre extends JFrame {
         JScrollPane scrollPane = new JScrollPane(listPanel); // Faire défiler les réservations
         add(scrollPane, BorderLayout.CENTER);
     }
-
     /**
      * Génère un récapitulatif des informations de la réservation sous forme de chaîne de caractères.
      * @param res La réservation à récapituler
@@ -150,7 +155,6 @@ public class MesReservationsFenetre extends JFrame {
                 "Statut : " + res.getStatut().getValue() + "\n" +
                 "Prix total : " + prixTotal.setScale(2, BigDecimal.ROUND_HALF_UP) + "€";
     }
-
     /**
      * Classe représentant un bouton avec des coins arrondis.
      * Cette classe personnalise l'apparence des boutons.
