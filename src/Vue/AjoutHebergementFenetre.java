@@ -95,18 +95,28 @@ public class AjoutHebergementFenetre extends JFrame {
                 chooser.setMultiSelectionEnabled(true);
                 chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
                 int result = chooser.showOpenDialog(AjoutHebergementFenetre.this);
+
                 if (result == JFileChooser.APPROVE_OPTION) {
-                    File[] selected = chooser.getSelectedFiles();
+                    File[] fichiersChoisis = chooser.getSelectedFiles(); // <- ici on appelle fichiersChoisis
                     imagePaths.clear();
-                    for (File f : selected) {
-                        try {
-                            Path destination = Path.of("resources/images/" + f.getName());
-                            Files.copy(f.toPath(), destination, StandardCopyOption.REPLACE_EXISTING);
-                            imagePaths.add(destination.toString());
-                        } catch (IOException ex) {
-                            ex.printStackTrace();
+
+                    for (File file : fichiersChoisis) {
+                        if (file.exists()) {
+                            String nomFichier = file.getName();
+                            Path destination = Path.of("resources/images/" + nomFichier);
+
+                            try {
+                                Files.copy(file.toPath(), destination, StandardCopyOption.REPLACE_EXISTING);
+                                imagePaths.add("images/" + nomFichier);  // Stocke chemin relatif
+                            } catch (IOException ex) {
+                                ex.printStackTrace();
+                                JOptionPane.showMessageDialog(AjoutHebergementFenetre.this, "Erreur de copie du fichier " + nomFichier);
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(AjoutHebergementFenetre.this, "Fichier introuvable : " + file.getAbsolutePath());
                         }
                     }
+
                     imageLabel.setText(imagePaths.size() + " image(s) sélectionnée(s).");
                 }
             }
@@ -222,24 +232,38 @@ public class AjoutHebergementFenetre extends JFrame {
                     int etoiles = Integer.parseInt(nbEtoilesField.getText().trim());
                     boolean piscine = piscineBox.isSelected();
                     boolean spa = spaBox.isSelected();
-                    dao.ajouterHotel(new Hotel(0, nom, adresse, prix, description, "Hôtel", imagePaths, etoiles, petitDej, piscine, spa));
+                    Hotel hotel = new Hotel(
+                            0, nom, adresse, prix, description, "Hôtel",
+                            new ArrayList<>(imagePaths), etoiles, petitDej, piscine, spa
+                    );
+                    dao.ajouterHotel(hotel);
                 }
                 case "Appartement" -> {
                     int pieces = Integer.parseInt(nbPiecesField.getText().trim());
                     int etage = Integer.parseInt(etageField.getText().trim());
-                    dao.ajouterAppartement(new Appartement(0, nom, adresse, prix, description, "Appartement", imagePaths, pieces, petitDej, etage));
+                    Appartement appartement = new Appartement(
+                            0, nom, adresse, prix, description, "Appartement",
+                            new ArrayList<>(imagePaths), pieces, petitDej, etage
+                    );
+                    dao.ajouterAppartement(appartement);
                 }
                 case "Maison d'hôtes" -> {
                     boolean jardin = jardinBox.isSelected();
-                    dao.ajouterMaisonHotes(new MaisonHotes(0, nom, adresse, prix, description, "Maison d'hôtes", imagePaths, petitDej, jardin));
+                    MaisonHotes maison = new MaisonHotes(
+                            0, nom, adresse, prix, description, "Maison d'hôtes",
+                            new ArrayList<>(imagePaths), petitDej, jardin
+                    );
+                    dao.ajouterMaisonHotes(maison);
                 }
             }
             JOptionPane.showMessageDialog(this, "Hébergement ajouté avec succès !");
             dispose();
         } catch (Exception e) {
+            e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Erreur : " + e.getMessage());
         }
     }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new AjoutHebergementFenetre().setVisible(true));

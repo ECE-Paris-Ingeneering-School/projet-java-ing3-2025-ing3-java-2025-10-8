@@ -184,7 +184,7 @@ public class HebergementDAO {
                 // Insertion des images dans hebergement_images
                 insererImagesHebergement(conn, idGenere, a.getImageUrls());
 
-                System.out.println("Appartement inséré : " + a.getNom());
+                System.out.println("✅ Appartement inséré : " + a.getNom());
             }
 
         } catch (SQLException e) {
@@ -228,13 +228,17 @@ public class HebergementDAO {
                 // Insertion des images
                 insererImagesHebergement(conn, idGenere, m.getImageUrls());
 
-                System.out.println("Maison d'hôtes insérée : " + m.getNom());
+                System.out.println("✅ Maison d'hôtes insérée : " + m.getNom());
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
+
+
+    // ---------------------- READ ----------------------
 
     /**
      * Recherche une maison d'hôtes par son ID.
@@ -356,6 +360,9 @@ public class HebergementDAO {
 
         return null;
     }
+
+
+    // ---------------------- FILTRAGE ----------------------
 
     /**
      * Récupère tous les hébergements enregistrés dans la base.
@@ -597,4 +604,35 @@ public class HebergementDAO {
             return false;
         }
     }
+    /**
+     * Récupère l'ID du dernier hébergement ajouté.
+     * @return l'ID de l'hébergement
+     */
+    public long getDernierIdHebergementAjoute() {
+        try (Connection conn = ConnexionBdd.seConnecter();
+             PreparedStatement ps = conn.prepareStatement("SELECT MAX(id_hebergement) FROM hebergement")) {
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getLong(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    /**
+     * Ajoute plusieurs images pour un hébergement existant.
+     * @param idHebergement ID de l'hébergement
+     * @param cheminsImages Liste des chemins d'images
+     */
+    public void ajouterImagesPourHebergement(long idHebergement, List<String> cheminsImages) {
+        try (Connection conn = ConnexionBdd.seConnecter()) {
+            insererImagesHebergement(conn, idHebergement, cheminsImages);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
