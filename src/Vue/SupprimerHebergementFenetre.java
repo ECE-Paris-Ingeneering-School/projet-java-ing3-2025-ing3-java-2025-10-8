@@ -10,8 +10,17 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
+/**
+ * Fenêtre permettant à un administrateur de supprimer un hébergement de la BDD
+ * Chaque hébergement est affiché dans une carte et un bouton de suppression
+ */
+
 public class SupprimerHebergementFenetre extends JFrame {
 
+    /**
+     * Constructeur principal
+     * Initialise la fenêtre avec les onglets d'hébergements et le bouton de retour
+     */
     public SupprimerHebergementFenetre() {
         setTitle("Supprimer un hébergement");
         setSize(1000, 600);
@@ -19,6 +28,7 @@ public class SupprimerHebergementFenetre extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
+        // Création des onglets pour chaque type
         JTabbedPane onglets = new JTabbedPane();
         onglets.add("Hôtels", creerPanelParType("Hotel"));
         onglets.add("Appartements", creerPanelParType("Appartement"));
@@ -29,6 +39,7 @@ public class SupprimerHebergementFenetre extends JFrame {
 
         add(onglets, BorderLayout.CENTER);
 
+        //Bouton retour
         JButton retour = new JButton("Retour à l'accueil admin");
         retour.setBackground(new Color(0, 45, 114)); // couleur de fond
         retour.setForeground(Color.WHITE);
@@ -42,6 +53,12 @@ public class SupprimerHebergementFenetre extends JFrame {
         add(bas, BorderLayout.SOUTH);
     }
 
+    /**
+     * Crée un panneau contenant tous les hébergements
+     *
+     * @param type le type d'hébergement
+     * @return JScrollPane contenant la liste des cartes d'hébergements
+     */
     private JScrollPane creerPanelParType(String type) {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -66,6 +83,12 @@ public class SupprimerHebergementFenetre extends JFrame {
         return scroll;
     }
 
+    /**
+     * Crée une carte représentant un hébergement avec un bouton de suppression
+     *
+     * @param h l'hébergement à afficher.
+     * @return JPanel représentant la carte de l'hébergement
+     */
     private JPanel creerCarteAvecSuppression(Hebergement h) {
         JPanel carte = new JPanel();
         carte.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
@@ -141,6 +164,11 @@ public class SupprimerHebergementFenetre extends JFrame {
         return carte;
     }
 
+    /**
+     * Méthode principale pour lancer la fenêtre indépendamment
+     *
+     * @param args Arguments de la ligne de commande (non utilisés)
+     */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new SupprimerHebergementFenetre().setVisible(true));
     }

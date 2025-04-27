@@ -1,21 +1,28 @@
 package DAO;
 
 import Modele.OffreReduction;
-
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.time.LocalDate;
-
+/**
+ * DAO pour gérer les opérations liées aux offres de réduction.
+ */
 public class OffreReductionDAO {
 
     private Connection connection;
-
+    /**
+     * Constructeur de l'OffreReductionDAO.
+     *
+     * @param connection La connexion à la base de données.
+     */
     public OffreReductionDAO(Connection connection) {
         this.connection = connection;
     }
-
-    // Récupérer l'offre active pour un utilisateur donné
+    /**
+     * Récupère l'offre de réduction active pour un utilisateur donné.
+     *
+     * @param idUtilisateur L'identifiant de l'utilisateur.
+     * @return L'offre de réduction active, ou null s'il n'y en a pas.
+     */
     public OffreReduction getOffreActivePourUtilisateur(int idUtilisateur) {
         OffreReduction offre = null;
         String sql = "SELECT * FROM offrereduction WHERE id_utilisateur = ? " +
@@ -40,8 +47,12 @@ public class OffreReductionDAO {
 
         return offre;
     }
-
-    // Vérifier l'ancienneté de l'utilisateur et générer une offre si applicable
+    /**
+     * Vérifie l'ancienneté de l'utilisateur (au moins 6 mois) et génère une offre de réduction.
+     *
+     * @param idUtilisateur L'identifiant de l'utilisateur.
+     * @return L'offre de réduction générée, ou null si non applicable.
+     */
     public OffreReduction genererOffreSiAncienUtilisateur(int idUtilisateur) {
         String sql = "SELECT date_inscription FROM utilisateur WHERE id_utilisateur = ?";
 
@@ -63,7 +74,7 @@ public class OffreReductionDAO {
                             Date.valueOf(LocalDate.now().plusDays(7))
                     );
 
-                    // Ajouter l'offre à la BDD
+                    // Ajouter l'offre à la bdd
                     if (ajouterOffre(offre)) {
                         return offre;
                     }
@@ -73,10 +84,14 @@ public class OffreReductionDAO {
             e.printStackTrace();
         }
 
-        return null;  // Aucun droit à l'offre
+        return null;  // Pas d'offre sinon
     }
-
-    // Ajouter une nouvelle offre de réduction
+    /**
+     * Ajoute une nouvelle offre de réduction dans la base de données.
+     *
+     * @param offre L'offre de réduction à ajouter.
+     * @return true si l'ajout a réussi, false sinon.
+     */
     public boolean ajouterOffre(OffreReduction offre) {
         String sql = "INSERT INTO offrereduction (id_utilisateur, description, pourcentage_reduction, date_debut, date_fin) " +
                 "VALUES (?, ?, ?, ?, ?)";
@@ -94,25 +109,29 @@ public class OffreReductionDAO {
             return false;
         }
     }
-
-    // Ajouter une réduction suite à un paiement
+    /**
+     * Ajoute une réduction suite à un paiement réalisé par un utilisateur.
+     *
+     * @param idPaiement L'identifiant du paiement.
+     * @param reduction Le pourcentage de réduction à appliquer.
+     * @param montant Le montant du paiement (non utilisé ici mais conservé pour de futures évolutions).
+     * @return true si l'ajout de la réduction a réussi, false sinon.
+     */
     public boolean ajouterReductionPaiement(int idPaiement, double reduction, double montant) {
-        // Récupérer l'ID utilisateur associé au paiement
+
         int idUtilisateur = -1;
         try {
-            idUtilisateur = getIdUtilisateurFromPaiement(idPaiement);  // Récupération de l'utilisateur
+            idUtilisateur = getIdUtilisateurFromPaiement(idPaiement);
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;  // Si une erreur survient dans la récupération de l'utilisateur, retourner false
+            return false;
         }
 
-        // Vérifier si un utilisateur a été trouvé
         if (idUtilisateur == -1) {
             System.out.println("Aucun utilisateur trouvé pour ce paiement.");
-            return false;  // Aucun utilisateur trouvé, retour sans appliquer la réduction
+            return false;
         }
 
-        // Préparer la requête d'insertion
         String sql = "INSERT INTO offrereduction (id_utilisateur, description, pourcentage_reduction, date_debut, date_fin) " +
                 "VALUES (?, ?, ?, ?, ?)";
 
@@ -123,17 +142,19 @@ public class OffreReductionDAO {
             ps.setDate(4, new Date(System.currentTimeMillis()));
             ps.setDate(5, Date.valueOf(LocalDate.now().plusDays(7)));  // Exemple : date de fin + 7 jours
 
-            // Exécution de la requête d'insertion
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;  // En cas d'erreur d'insertion, retourner false
+            return false;
         }
     }
-
-
-    // 🔽 ICI : Nouvelle méthode pour récupérer l'ID utilisateur depuis un paiement
-    // Récupère l'id_utilisateur à partir d'un id_paiement, via la réservation
+    /**
+     * Récupère l'identifiant de l'utilisateur à partir de l'identifiant d'un paiement.
+     *
+     * @param idPaiement L'identifiant du paiement.
+     * @return L'identifiant de l'utilisateur associé.
+     * @throws SQLException En cas d'erreur SQL ou si aucun utilisateur n'est trouvé.
+     */
     private int getIdUtilisateurFromPaiement(int idPaiement) throws SQLException {
         String sql = "SELECT r.id_utilisateur " +
                 "FROM paiement p " +
@@ -145,7 +166,7 @@ public class OffreReductionDAO {
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 int idUtilisateur = rs.getInt("id_utilisateur");
-                System.out.println("ID utilisateur trouvé : " + idUtilisateur);  // Ajout de la ligne pour le debug
+                System.out.println("ID utilisateur trouvé : " + idUtilisateur);
                 return idUtilisateur;
             } else {
                 throw new SQLException("Aucun utilisateur trouvé pour ce paiement.");

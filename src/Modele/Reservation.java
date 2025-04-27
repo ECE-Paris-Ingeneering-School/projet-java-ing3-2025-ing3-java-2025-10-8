@@ -3,6 +3,10 @@ package Modele;
 import java.time.LocalDate;
 import DAO.HebergementDAO;
 
+/**
+ * Classe représentant une réservation.
+ * Contient des informations liées à la réservation : utilisateur, dates et hébergement.
+ */
 public class Reservation {
 
     private int idReservation;
@@ -15,9 +19,11 @@ public class Reservation {
     private int nombreChambres;
     private Statut statut;
 
-    // Enum pour le statut de la réservation
+    /**
+     * Enumération des statuts possibles d'une réservation.
+     */
     public enum Statut {
-        PAYE("Confirmée"),
+        PAYE("Confirmée"), // Confirmée et payée
         ANNULEE("Annulée"),
         EN_ATTENTE("En attente");
 
@@ -26,22 +32,43 @@ public class Reservation {
         Statut(String value) {
             this.value = value;
         }
-
+        /**
+         * Retourne la valeur du statut sous forme de chaîne.
+         *
+         * @return Valeur du statut.
+         */
         public String getValue() {
             return value;
         }
 
+        /**
+         * Convertit une chaîne de caractères en statut.
+         *
+         * @param value La chaîne de caractères représentant un statut.
+         * @return Le statut correspondant.
+         */
         public static Statut fromString(String value) {
             for (Statut statut : Statut.values()) {
                 if (statut.value.equalsIgnoreCase(value)) {
                     return statut;
                 }
             }
-            return null;
+            return null; // Si aucun statut correspond
         }
     }
-
-    // Constructeur avec idUtilisateur
+    /**
+     * Constructeur de la classe Reservation avec l'identifiant de l'utilisateur.
+     *
+     * @param idReservation L'identifiant de la réservation.
+     * @param idUtilisateur L'identifiant de l'utilisateur ayant effectué la réservation.
+     * @param idHebergement L'identifiant de l'hébergement réservé.
+     * @param dateArrivee La date d'arrivée de la réservation.
+     * @param dateDepart La date de départ de la réservation.
+     * @param nombreAdultes Le nombre d'adultes pour la réservation.
+     * @param nombreEnfants Le nombre d'enfants pour la réservation.
+     * @param nombreChambres Le nombre de chambres réservées.
+     * @param statut Le statut actuel de la réservation.
+     */
     public Reservation(int idReservation, int idUtilisateur, int idHebergement,
                        LocalDate dateArrivee, LocalDate dateDepart,
                        int nombreAdultes, int nombreEnfants,
@@ -57,7 +84,19 @@ public class Reservation {
         this.statut = statut;
     }
 
-    // Constructeur sans idUtilisateur
+    /**
+     * Constructeur de la classe Reservation sans l'identifiant de l'utilisateur.
+     * Utilisé lorsque l'utilisateur est géré séparément (pour des tests).
+     *
+     * @param idReservation L'identifiant de la réservation.
+     * @param idHebergement L'identifiant de l'hébergement réservé.
+     * @param dateArrivee La date d'arrivée de la réservation.
+     * @param dateDepart La date de départ de la réservation.
+     * @param nombreAdultes Le nombre d'adultes pour la réservation.
+     * @param nombreEnfants Le nombre d'enfants pour la réservation.
+     * @param nombreChambres Le nombre de chambres réservées.
+     * @param statut Le statut actuel de la réservation.
+     */
     public Reservation(int idReservation, int idHebergement,
                        LocalDate dateArrivee, LocalDate dateDepart,
                        int nombreAdultes, int nombreEnfants,
@@ -71,14 +110,18 @@ public class Reservation {
         this.nombreChambres = nombreChambres;
         this.statut = statut;
     }
-
-    // Méthode pour récupérer l'hébergement associé à la réservation
+    /**
+     * Récupère l'hébergement associé à la réservation.
+     *
+     * @return L'hébergement lié à cette réservation.
+     */
     public Hebergement getHebergement() {
-        HebergementDAO hebergementDAO = new HebergementDAO(); // Créer ou récupérer une instance de ton DAO Hebergement
-        return hebergementDAO.getHebergementById(this.idHebergement);  // Recherche de l'hébergement par ID
+        HebergementDAO hebergementDAO = new HebergementDAO();
+        return hebergementDAO.getHebergementById(this.idHebergement);
     }
 
-    // Getters et Setters
+    // Getters et Setters pour accéder/modifier les propriétés de la réservation
+
     public int getIdReservation() {
         return idReservation;
     }
@@ -91,7 +134,6 @@ public class Reservation {
         return idUtilisateur;
     }
 
-    // Setter pour définir l'ID de l'utilisateur
     public void setIdUtilisateur(int idUtilisateur) {
         this.idUtilisateur = idUtilisateur;
     }
@@ -151,7 +193,11 @@ public class Reservation {
     public void setStatut(Statut statut) {
         this.statut = statut;
     }
-
+    /**
+     * Méthode qui retourne une représentation sous forme texte de la réservation.
+     *
+     * @return La chaîne représentant l'objet Reservation.
+     */
     @Override
     public String toString() {
         return "Reservation [idReservation=" + idReservation + ", idUtilisateur=" + idUtilisateur

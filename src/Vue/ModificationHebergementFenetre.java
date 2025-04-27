@@ -6,7 +6,14 @@ import Modele.*;
 import javax.swing.*;
 import java.awt.*;
 import java.math.BigDecimal;
-import java.util.List;
+
+/**
+ * Fenêtre permettant de modifier les informations d'un hébergement
+ * Gère les différents types d'hébergement : hôtel, appartement et maison d'hôtes
+ * Affiche les champs nom, adresse, prix, etc. et les champs spécifiques à chaque hébergement
+ * Permet l'enregistrement des modifications directement dans la base de données
+ *
+ */
 
 public class ModificationHebergementFenetre extends JFrame {
     private JTextField nomField, adresseField, prixField, descriptionField, imageUrlField;
@@ -17,6 +24,10 @@ public class ModificationHebergementFenetre extends JFrame {
 
     private Hebergement hebergement;
 
+    /**
+     * Constructeur principal de la fenêtre de modification
+     * @param h L'hébergement à modifier
+     */
     public ModificationHebergementFenetre(Hebergement h) {
         this.hebergement = h;
 
@@ -26,6 +37,7 @@ public class ModificationHebergementFenetre extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
+        //Bandeau avec le logo
         JPanel header = new JPanel(new FlowLayout(FlowLayout.LEFT));
         header.setBackground(new Color(0, 45, 114));
         JLabel logo = new JLabel(new ImageIcon(new ImageIcon(getClass().getResource("/Vue/BookingLogo.png")).getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH)));
@@ -36,11 +48,13 @@ public class ModificationHebergementFenetre extends JFrame {
         header.add(title);
         add(header, BorderLayout.NORTH);
 
+        //Formulaire principal
         JPanel formPanel = new JPanel();
         formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
         formPanel.setBorder(BorderFactory.createEmptyBorder(10, 60, 10, 60));
         formPanel.setBackground(Color.WHITE);
 
+        //Champs communs aux hebergements
         nomField = new JTextField(h.getNom());
         adresseField = new JTextField(h.getAdresse());
         prixField = new JTextField(h.getPrixParNuit().toString());
@@ -55,6 +69,7 @@ public class ModificationHebergementFenetre extends JFrame {
         formPanel.add(createLabeledField("URL image (ex: img/hotel1.jpg) :", imageUrlField));
         formPanel.add(petitDejBox);
 
+        //Champs spécifiques aux hebergements
         specificFieldsPanel = new JPanel();
         specificFieldsPanel.setLayout(new BoxLayout(specificFieldsPanel, BoxLayout.Y_AXIS));
         specificFieldsPanel.setBackground(Color.WHITE);
@@ -83,6 +98,7 @@ public class ModificationHebergementFenetre extends JFrame {
             specificFieldsPanel.add(jardinBox);
         }
 
+        //bouton pour enregistrer les modif
         JButton enregistrer = new JButton("Enregistrer les modifications");
         enregistrer.setBackground(new Color(255, 128, 0));
         enregistrer.setForeground(Color.WHITE);
@@ -94,6 +110,12 @@ public class ModificationHebergementFenetre extends JFrame {
         add(formPanel, BorderLayout.CENTER);
     }
 
+    /**
+     * Crée un champ de formulaire avec un label associé
+     * @param label le texte du label
+     * @param field le champ de saisie correspondant
+     * @return le panneau contenant le label et le champ
+     */
     private JPanel createLabeledField(String label, JTextField field) {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(Color.WHITE);
@@ -105,6 +127,10 @@ public class ModificationHebergementFenetre extends JFrame {
         return panel;
     }
 
+    /**
+     * Récupère les données saisies et met à jour l'hébergement en base de données.
+     * Affiche un message de succès ou d'erreur.
+     */
     private void modifierHebergement() {
         try {
             hebergement.setNom(nomField.getText().trim());
@@ -117,6 +143,7 @@ public class ModificationHebergementFenetre extends JFrame {
                             .filter(s -> !s.isEmpty())
                             .toList()
             );
+            //MAJ selon type
             if (hebergement instanceof Hotel hotel) {
                 hotel.setNombreEtoiles(Integer.parseInt(nbEtoilesField.getText().trim()));
                 hotel.setPetitDejeuner(petitDejBox.isSelected());
@@ -131,6 +158,7 @@ public class ModificationHebergementFenetre extends JFrame {
                 maison.setPetitDejeuner(petitDejBox.isSelected());
             }
 
+            //MAJ BDD
             boolean success = new HebergementDAO().modifierHebergement(hebergement);
             if (success) {
                 JOptionPane.showMessageDialog(this, "Modifications enregistrées !");
