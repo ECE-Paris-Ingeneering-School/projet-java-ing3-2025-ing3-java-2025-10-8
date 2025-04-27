@@ -14,7 +14,7 @@ public class Paiement {
     private StatutPaiement statut;
     private Date datePaiement;
     /**
-     * Eénumération des méthodes de paiement disponibles.
+     * Enumération des méthodes de paiement disponibles.
      */
     public enum MethodePaiement {
         CARTE_BANCAIRE,

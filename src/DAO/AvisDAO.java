@@ -12,7 +12,6 @@ import java.util.List;
  * Permet d'ajouter un avis, de récupérer la liste des avis d’un hébergement,
  * et de calculer la note moyenne.
  * Pattern : DAO (accès à la BDD via JDBC)
- * @author Noa
  */
 
 public class AvisDAO {
