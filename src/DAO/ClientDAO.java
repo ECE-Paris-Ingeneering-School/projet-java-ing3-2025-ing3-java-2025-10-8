@@ -12,7 +12,6 @@ import java.util.List;
  * DAO (Data Access Object) de la classe Client.
  * Gère toutes les opérations d’accès et de manipulation des données client dans la base.
  * Pattern : DAO, utilisé avec JDBC pour la table `client` liée à `utilisateur`.
- * @author Noa
  */
 
 public class ClientDAO {

@@ -4,8 +4,7 @@ package Modele;
  * Classe Admin héritant de la classe Utilisateur.
  * Représente un utilisateur administrateur de l'application Booking.
  * Permet la gestion spécifique aux administrateurs (ajout d’hébergements, gestion des réductions, etc.).
- * Pattern : MVC - Modèle.
- * @author [TonNom]
+ * Pattern : MVC - Modèle
  */
 public class Admin extends Utilisateur {
 

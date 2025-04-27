@@ -7,8 +7,7 @@ import java.time.LocalDate;
  * Classe Modèle représentant un avis utilisateur sur un hébergement.
  * Contient les données liées à un avis : note, commentaire, date, auteur et hébergement visé.
  * Utilisée dans la logique métier et la couche DAO (base de données).
- * Pattern : MVC - Modèle.
- * @author Noa
+ * Pattern : MVC - Modèle
  */
 public class Avis {
     /** Identifiant unique de l'avis (clé primaire) */

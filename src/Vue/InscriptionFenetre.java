@@ -8,6 +8,10 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+/**
+ * Fenêtre d'inscription pour un nouveau client
+ * Permet à l'utilisateur de saisir ses informations pour créer un compte
+ */
 public class InscriptionFenetre extends JFrame {
 
     private JTextField nomField;
@@ -18,6 +22,10 @@ public class InscriptionFenetre extends JFrame {
     private JButton registerButton;
     private JButton retourButton;
 
+    /**
+     * Constructeur de la fenêtre d'inscription
+     * Initialise l'interface graphique et les actions associées
+     */
     public InscriptionFenetre() {
         setTitle("Inscription - Booking");
         setSize(450, 520);
@@ -132,6 +140,12 @@ public class InscriptionFenetre extends JFrame {
         });
     }
 
+    /**
+     * Crée un label stylisé pour les champs de saisie
+     *
+     * @param text Texte du label
+     * @return JLabel configuré
+     */
     private JLabel createLabel(String text) {
         JLabel label = new JLabel(text);
         label.setFont(new Font("Arial", Font.BOLD, 13));
@@ -140,13 +154,29 @@ public class InscriptionFenetre extends JFrame {
         return label;
     }
 
+    /**
+     * Applique un style standardisé aux champs de saisie
+     *
+     * @param field Champ à styliser
+     */
     private void styleField(JTextField field) {
         field.setMaximumSize(new Dimension(280, 35));
         field.setFont(new Font("Arial", Font.PLAIN, 14));
     }
 
     // Bouton arrondi
+    /**
+     * Bouton personnalisé avec coins arrondis
+     */
     static class RoundedButton extends JButton {
+
+        /**
+         * Constructeur du bouton arrondi
+         *
+         * @param text Texte du bouton
+         * @param bg Couleur de fond
+         * @param fg Couleur du texte
+         */
         public RoundedButton(String text, Color bg, Color fg) {
             super(text);
             setContentAreaFilled(false);
@@ -173,6 +203,11 @@ public class InscriptionFenetre extends JFrame {
         }
     }
 
+    /**
+     * Méthode principale pour exécuter l'interface d'inscription
+     *
+     * @param args Arguments de la ligne de commande (non utilisés)
+     */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new InscriptionFenetre().setVisible(true));
     }

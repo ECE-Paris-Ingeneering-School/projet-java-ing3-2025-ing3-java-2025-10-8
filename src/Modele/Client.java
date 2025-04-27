@@ -7,7 +7,6 @@ package Modele;
  * Utilisée pour les opérations métier et les interactions avec la base via ClientDAO.
  * @see DAO.ClientDAO
  * @see Modele.Utilisateur
- * @author [TonNom]
  */
 public class Client extends Utilisateur {
 
