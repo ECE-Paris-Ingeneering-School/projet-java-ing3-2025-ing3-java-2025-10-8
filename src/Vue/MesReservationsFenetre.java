@@ -145,7 +145,11 @@ public class MesReservationsFenetre extends JFrame {
         long nuits = java.time.temporal.ChronoUnit.DAYS.between(res.getDateArrivee(), res.getDateDepart());
 
         // Calcul du prix total
-        BigDecimal prixTotal = res.getHebergement().getPrixParNuit().multiply(BigDecimal.valueOf(nuits));
+        BigDecimal prixParNuit = res.getHebergement().getPrixParNuit();
+        if (prixParNuit.compareTo(BigDecimal.ZERO) < 0) {
+            prixParNuit = BigDecimal.ZERO; // Remplace par 0 si invalide
+        }
+        BigDecimal prixTotal = prixParNuit.multiply(BigDecimal.valueOf(nuits));
 
         // Retour du récapitulatif avec la concaténation correcte
         return "Hébergement : " + res.getHebergement().getNom() + "\n" +

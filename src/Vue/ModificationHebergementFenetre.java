@@ -135,7 +135,17 @@ public class ModificationHebergementFenetre extends JFrame {
         try {
             hebergement.setNom(nomField.getText().trim());
             hebergement.setAdresse(adresseField.getText().trim());
-            hebergement.setPrixParNuit(new BigDecimal(prixField.getText().trim()));
+            try {
+                BigDecimal prix = new BigDecimal(prixField.getText().trim());
+                if (prix.compareTo(BigDecimal.ZERO) < 0) {
+                    JOptionPane.showMessageDialog(this, "Le prix ne peut pas être négatif.");
+                    return;
+                }
+                hebergement.setPrixParNuit(prix);
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Veuillez entrer un prix valide.");
+                return;
+            }
             hebergement.setDescription(descriptionField.getText().trim());
             hebergement.setImageUrls(
                     java.util.Arrays.stream(imageUrlField.getText().trim().split(","))
