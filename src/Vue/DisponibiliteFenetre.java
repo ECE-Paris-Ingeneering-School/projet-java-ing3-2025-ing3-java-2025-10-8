@@ -72,6 +72,11 @@ public class DisponibiliteFenetre extends JFrame {
                 LocalDate dateArriveeLocalDate = LocalDate.parse(dateArrivee.getText());
                 LocalDate dateDepartLocalDate = LocalDate.parse(dateDepart.getText());
 
+                if (!dateArriveeLocalDate.isBefore(dateDepartLocalDate)) {
+                    JOptionPane.showMessageDialog(this, "La date d'arrivée doit être avant la date de départ.");
+                    return;
+                }
+
                 boolean disponible = reservationDAO.estDisponible(
                         (int) hebergement.getIdHebergement(),
                         dateArriveeLocalDate,
@@ -95,6 +100,12 @@ public class DisponibiliteFenetre extends JFrame {
                 // Vérification de la validité des informations
                 LocalDate dateArriveeLocalDate = LocalDate.parse(dateArrivee.getText());
                 LocalDate dateDepartLocalDate = LocalDate.parse(dateDepart.getText());
+
+                if (!dateArriveeLocalDate.isBefore(dateDepartLocalDate)) {
+                    JOptionPane.showMessageDialog(this, "La date d'arrivée doit être avant la date de départ.");
+                    return;
+                }
+
                 int nbAdultesValue = (int) nbAdultes.getSelectedItem();
                 int nbEnfantsValue = (int) nbEnfants.getSelectedItem();
                 int nbChambresValue = (int) nbChambres.getSelectedItem();
