@@ -122,6 +122,11 @@ public class InscriptionFenetre extends JFrame {
                 return;
             }
 
+            if (!email.contains("@")) {
+                JOptionPane.showMessageDialog(this, "Adresse email invalide : doit être de la forme nom@exemple", "Email invalide", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
             Client client = new Client(0, nom, prenom, email, mdp, Client.TypeClient.NOUVEAU);
             ClientDAO dao = new ClientDAO();
 
@@ -131,14 +136,6 @@ public class InscriptionFenetre extends JFrame {
                 new ConnexionFenetre().setVisible(true);
             } else {
                 JOptionPane.showMessageDialog(this, "Erreur d'inscription client.");
-            }
-        });
-        // Retour
-        lienConnexion.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                dispose();
-                new ConnexionFenetre().setVisible(true);
             }
         });
     }
