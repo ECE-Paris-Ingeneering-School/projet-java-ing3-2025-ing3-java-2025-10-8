@@ -112,24 +112,27 @@ public class InscriptionFenetre extends JFrame {
 
         // Action inscription
         inscrireButton.addActionListener(e -> {
-            String nom = nomField.getText();
-            String prenom = prenomField.getText();
-            String email = emailField.getText();
-            String mdp = new String(mdpField.getPassword());
+            String nom = nomField.getText().trim();
+            String prenom = prenomField.getText().trim();
+            String email = emailField.getText().trim();
+            String mdp = new String(mdpField.getPassword()).trim();
 
+            if (nom.isEmpty() || prenom.isEmpty() || email.isEmpty() || mdp.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Veuillez remplir tous les champs.", "Champs manquants", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
 
-                Client client = new Client(0, nom, prenom, email, mdp, Client.TypeClient.NOUVEAU);
-                ClientDAO dao = new ClientDAO();
-                if (dao.ajouterClient(client)) {
-                    JOptionPane.showMessageDialog(this, "Client inscrit !");
-                    dispose();
-                    new ConnexionFenetre().setVisible(true);
-                } else {
-                    JOptionPane.showMessageDialog(this, "Erreur d'inscription client.");
-                }
+            Client client = new Client(0, nom, prenom, email, mdp, Client.TypeClient.NOUVEAU);
+            ClientDAO dao = new ClientDAO();
 
+            if (dao.ajouterClient(client)) {
+                JOptionPane.showMessageDialog(this, "Client inscrit !");
+                dispose();
+                new ConnexionFenetre().setVisible(true);
+            } else {
+                JOptionPane.showMessageDialog(this, "Erreur d'inscription client.");
+            }
         });
-
         // Retour
         lienConnexion.addMouseListener(new MouseAdapter() {
             @Override
