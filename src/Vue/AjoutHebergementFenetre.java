@@ -212,14 +212,19 @@ public class AjoutHebergementFenetre extends JFrame {
         boolean petitDej = petitDejBox.isSelected();
         String type = (String) typeCombo.getSelectedItem();
 
-        if (nom.isEmpty() || adresse.isEmpty() || prixStr.isEmpty() || description.isEmpty() || imagePaths.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Veuillez remplir tous les champs obligatoires.");
+        if (!adresse.matches("^\\d+\\s+.+")) {
+            JOptionPane.showMessageDialog(this, "L'adresse doit commencer par un numéro suivi du nom de la rue (ex: 10 rue Victor Hugo).");
             return;
         }
+
 
         BigDecimal prix;
         try {
             prix = new BigDecimal(prixStr);
+            if (prix.compareTo(BigDecimal.ZERO) <= 0) {
+                JOptionPane.showMessageDialog(this, "Le prix doit être un nombre strictement positif.");
+                return;
+            }
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Le prix doit être un nombre valide.");
             return;

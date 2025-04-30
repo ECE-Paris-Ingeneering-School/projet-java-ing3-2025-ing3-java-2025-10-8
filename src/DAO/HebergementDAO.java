@@ -184,7 +184,7 @@ public class HebergementDAO {
                 // Insertion des images dans hebergement_images
                 insererImagesHebergement(conn, idGenere, a.getImageUrls());
 
-                System.out.println("✅ Appartement inséré : " + a.getNom());
+                System.out.println("Appartement inséré : " + a.getNom());
             }
 
         } catch (SQLException e) {
@@ -228,7 +228,7 @@ public class HebergementDAO {
                 // Insertion des images
                 insererImagesHebergement(conn, idGenere, m.getImageUrls());
 
-                System.out.println("✅ Maison d'hôtes insérée : " + m.getNom());
+                System.out.println("Maison d'hôtes insérée : " + m.getNom());
             }
 
         } catch (SQLException e) {
